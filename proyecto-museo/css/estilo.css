@@ -1,0 +1,267 @@
+* {
+    box-sizing: border-box
+}
+
+body {
+    background: linear-gradient(to bottom,  rgb(61, 140, 173),rgb(172, 82, 134));
+}
+
+header {
+    background-color: rgb(33, 198, 240);
+}
+
+header .logo {
+    font-size: 1.5em;
+    margin: 0;
+
+    font-weight: bold;
+    color: blueviolet;
+}
+
+header .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo {
+    width: 50px;
+    height: 45px;
+}
+
+HR {
+    color: white;
+    font-size: 1.5em;
+}
+
+fieldset {
+    color: white;
+}
+
+
+
+#cartas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+
+}
+
+.contacto {
+    background-color: rgb(240, 240, 240);
+
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+
+}
+
+.img {
+    width: 1100px;
+    height: 550px;
+}
+
+.carrusel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+
+}
+
+#escultura {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    height: 65vh;
+    color: white;
+    background-image: linear-gradient(0deg,
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)), url(../img/Escultura_MiguelAngel-Piedad.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+#orfebreria {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    height: 65vh;
+    color: white;
+    background-image: linear-gradient(0deg,
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)), url(../img/Orferia_HuevoDeFabergé.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+#pintura {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    height: 65vh;
+    color: white;
+    background-image: linear-gradient(0deg,
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)), url(../img/Pintura_VanGogh-Rhone.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+#tejidos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    height: 65vh;
+    color: white;
+    background-image: linear-gradient(0deg,
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)), url(../img/Tejido_Egeria.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+#login {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    height: 65vh;
+
+    padding: 100px;
+
+}
+.logofooter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 135px;
+}
+#crear {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    height: 65vh;
+
+    padding: 100px;
+
+}
+
+#centrado {
+    text-align: center;
+}
+
+#redes {
+    font-size: 1.5em;
+
+    width: 500px;
+    height: 200px;
+    height: 65vh;
+}
+
+
+.imgTarjetaIndex {
+    height: 150px;
+    width: 192px;
+}
+
+.card-header {
+    background-color: rgb(33, 198, 240);
+}
+
+.card-body {
+    background: linear-gradient(to bottom, rgb(61, 140, 173), rgb(172, 82, 134));
+}
+
+.card-footer {
+    background-color: rgb(141, 67, 110);
+}
+
+.cardIndex {
+    height: 300px;
+}
+
+.cardgalerias{
+    height: 350px;
+}
+
+.imgCarrusel {
+    margin-left: auto;
+    margin-right: auto;
+    height: 400px;
+    width: 800px;
+}
+
+.redes {
+    width: 70px;
+}
+.contacto{
+    text-decoration: none;
+    display: inline;
+    padding: 0%;
+    background: linear-gradient(to bottom, rgb(61, 140, 173), rgb(172, 82, 134));
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 600px) {
+    legend {
+        font-size: 5em;
+    }
+}
+
+@media (max-width: 600px) {
+    .imgCarrusel {
+        height: 200px;
+        width: 400px;
+    }
+}
+
+@media (max-width: 600px) {
+    .redes {
+        width: 50px;
+    }
+}
+
+
+
+.cardimg{
+    height: 600px;
+
+}
+@media (max-width: 600px){
+    .cardimg{
+        height:200px;
+    }
+}
+
+@media (max-width: 600px){
+    .card-body{
+        font-size: 10;
+    }
+}
