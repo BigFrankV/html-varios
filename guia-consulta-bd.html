@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía para Consultas de Bases de Datos</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Prism.js para resaltado de sintaxis -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --code-bg: #282c34; /* Fondo oscuro para código */
+            --code-text: #f8f9fa; /* Texto claro para código */
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            padding-top: 56px;
+            background-color: var(--light-bg);
+            color: #333;
+            position: relative;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--secondary-color);
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 30px;
+        }
+        
+        .hero-section h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 3rem;
+        }
+        
+        .hero-section p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            margin: 40px 0 20px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Mejora para bloques de código */
+        .code-block {
+            background-color: var(--code-bg);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px a 0;
+            position: relative;
+            font-family: 'Courier New', monospace;
+            color: var(--code-text);
+            overflow: hidden;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-block code {
+            color: var(--code-text) !important;
+            background-color: transparent;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: block;
+        }
+        
+        /* Mejora para resaltado de sintaxis */
+        .hljs {
+            background-color: var(--code-bg) !important;
+            color: var(--code-text) !important;
+        }
+        
+        .hljs-keyword {
+            color: #ff79c6 !important; /* Rosa */
+            font-weight: bold;
+        }
+        
+        .hljs-string {
+            color: #f1fa8c !important; /* Amarillo */
+        }
+        
+        .hljs-number {
+            color: #bd93f9 !important; /* Púrpura */
+        }
+        
+        .hljs-function, .hljs-built_in {
+            color: #50fa7b !important; /* Verde */
+        }
+        
+        .hljs-comment {
+            color: #6272a4 !important; /* Azul grisáceo */
+            font-style: italic;
+        }
+        
+        .hljs-operator, .hljs-punctuation {
+            color: #ff79c6 !important; /* Rosa */
+        }
+        
+        .hljs-literal, .hljs-type {
+            color: #8be9fd !important; /* Celeste */
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 3px;
+            padding: 2px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            color: white;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .feature-box {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            font-size: 30px;
+            line-height: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .table-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin: 20px 0;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .sidebar .nav-link {
+            color: var(--secondary-color) !important;
+            padding: 10px 15px;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left-color: var(--primary-color);
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: rgba(52, 152, 219, 0.15);
+            border-left-color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        /* Mantiene el estilo inline de código */
+        code {
+            background-color: #f0f0f0;
+            color: var(--accent-color);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Pero reseta para código en bloques pre */
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        
+        .back-to-top:hover {
+            background-color: #2980b9;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 50px 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .sidebar {
+                position: static;
+                height: auto;
+                margin-bottom: 30px;
+            }
+            
+            .feature-box {
+                margin-bottom: 40px;
+            }
+        }
+    </style>
+    
+</head>
+<body data-bs-spy="scroll" data-bs-target="#sidebar" data-bs-offset="56">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-database me-2"></i>
+                Guía SQL
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#instalacion">Instalación</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conceptos">Conceptos Básicos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#sintaxis">Sintaxis SQL</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#joins">Joins</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#funciones">Funciones</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="inicio">
+        <div class="container text-center">
+            <h1>Guía para Consultas de Bases de Datos</h1>
+            <p class="lead">Aprende a realizar consultas, gestionar bases de datos y optimizar tus habilidades en SQL</p>
+            <button class="btn btn-light btn-lg mt-3" id="empezarBtn">
+                <i class="fas fa-play-circle me-2"></i>Comenzar a Aprender
+            </button>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar / Navegación -->
+            <div class="col-lg-3">
+                <div class="sidebar" id="sidebar">
+                    <div class="list-group">
+                        <a class="list-group-item bg-light font-weight-bold">Contenidos</a>
+                        <a class="nav-link" href="#instalacion">Instalación</a>
+                        <a class="nav-link" href="#basesdatos">Bases de Datos Relacionales</a>
+                        <a class="nav-link" href="#guia">Guía Práctica</a>
+                        <a class="nav-link" href="#sintaxis">Sintaxis SQL</a>
+                        <a class="nav-link" href="#operadores">Operadores</a>
+                        <a class="nav-link" href="#alias">Alias</a>
+                        <a class="nav-link" href="#concatenar">Concatenación</a>
+                        <a class="nav-link" href="#orderby">Order By</a>
+                        <a class="nav-link" href="#where">Where</a>
+                        <a class="nav-link" href="#logicos">Operadores Lógicos</a>
+                        <a class="nav-link" href="#variables">Variables de Sustitución</a>
+                        <a class="nav-link" href="#creartablas">Creación de Tablas</a>
+                        <a class="nav-link" href="#funciones">Funciones</a>
+                        <a class="nav-link" href="#joins">Joins</a>
+                        <a class="nav-link" href="#subconsultas">Subconsultas</a>
+                        <a class="nav-link" href="#operadoreset">Operadores Set</a>
+                        <a class="nav-link" href="#dml">Sentencias DML</a>
+                        <a class="nav-link" href="#privilegios">Privilegios</a>
+                        <a class="nav-link" href="#usuarios">Usuarios</a>
+                        <a class="nav-link" href="#vistas">Vistas</a>
+                        <a class="nav-link" href="#secuencias">Secuencias</a>
+                        <a class="nav-link" href="#indices">Índices</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Instalación -->
+                <section id="instalacion">
+                    <h2 class="section-title">Instalación</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-download me-2"></i>Pasos para la instalación
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <i class="fas fa-database me-2 text-primary"></i>
+                                    Instalar el motor de base de datos
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-laptop-code me-2 text-primary"></i>
+                                    Instalar SQL Developer para gestionar la base de datos
+                                </li>
+                            </ul>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Asegúrate de descargar la versión compatible con tu sistema operativo.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bases de Datos Relacionales -->
+                <section id="basesdatos">
+                    <h2 class="section-title">Bases de Datos Relacionales</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-project-diagram me-2"></i>Conceptos Fundamentales
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <i class="fas fa-link me-2 text-primary"></i>
+                                    Interrelaciones entre tablas (a través de columnas de referencia)
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-user-plus me-2 text-primary"></i>
+                                    Creación de usuario y carga de tablas
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-search me-2 text-primary"></i>
+                                    Búsqueda de información que satisface los requerimientos
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Guía Práctica -->
+                <section id="guia">
+                    <h2 class="section-title">Guía Práctica</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tasks me-2"></i>Pasos a seguir
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Crear los usuarios en SYS</div>
+                                        Establecer permisos y roles adecuados
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Crear la conexión del usuario</div>
+                                        Configurar los parámetros de conexión
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Cargar la base de datos</div>
+                                        En el usuario recién creado
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Leer el caso y separar información</div>
+                                        <ul>
+                                            <li>Variables a ocupar en crudo (sin embellecedores)</li>
+                                            <li>Variables no Variables (resultados de operaciones, porcentajes, etc.)</li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Embellecer el informe</div>
+                                        Formato adecuado para presentación
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sintaxis SQL -->
+                <section id="sintaxis">
+                    <h2 class="section-title">Sintaxis SQL</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-code me-2"></i>Estructura básica de consultas
+                        </div>
+                        <div class="card-body">
+                            <div class="code-block">
+                                <pre><code class="language-sql">SELECT * | { [ DISTINCT ] columna expresión [alias],...}
+FROM   tabla
+[WHERE  condición]
+[ORDER  BY {columna, alias, expresión, posición_numérica} [ASC|DESC]];</code></pre>
+                                <button class="copy-btn" data-target="sintaxis-select">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Los elementos entre corchetes [ ] son opcionales, mientras que los separados por | son alternativas.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Operadores -->
+                <section id="operadores">
+                    <h2 class="section-title">Operadores</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-not-equal me-2"></i>Operadores más comunes
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>Operador</th>
+                                            <th>Descripción</th>
+                                            <th>Ejemplo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>=</td>
+                                            <td>Igual a</td>
+                                            <td><code>salary = 5000</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>!=, &lt;&gt;</td>
+                                            <td>Diferente a</td>
+                                            <td><code>department_id != 10</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>&lt;, &gt;</td>
+                                            <td>Menor que, Mayor que</td>
+                                            <td><code>salary > 3000</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>&lt;=, &gt;=</td>
+                                            <td>Menor o igual, Mayor o igual</td>
+                                            <td><code>hire_date <= '01-JAN-2010'</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>BETWEEN</td>
+                                            <td>Entre un rango (inclusivo)</td>
+                                            <td><code>salary BETWEEN 3000 AND 5000</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>IN</td>
+                                            <td>En una lista de valores</td>
+                                            <td><code>department_id IN (10, 20, 30)</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>LIKE</td>
+                                            <td>Coincide con patrón</td>
+                                            <td><code>last_name LIKE 'S%'</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>IS NULL</td>
+                                            <td>Es nulo</td>
+                                            <td><code>commission_pct IS NULL</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Alias -->
+                <section id="alias">
+                    <h2 class="section-title">Alias</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tag me-2"></i>Tipos de Alias
+                        </div>
+                        <div class="card-body">
+                            <h5>De columna: as "alias"</h5>
+                            <div class="code-block">
+                                <pre><code class="language-sql">SELECT employee_id AS "IDENTIFICACION EMPLEADO", 
+       first_name || ' ' || last_name AS "NOMBRE DEL EMPLEADO",
+       salary salario
+FROM employees;</code></pre>
+                                <button class="copy-btn" data-target="alias-columna">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            
+                            <h5 class="mt-4">De tabla: from, join</h5>
+                            <div class="code-block">
+                                <pre><code class="language-sql">SELECT e.employee_id, e.last_name, d.department_name
+FROM employees e, departments d
+WHERE e.department_id = d.department_id;</code></pre>
+                                <button class="copy-btn" data-target="alias-tabla">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Concatenar -->
+                <section id="concatenar">
+                    <h2 class="section-title">Concatenación</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-link me-2"></i>Unir cadenas de texto
+                        </div>
+                        <div class="card-body">
+                            <div class="code-block">
+                                <pre><code class="language-sql">SELECT employee_id "IDENTIFICACION EMPLEADO", 
+       first_name || ' ' || last_name "NOMBRE DEL EMPLEADO",
+       salary salario
+FROM employees;</code></pre>
+                                <button class="copy-btn" data-target="concatenacion">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                El operador <code>||</code> se utiliza para concatenar cadenas de texto en Oracle. En otros sistemas como SQL Server, se utiliza el operador <code>+</code>.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Order By -->
+                <section id="orderby">
+                    <h2 class="section-title">Order By</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-sort me-2"></i>Ordenar resultados
+                        </div>
+                        <div class="card-body">
+                            <p>La cláusula ORDER BY va al final de la sentencia SELECT y permite ordenar en forma Ascendente (defecto) o Descendente.</p>
+                            <div class="code-block">
+                                <pre><code class="language-sql">SELECT employee_id, last_name, salary
+FROM employees
+ORDER BY salary DESC;</code></pre>
+                                <button class="copy-btn" data-target="orderby-example">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Where -->
+                <section id="where">
+                    <h2 class="section-title">Where</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-filter me-2"></i>Filtrar resultados
+                        </div>
+                        <div class="card-body">
+                            <p>La cláusula WHERE restringe a que las filas deben cumplir con una condición para ser visualizadas, actualizadas o eliminadas.</p>
+                            
+                            <ul>
+                                <li>Se pueden comparar valores entre columnas, valor literal, expresiones aritméticas o funciones</li>
+                                <li>Se utilizan condiciones para filtrar</li>
+                                <li>Los valores de una columna son comparados fila a fila contra una condición</li>
+                            </ul>
+                            
+                            <p>Elementos que se pueden comparar:</p>
+                            <ul>
+                                <li>Columna</li>
+                                <li>Constante</li>
+                                <li>Lista de valores</li>
+                                <li>Cadena de Caracteres</li>
+                                <li>Fechas literales</li>
+                                <li>Expresiones matemáticas</li>
+                            </ul>
+                            
+                            <div class="code-block">
+                                <pre><code class="language-sql">SELECT employee_id, last_name, salary
+FROM employees
+WHERE department_id = 90
+AND salary > 10000;</code></pre>
+                                <button class="copy-btn" data-target="where-example">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Operadores Lógicos -->
+                <section id="logicos">
+                    <h2 class="section-title">Operadores Lógicos</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-code-branch me-2"></i>Combinar condiciones
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>Operador</th>
+                                            <th>Descripción</th>
+                                            <th>Ejemplo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AND</td>
+                                            <td>Todas las condiciones deben ser verdaderas</td>
+                                            <td><code>salary > 3000 AND department_id = 50</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td>OR</td>
+                                            <td>Al menos una condición debe ser verdadera</td>
+                                            <td><code>department_id = 60 OR job_id = 'IT_PROG'</code
+                                                ></td>
+                                            </tr>
+                                            <tr>
+                                                <td>NOT</td>
+                                                <td>Niega una condición</td>
+                                                <td><code>NOT (salary BETWEEN 1000 AND 2000)</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    El operador AND tiene mayor precedencia que OR. Usa paréntesis para controlar el orden de evaluación.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Variables de Sustitución -->
+                    <section id="variables">
+                        <h2 class="section-title">Variables de Sustitución &</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-exchange-alt me-2"></i>Uso de variables
+                            </div>
+                            <div class="card-body">
+                                <div class="code-block">
+                                    <pre><code class="language-sql">SELECT last_name, department_id, salary*12
+    FROM   employees
+    WHERE  job_id = '&job_title';</code></pre>
+                                    <button class="copy-btn" data-target="variables-example">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                
+                                <p class="mt-3">Cuando se quiere que el dato colocado se ocupe en dos lados, se pone en la primera variable <code>&&</code> y en las demás <code>&</code>:</p>
+                                
+                                <div class="code-block">
+                                    <pre><code class="language-sql">SELECT employee_id, last_name, job_id, &&column_name
+    FROM employees
+    ORDER BY &column_name;</code></pre>
+                                    <button class="copy-btn" data-target="variables-multiple">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Creación de Tablas -->
+                    <section id="creartablas">
+                        <h2 class="section-title">Creación de tabla nueva</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-table me-2"></i>Crear tablas desde consultas
+                            </div>
+                            <div class="card-body">
+                                <p>Para crear nuevas tablas en la base de datos y guardar los datos de una consulta:</p>
+                                
+                                <div class="code-block">
+                                    <pre><code class="language-sql">CREATE TABLE nombre_tabla [(columna, columna...)] AS 
+    sentencia_select;</code></pre>
+                                    <button class="copy-btn" data-target="create-table">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Esta sentencia crea una nueva tabla con los resultados de la consulta SELECT.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Funciones -->
+                    <section id="funciones">
+                        <h2 class="section-title">Funciones</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-function me-2"></i>Funciones en SQL
+                            </div>
+                            <div class="card-body">
+                                <p>Una función siempre devuelve algo. Toma algo, lo procesa y devuelve algo nuevo. Cada función tiene por lo menos 1 parámetro.</p>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>LAS FUNCIONES SE PUEDEN ANIDAR</strong>
+                                    <p>Una dentro de otra, recordar el tipo de datos puede tener problemas con algunas funciones.</p>
+                                    <p><code>F3(F2(F1(col, arg1), arg2), arg3)</code></p>
+                                </div>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-info text-white">Funciones de texto</div>
+                                            <div class="card-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item"><code>lower()</code> - todo en minúscula</li>
+                                                    <li class="list-group-item"><code>upper()</code> - todo en mayúscula</li>
+                                                    <li class="list-group-item"><code>initcap()</code> - solo la primera en mayúscula</li>
+                                                    <li class="list-group-item"><code>substr()</code> - corta (ej: <code>SUBSTR(last_name, -2, 2)</code>)</li>
+                                                    <li class="list-group-item"><code>replace()</code> - reemplaza (ej: <code>REPLACE(last_name, 'A', 'Hola')</code>)</li>
+                                                    <li class="list-group-item"><code>instr()</code> - devuelve posición</li>
+                                                    <li class="list-group-item"><code>length()</code> - largo de texto</li>
+                                                    <li class="list-group-item"><code>concat()</code> o <code>||</code> - concatena</li>
+                                                    <li class="list-group-item"><code>trim()</code> - elimina espacios</li>
+                                                    <li class="list-group-item"><code>lpad()</code> / <code>rpad()</code> - rellena izquierda/derecha</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-success text-white">Funciones numéricas</div>
+                                            <div class="card-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item"><code>round()</code> - redondea</li>
+                                                    <li class="list-group-item"><code>trunc()</code> - trunca</li>
+                                                    <li class="list-group-item"><code>mod()</code> - módulo</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card">
+                                            <div class="card-header bg-warning text-dark">Funciones de fecha</div>
+                                            <div class="card-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item"><code>sysdate</code> - fecha actual</li>
+                                                    <li class="list-group-item"><code>months_between()</code> - meses entre fechas</li>
+                                                    <li class="list-group-item"><code>add_months()</code> - sumar/restar meses</li>
+                                                    <li class="list-group-item"><code>last_day()</code> - último día del mes</li>
+                                                    <li class="list-group-item"><code>extract()</code> - extrae parte de fecha</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="mt-4">Funciones de conversión</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>Función</th>
+                                                <th>Descripción</th>
+                                                <th>Ejemplo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>TO_NUMBER</code></td>
+                                                <td>Convierte a número</td>
+                                                <td><code>TO_NUMBER('1234,56')</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>TO_CHAR</code></td>
+                                                <td>Convierte a texto</td>
+                                                <td><code>TO_CHAR(salary, '$999G999')</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>TO_DATE</code></td>
+                                                <td>Convierte a fecha</td>
+                                                <td><code>TO_DATE('2007/05/31','YYYY/MM/DD')</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <h5 class="mt-4">Manejo de nulos</h5>
+                                <div class="code-block">
+                                    <pre><code class="language-sql">-- NVL: Reemplaza NULL por un valor
+    NVL(manager_id, 0)
+    
+    -- NVL2: Distintos valores si es NULL o no
+    NVL2(commission_pct, 'si no es null', 'si es null')
+    
+    -- NULLIF: Retorna NULL si los dos valores son iguales
+    NULLIF(x, y)
+    
+    -- COALESCE: Devuelve el primer valor no nulo
+    COALESCE(expr1, expr2, …, exprn)</code></pre>
+                                    <button class="copy-btn" data-target="null-functions">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Joins -->
+                    <section id="joins">
+                        <h2 class="section-title">Joins</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-table me-2"></i>Unión de tablas
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5>Inner Join</h5>
+                                        <p>Muestra solo lo que tienen en común ambas tablas.</p>
+                                        <div class="code-block">
+                                            <pre><code class="language-sql">SELECT suppliers.supplier_id, suppliers.supplier_name,
+           orders.order_date
+    FROM suppliers
+    INNER JOIN orders
+    ON suppliers.supplier_id = orders.supplier_id;</code></pre>
+                                            <button class="copy-btn" data-target="inner-join">
+                                                <i class="far fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <h5>Left Outer Join</h5>
+                                        <p>Muestra todo lo que tiene la tabla de la izquierda.</p>
+                                        <div class="code-block">
+                                            <pre><code class="language-sql">SELECT suppliers.supplier_id, suppliers.supplier_name,
+           orders.order_date
+    FROM suppliers
+    LEFT OUTER JOIN orders
+    ON suppliers.supplier_id = orders.supplier_id;</code></pre>
+                                            <button class="copy-btn" data-target="left-join">
+                                                <i class="far fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <h5>Right Outer Join</h5>
+                                        <p>Muestra todo lo que tiene la tabla de la derecha.</p>
+                                        <div class="code-block">
+                                            <pre><code class="language-sql">SELECT orders.order_id, orders.order_date,
+           suppliers.supplier_name
+    FROM suppliers
+    RIGHT OUTER JOIN orders
+    ON suppliers.supplier_id = orders.supplier_id;</code></pre>
+                                            <button class="copy-btn" data-target="right-join">
+                                                <i class="far fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="text-center mt-4">
+                                            <img src="https://www.codeproject.com/KB/database/Visual_SQL_Joins/Visual_SQL_JOINS_orig.jpg" 
+                                                 alt="Diagrama de Joins" class="img-fluid rounded shadow" 
+                                                 style="max-width: 90%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Subconsultas -->
+                    <section id="subconsultas">
+                        <h2 class="section-title">Subconsultas</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-layer-group me-2"></i>Consultas anidadas
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Consulta que solo da una celda (un dato) sirve para el WHERE o comparar datos</li>
+                                    <li>Consulta que da una columna de datos sirve para IN() o cualquier cosa que pida más de un dato</li>
+                                </ul>
+                                
+                                <div class="code-block">
+                                    <pre><code class="language-sql">-- Subconsulta que devuelve un solo valor
+    SELECT employee_id, last_name, job_id, salary
+    FROM employees
+    WHERE salary > (SELECT AVG(salary) FROM employees);
+    
+    -- Subconsulta que devuelve múltiples valores
+    SELECT employee_id, last_name
+    FROM employees
+    WHERE department_id IN (SELECT department_id 
+                            FROM departments 
+                            WHERE location_id = 1700);</code></pre>
+                                    <button class="copy-btn" data-target="subconsultas-example">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Operadores Set -->
+                    <section id="operadoreset">
+                        <h2 class="section-title">
+                            Operadores Set
+                    </h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-object-group me-2"></i>Operaciones con conjuntos
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-info text-white">UNION</div>
+                                        <div class="card-body">
+                                            <p>Junta dos tablas con los mismos datos y no se duplican.</p>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">SELECT employee_id, job_id FROM employees
+UNION
+SELECT employee_id, job_id FROM job_history;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-success text-white">UNION ALL</div>
+                                        <div class="card-body">
+                                            <p>Junta dos tablas con los mismos datos (incluye duplicados).</p>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">SELECT employee_id, job_id FROM employees
+UNION ALL
+SELECT employee_id, job_id FROM job_history;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-warning text-dark">INTERSECT</div>
+                                        <div class="card-body">
+                                            <p>Muestra solo los datos comunes en ambas tablas.</p>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">SELECT employee_id, job_id FROM employees
+INTERSECT
+SELECT employee_id, job_id FROM job_history;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-danger text-white">MINUS</div>
+                                        <div class="card-body">
+                                            <p>A le quita lo que coincide con B.</p>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">SELECT employee_id, job_id FROM employees
+MINUS
+SELECT employee_id, job_id FROM job_history;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sentencias DML -->
+                <section id="dml">
+                    <h2 class="section-title">Sentencias DML</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-edit me-2"></i>Manipulación de Datos
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>INSERT</h5>
+                                    <p>Inserta datos en una tabla.</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id)
+VALUES (207, 'John', 'Smith', 'JSMITH', SYSDATE, 'IT_PROG');</code></pre>
+                                    </div>
+                                    
+                                    <h5 class="mt-4">UPDATE</h5>
+                                    <p>Actualiza los datos de una tabla.</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">UPDATE employees
+SET salary = salary * 1.10
+WHERE department_id = 90;</code></pre>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h5>DELETE</h5>
+                                    <p>Borra datos de una tabla.</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">DELETE FROM employees
+WHERE department_id = 20;</code></pre>
+                                    </div>
+                                    
+                                    <h5 class="mt-4">TRUNCATE</h5>
+                                    <p>Borra todos los datos de una tabla.</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">TRUNCATE TABLE job_history;</code></pre>
+                                    </div>
+                                    
+                                    <div class="alert alert-warning mt-4">
+                                        <h5><i class="fas fa-exclamation-triangle me-2"></i>Control de transacciones</h5>
+                                        <p><strong>COMMIT:</strong> Confirma acciones y guarda datos en las tablas.</p>
+                                        <p><strong>ROLLBACK:</strong> Deshace acciones ya aplicadas hasta el último commit.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Privilegios -->
+                <section id="privilegios">
+                    <h2 class="section-title">Privilegios</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-key me-2"></i>Gestión de permisos
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Privilegios de sistema (SYS)</h5>
+                                    <p>Permisos de creación, grant, permisos para los usuarios.</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">-- Otorgar privilegios de sistema
+GRANT CREATE SESSION TO usuario;
+GRANT CREATE TABLE TO usuario;
+GRANT CREATE VIEW TO usuario;</code></pre>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h5>Privilegios de objetos (TABLAS)</h5>
+                                    <p>Permisos para tablas, ON.</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">-- Otorgar privilegios de objeto
+GRANT SELECT, INSERT, UPDATE ON employees TO usuario;
+GRANT SELECT ON departments TO PUBLIC;
+REVOKE DELETE ON employees FROM usuario;</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Usuarios -->
+                <section id="usuarios">
+                    <h2 class="section-title">Usuarios</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-users me-2"></i>Tipos de usuarios
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-primary text-white">Dueño</div>
+                                        <div class="card-body">
+                                            <ul>
+                                                <li>Crea las tablas</li>
+                                                <li>Tiene todos los permisos</li>
+                                                <li>Da permisos a otros usuarios</li>
+                                                <li>Tiene el rol "resource"</li>
+                                            </ul>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">GRANT RESOURCE TO C##DUEÑO;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-info text-white">Desarrollador</div>
+                                        <div class="card-body">
+                                            <ul>
+                                                <li>Tiene algunos permisos que le da el dueño</li>
+                                                <li>Puede tener permisos específicos</li>
+                                                <li>Generalmente puede modificar datos</li>
+                                            </ul>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">GRANT SELECT, INSERT, UPDATE ON employees TO C##DESARROLLADOR;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-secondary text-white">Consumidor</div>
+                                        <div class="card-body">
+                                            <ul>
+                                                <li>Solo lee la información</li>
+                                                <li>No puede realizar ninguna acción de modificación</li>
+                                                <li>Tiene permisos de consulta únicamente</li>
+                                            </ul>
+                                            <div class="code-block">
+                                                <pre><code class="language-sql">GRANT SELECT ON employees TO C##CONSUMIDOR;</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <p>Los nombres de usuario en versiones recientes de Oracle deben ir precedidos de <code>C##</code> cuando se utiliza el modo de contenedor múltiple (CDB).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vistas -->
+                <section id="vistas">
+                    <h2 class="section-title">Vistas</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-eye me-2"></i>Consultas almacenadas
+                        </div>
+                        <div class="card-body">
+                            <p>Las vistas guardan las consultas en un paquete para poder volver a ver los informes de manera más automática. El usuario requiere permisos específicos para crearlas.</p>
+                            
+                            <div class="code-block">
+                                <pre><code class="language-sql">-- Crear una vista simple
+CREATE VIEW emp_dept_view AS
+SELECT e.employee_id, e.first_name, e.last_name, 
+       d.department_name
+FROM employees e JOIN departments d
+ON e.department_id = d.department_id;
+
+-- Usar la vista
+SELECT * FROM emp_dept_view
+WHERE department_name = 'IT';</code></pre>
+                                <button class="copy-btn" data-target="vista-example">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Las vistas pueden ser actualizables o de solo lectura, dependiendo de su complejidad y de las tablas subyacentes.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Secuencias -->
+                <section id="secuencias">
+                    <h2 class="section-title">Secuencias</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-list-ol me-2"></i>Generadores de números
+                        </div>
+                        <div class="card-body">
+                            <p>Secuencia de números que se le pueden ajustar varios parámetros como el número inicial, de a cuánto avanza, si es cíclica, autoincrementar, etc. Se puede concatenar con columnas.</p>
+                            
+                            <div class="code-block">
+                                <pre><code class="language-sql">-- Crear una secuencia
+CREATE SEQUENCE employees_seq
+  START WITH 207
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+
+-- Usar una secuencia
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id)
+VALUES (employees_seq.NEXTVAL, 'Jane', 'Doe', 'JDOE', SYSDATE, 'IT_PROG');
+
+-- Obtener el valor actual
+SELECT employees_seq.CURRVAL FROM dual;</code></pre>
+                                <button class="copy-btn" data-target="secuencia-example">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Índices -->
+                <section id="indices">
+                    <h2 class="section-title">Índices</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-search-plus me-2"></i>Optimización de consultas
+                        </div>
+                        <div class="card-body">
+                            <p>Los índices optimizan queries y mejoran el rendimiento. Solemos ocupar dos tipos: los B-tree y los de PK de las columnas.</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Creación de índice</h5>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">-- Índice simple
+CREATE INDEX emp_last_name_idx
+ON employees (last_name);
+
+-- Índice compuesto
+CREATE INDEX emp_dept_job_idx
+ON employees (department_id, job_id);</code></pre>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h5>Creación de índice único</h5>
+                                    <div class="code-block">
+                                        <pre><code class="language-sql">-- Índice único
+CREATE UNIQUE INDEX emp_email_idx
+ON employees (email);
+
+-- Eliminar un índice
+DROP
+INDEX emp_last_name_idx;</code></pre>
+</div>
+</div>
+</div>
+
+<div class="alert alert-info mt-3">
+<i class="fas fa-info-circle me-2"></i>
+<p>Los índices mejoran la velocidad de las consultas, pero agregan sobrecarga en operaciones de inserción, actualización y eliminación. Utiliza índices en columnas que se usan frecuentemente en cláusulas WHERE, JOIN o ORDER BY.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Recursos Adicionales -->
+<section id="recursos">
+<h2 class="section-title">Recursos Adicionales</h2>
+<div class="card">
+<div class="card-header">
+<i class="fas fa-external-link-alt me-2"></i>Enlaces útiles
+</div>
+<div class="card-body">
+<div class="row">
+<div class="col-md-6">
+<div class="list-group">
+    <a href="https://docs.oracle.com/database/121/SQLRF/toc.htm" class="list-group-item list-group-item-action" target="_blank">
+        <i class="fas fa-book me-2 text-primary"></i>
+        Documentación oficial de Oracle SQL
+    </a>
+    <a href="https://www.w3schools.com/sql/" class="list-group-item list-group-item-action" target="_blank">
+        <i class="fas fa-graduation-cap me-2 text-primary"></i>
+        Tutoriales SQL en W3Schools
+    </a>
+    <a href="https://www.sqltutorial.org/" class="list-group-item list-group-item-action" target="_blank">
+        <i class="fas fa-chalkboard-teacher me-2 text-primary"></i>
+        SQL Tutorial - Guía completa
+    </a>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="list-group">
+    <a href="https://livesql.oracle.com/" class="list-group-item list-group-item-action" target="_blank">
+        <i class="fas fa-laptop-code me-2 text-primary"></i>
+        Oracle LiveSQL - Prueba SQL online
+    </a>
+    <a href="https://sqlzoo.net/" class="list-group-item list-group-item-action" target="_blank">
+        <i class="fas fa-dumbbell me-2 text-primary"></i>
+        SQLZoo - Ejercicios prácticos
+    </a>
+    <a href="https://www.oracle.com/database/technologies/appdev/sqldeveloper-landing.html" class="list-group-item list-group-item-action" target="_blank">
+        <i class="fas fa-download me-2 text-primary"></i>
+        Descargar Oracle SQL Developer
+    </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Sección del orden de ejecución SQL -->
+<section id="orden-ejecucion">
+    <h2 class="section-title">Orden de Ejecución SQL</h2>
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-layer-group me-2"></i>Procesamiento de consultas por niveles
+        </div>
+        <div class="card-body">
+            <p>En SQL, las consultas se procesan en un orden específico que es importante entender para escribir consultas efectivas:</p>
+            
+            <div class="row mt-4 mb-4">
+                <div class="col-md-8 mx-auto">
+                    <div class="text-center">
+                        <!-- Imagen del orden lógico de procesamiento SQL -->
+                        <img src="https://www.helenanderson.co.nz/wp-content/uploads/2019/05/SQL-execution-order.png" 
+                             alt="Orden lógico de procesamiento SQL" 
+                             class="img-fluid rounded shadow-sm mb-4" 
+                             style="max-width: 100%;">
+                        <p class="text-muted">Orden lógico de procesamiento SQL</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <!-- Imagen de la jerarquía de operaciones SQL -->
+                        <img src="https://learnsql.com/blog/sql-order-of-operations/2.png" 
+                             alt="Jerarquía de operaciones SQL" 
+                             class="img-fluid rounded shadow-sm mb-3" 
+                             style="max-width: 100%;">
+                        <p class="text-muted">Jerarquía de operaciones SQL</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <!-- Imagen de diagramas de JOINS -->
+                        <img src="https://i0.wp.com/www.databasestar.com/wp-content/uploads/2019/07/SQL-Joins-Database-Table-Venn-Diagram.png" 
+                             alt="Diagramas de JOINs en SQL" 
+                             class="img-fluid rounded shadow-sm mb-3" 
+                             style="max-width: 100%;">
+                        <p class="text-muted">Diagramas de JOINs en SQL</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <h5><i class="fas fa-info-circle me-2"></i>Orden real de ejecución:</h5>
+                <ol>
+                    <li><strong>FROM / JOIN</strong> - Determina las tablas de datos y las combina según sea necesario</li>
+                    <li><strong>WHERE</strong> - Filtra las filas según condiciones</li>
+                    <li><strong>GROUP BY</strong> - Agrupa filas que comparten valores</li>
+                    <li><strong>HAVING</strong> - Filtra grupos según condiciones</li>
+                    <li><strong>SELECT</strong> - Selecciona las columnas específicas</li>
+                    <li><strong>DISTINCT</strong> - Elimina filas duplicadas</li>
+                    <li><strong>ORDER BY</strong> - Ordena el conjunto de resultados</li>
+                    <li><strong>LIMIT / OFFSET</strong> - Limita el número de filas devueltas</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+<!-- Sección del orden de ejecución SQL -->
+<section id="orden-ejecucion">
+    <h2 class="section-title">Orden de Ejecución SQL</h2>
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-layer-group me-2"></i>Procesamiento de consultas por niveles
+        </div>
+        <div class="card-body">
+            <p>En SQL, las consultas se procesan en un orden específico que es importante entender para escribir consultas efectivas:</p>
+            
+            <div class="row mt-4 mb-4">
+                <div class="col-md-8 mx-auto">
+                    <div class="text-center">
+                        <!-- Imagen del orden lógico de procesamiento SQL -->
+                        <img src="https://static.platzi.com/media/user_upload/Orden%20de%20Ejecucion%20de%20SQL-03d2d45b-d7e9-44a5-a2ed-ebe11f61ded4.jpg" 
+                             alt="Orden lógico de procesamiento SQL" 
+                             class="img-fluid rounded shadow-sm mb-4" 
+                             style="max-width: 100%;">
+                        <p class="text-muted">Orden lógico de procesamiento SQL</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <!-- Imagen de la jerarquía de operaciones SQL -->
+                        <img src="https://static.platzi.com/media/user_upload/2021-01-10%2000_28_17-Window-b50834ae-9fde-4a2a-b88e-57828f7c1783.jpg" 
+                             alt="Jerarquía de operaciones SQL" 
+                             class="img-fluid rounded shadow-sm mb-3" 
+                             style="max-width: 100%;">
+                        <p class="text-muted">Jerarquía de operaciones SQL</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <!-- Imagen de diagramas de JOINS -->
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Joins_del_SQL.svg" 
+                             alt="Diagramas de JOINs en SQL" 
+                             class="img-fluid rounded shadow-sm mb-3" 
+                             style="max-width: 100%;">
+                        <p class="text-muted">Diagramas de JOINs en SQL</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <h5><i class="fas fa-info-circle me-2"></i>Orden real de ejecución:</h5>
+                <ol>
+                    <li><strong>FROM / JOIN</strong> - Determina las tablas de datos y las combina según sea necesario</li>
+                    <li><strong>WHERE</strong> - Filtra las filas según condiciones</li>
+                    <li><strong>GROUP BY</strong> - Agrupa filas que comparten valores</li>
+                    <li><strong>HAVING</strong> - Filtra grupos según condiciones</li>
+                    <li><strong>SELECT</strong> - Selecciona las columnas específicas</li>
+                    <li><strong>DISTINCT</strong> - Elimina filas duplicadas</li>
+                    <li><strong>ORDER BY</strong> - Ordena el conjunto de resultados</li>
+                    <li><strong>LIMIT / OFFSET</strong> - Limita el número de filas devueltas</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de subconsultas con explicación visual -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <i class="fas fa-sitemap me-2"></i>Ejecución de Subconsultas
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-7">
+                    <h5>Cómo se procesan las subconsultas</h5>
+                    <p>Las subconsultas se ejecutan desde la más interna hacia la más externa:</p>
+                    <div class="code-block">
+                        <pre><code class="language-sql">SELECT employee_id, last_name
+FROM employees
+WHERE department_id IN (
+    SELECT department_id 
+    FROM departments 
+    WHERE location_id = (
+        SELECT location_id
+        FROM locations
+        WHERE city = 'Toronto'
+    )
+);</code></pre>
+                        <button class="copy-btn" data-target="subconsulta-anidada">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="alert alert-warning mt-3">
+                        <ol>
+                            <li>Primero se ejecuta: <code>SELECT location_id FROM locations WHERE city = 'Toronto'</code></li>
+                            <li>Luego: <code>SELECT department_id FROM departments WHERE location_id = resultado_anterior</code></li>
+                            <li>Finalmente: <code>SELECT employee_id, last_name FROM employees WHERE department_id IN resultado_anterior</code></li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="text-center mt-3">
+                        <!-- Imagen del proceso de ejecución de subconsultas -->
+                        <img src="https://ingenieriadesoftware.es/wp-content/uploads/2020/07/checkered_flag_diagram_pg1.png" 
+                             alt="Proceso de ejecución de subconsultas" 
+                             class="img-fluid rounded shadow-sm" 
+                             style="max-width: 100%;">
+                        <p class="text-muted mt-2">Proceso de ejecución de subconsultas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Consejos Finales -->
+<section id="consejos">
+<h2 class="section-title">Consejos Finales</h2>
+<div class="card">
+<div class="card-header">
+<i class="fas fa-lightbulb me-2"></i>Buenas prácticas
+</div>
+<div class="card-body">
+<div class="row">
+<div class="col-md-6">
+<div class="alert alert-success">
+    <h5><i class="fas fa-check-circle me-2"></i>Recomendaciones</h5>
+    <ul>
+        <li>Utiliza alias descriptivos para las tablas y columnas</li>
+        <li>Comenta tu código SQL para facilitar la comprensión</li>
+        <li>Sé específico en las columnas que necesitas (evita SELECT *)</li>
+        <li>Utiliza parámetros de enlace en lugar de concatenar cadenas</li>
+        <li>Optimiza consultas complejas con índices adecuados</li>
+        <li>Realiza pruebas con conjuntos de datos pequeños antes de ejecutar en producción</li>
+    </ul>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="alert alert-danger">
+    <h5><i class="fas fa-exclamation-circle me-2"></i>Errores comunes a evitar</h5>
+    <ul>
+        <li>No verificar la sintaxis antes de ejecutar</li>
+        <li>Olvidar condiciones en cláusulas WHERE (afecta a todas las filas)</li>
+        <li>No hacer COMMIT después de operaciones DML</li>
+        <li>Crear consultas excesivamente complejas y difíciles de mantener</li>
+        <li>No considerar el rendimiento en tablas grandes</li>
+        <li>Ignorar la posibilidad de valores NULL</li>
+    </ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Guía para Consultas de Bases de Datos</h5>
+                <p>Un recurso educativo para aprender SQL y realizar consultas efectivas.</p>
+                <p class="mt-3"><strong>Creado por:</strong> Frank Vogt (alias Big-Z)</p>
+            </div>
+            <div class="col-md-2">
+                <h5>Enlaces rápidos</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#requisitos" class="text-white">Requisitos</a></li>
+                    <li><a href="#sintaxis" class="text-white">Sintaxis SQL</a></li>
+                    <li><a href="#operadores" class="text-white">Operadores</a></li>
+                    <li><a href="#joins" class="text-white">Joins</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Recursos</h5>
+                <ul class="list-unstyled">
+                    <li><a href="https://www.oracle.com/database/" class="text-white" target="_blank">Oracle Database</a></li>
+                    <li><a href="https://www.w3schools.com/sql/" class="text-white" target="_blank">W3Schools SQL</a></li>
+                    <li><a href="https://sqlzoo.net/" class="text-white" target="_blank">SQLZoo</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Contacto</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope me-2"></i> <a href="mailto:fr.vogt@duocuc.cl" class="text-white">fr.vogt@duocuc.cl</a></li>
+                    <li><i class="fas fa-envelope me-2"></i> <a href="mailto:elexfrank17@gmail.com" class="text-white">elexfrank17@gmail.com</a></li>
+                    <li><i class="fas fa-phone me-2"></i> +56928959744</li>
+                    <li><i class="fab fa-github me-2"></i> <a href="https://github.com/BigFrankV" class="text-white" target="_blank">github.com/BigFrankV</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="text-center">
+            <p class="mb-0">&copy; 2023 Guía para Consultas SQL por Frank Vogt. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap JS y Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Highlight.js para resaltado de código -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/sql.min.js"></script>
+
+<!-- JavaScript personalizado -->
+<script>
+// Inicializar Highlight.js
+document.addEventListener('DOMContentLoaded', (event) => {
+hljs.highlightAll();
+
+// Funcionalidad para el botón de copiar código
+document.querySelectorAll('.copy-btn').forEach(button => {
+button.addEventListener('click', function() {
+const codeBlock = this.parentElement.querySelector('code');
+const textArea = document.createElement('textarea');
+textArea.value = codeBlock.textContent;
+document.body.appendChild(textArea);
+textArea.select();
+document.execCommand('copy');
+document.body.removeChild(textArea);
+
+// Cambiar el ícono para dar feedback
+const icon = this.querySelector('i');
+icon.classList.remove('fa-copy');
+icon.classList.add('fa-check');
+
+// Restaurar el ícono después de 2 segundos
+setTimeout(() => {
+icon.classList.remove('fa-check');
+icon.classList.add('fa-copy');
+}, 2000);
+});
+});
+
+// Activar los tooltips de Bootstrap
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+});
+
+// Scroll suave para los enlaces internos
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function (e) {
+e.preventDefault();
+const targetId = this.getAttribute('href');
+const targetElement = document.querySelector(targetId);
+
+if (targetElement) {
+window.scrollTo({
+top: targetElement.offsetTop - 70, // Ajustar según el tamaño de la barra de navegación
+behavior: 'smooth'
+});
+
+// Si hay un colapso abierto, cerrarlo (para modo móvil)
+const navbarCollapse = document.querySelector('.navbar-collapse.show');
+if (navbarCollapse) {
+navbarCollapse.classList.remove('show');
+}
+}
+});
+});
+
+// Cambiar el estado activo en la navegación mientras se desplaza
+window.addEventListener('scroll', function() {
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-link');
+
+let currentSection = '';
+
+sections.forEach(section => {
+const sectionTop = section.offsetTop - 100;
+const sectionHeight = section.offsetHeight;
+
+if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+currentSection = '#' + section.getAttribute('id');
+}
+});
+
+navLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href') === currentSection) {
+link.classList.add('active');
+}
+});
+});
+
+// Colapsar la barra de navegación al hacer clic en un enlace (para pantallas pequeñas)
+document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+link.addEventListener('click', () => {
+const navbarCollapse = document.querySelector('.navbar-collapse');
+if (navbarCollapse.classList.contains('show')) {
+navbarCollapse.classList.remove('show');
+}
+});
+});
+
+// Botón para volver arriba
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+const btnTop = document.getElementById("btnTop");
+if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+btnTop.style.display = "block";
+} else {
+btnTop.style.display = "none";
+}
+}
+
+function topFunction() {
+window.scrollTo({
+top: 0,
+behavior: 'smooth'
+});
+}
+</script>
+</body>
+</html>

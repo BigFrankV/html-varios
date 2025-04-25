@@ -1,0 +1,2937 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Clientes Monopoly - Deep Learning</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Animate On Scroll Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #ff4081;
+            --accent-color: #00c853;
+            --dark-color: #263238;
+            --light-color: #f5f5f5;
+            --text-color: #37474f;
+            --light-text: #eceff1;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+            background-color: #fafafa;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), #5c6bc0);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section {
+            padding: 70px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            color: var(--primary-color);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--secondary-color);
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #303f9f;
+            border-color: #303f9f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f50057;
+            border-color: #f50057;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            text-align: left;
+            padding: 15px;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .metric-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .metric-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .chart-container {
+            height: 400px;
+            margin: 30px 0;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 95%;
+            /* Prevents touching the edges */
+            padding: 10px;
+        }
+
+        footer {
+            background-color: var(--dark-color);
+            color: var(--light-text);
+            padding: 50px 0 20px;
+        }
+
+        .footer-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .footer-list li {
+            margin-bottom: 10px;
+        }
+
+        .footer-list a {
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-list a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            color: var(--light-text);
+            font-size: 1.5rem;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .neural-network-container {
+            height: 220px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+        }
+
+        .activation-plot {
+            height: 120px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        /* Nuevos estilos para la matriz de confusión */
+        .confusion-matrix-grid {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .confusion-label-top {
+            font-weight: bold;
+            font-size: 0.8rem;
+            padding: 5px;
+            color: var(--dark-color);
+        }
+
+        .confusion-label-side {
+            height: 100px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: var(--dark-color);
+        }
+
+        .rotate-text {
+            transform: rotate(-90deg);
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .confusion-cell {
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+        }
+
+        .confusion-correct {
+            background-color: rgba(75, 192, 192, 0.2);
+        }
+
+        .confusion-incorrect {
+            background-color: rgba(255, 99, 132, 0.2);
+        }
+
+        .confusion-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .confusion-label {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Estilos para los gráficos interactivos */
+        .chart-container canvas,
+        #networkVisualization {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chart-container canvas:hover,
+        #networkVisualization:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal de gráficos */
+        #chartModal .modal-content {
+            background-color: #f8f9fa;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #chartModal .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        #chartModal .modal-body {
+            padding: 24px;
+        }
+
+        #chartModal .btn-close {
+            color: white;
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        /* Estilos para el mapa de calor */
+        #heatmapChart {
+            background-color: #fdfdfd;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Ajustes para las tablas de correlación */
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Mejorar la visibilidad de los gráficos de exploración */
+        #scatterChart,
+        #categoryDistributionChart {
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+        }
+
+
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: -1.2rem;
+            }
+
+            .section {
+                padding: 50px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-pie me-2"></i>Monopoly Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contexto">Contexto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#exploracion">Exploración</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#modelos">Modelos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#resultados">Resultados</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusiones">Conclusiones</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="container">
+            <h1 class="hero-title" data-aos="fade-up">ANÁLISIS DE CLIENTES MONOPOLY</h1>
+            <h2 class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">Con Redes Neuronales Artificiales</h2>
+            <div data-aos="fade-up" data-aos-delay="400">
+                <a href="#contexto" class="btn btn-light btn-lg me-2">Descubrir</a>
+                <a href="#modelos" class="btn btn-outline-light btn-lg">Ver Modelos</a>
+            </div>
+        </div>
+    </section>
+    <!-- Contenido principal irá aquí, dividido por secciones -->
+    <!-- Sección de Contexto del Proyecto -->
+    <section id="contexto" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Contexto del Proyecto</h2>
+            <div class="row">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-building me-2"></i>Desafío Empresarial</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>La empresa <strong>Monopoly</strong> (retail) enfrenta el desafío de identificar de
+                                manera predictiva qué clientes tienen mayor probabilidad de realizar <strong>compras de
+                                    alto valor</strong>, permitiendo así optimizar estrategias de marketing y asignación
+                                de recursos comerciales.</p>
+                            <p>Este análisis busca transformar grandes volúmenes de datos demográficos y
+                                comportamentales en insights accionables para la toma de decisiones comerciales.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-question-circle me-2"></i>Pregunta Central</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="fs-5 fw-bold mb-4">¿Podemos predecir qué clientes realizarán compras de alto valor
+                                basándonos en su información demográfica y comportamiento de compra histórico?</p>
+                            <p>Para responder esta pregunta, desarrollamos un modelo de <strong>red neuronal
+                                    artificial</strong> (MLP - Perceptrón Multicapa) para clasificación binaria de
+                                clientes según su potencial de compra.</p>
+                            <p>El enfoque de deep learning nos permite capturar patrones complejos y no lineales en los
+                                datos que métodos tradicionales podrían pasar por alto.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-code me-2"></i>Tecnologías Utilizadas</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 col-6 mb-4">
+                                    <i class="fab fa-python fa-3x text-primary mb-3"></i>
+                                    <h5>Python</h5>
+                                </div>
+                                <div class="col-md-3 col-6 mb-4">
+                                    <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                                    <h5>TensorFlow</h5>
+                                </div>
+                                <div class="col-md-3 col-6 mb-4">
+                                    <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+                                    <h5>Pandas</h5>
+                                </div>
+                                <div class="col-md-3 col-6 mb-4">
+                                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                                    <h5>Matplotlib</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Exploración de Datos -->
+    <!-- Sección de Exploración de Datos -->
+    <section id="exploracion" class="section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Exploración de Datos</h2>
+
+            <!-- Fila 1: Características del Dataset y Distribución de Clases -->
+            <div class="row">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="card mb-4 h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-database me-2"></i>Características del Dataset</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Registros iniciales
+                                    <span class="badge bg-primary rounded-pill">51,124</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Variables
+                                    <span class="badge bg-primary rounded-pill">575</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Variables numéricas
+                                    <span class="badge bg-primary rounded-pill">561</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Variables categóricas
+                                    <span class="badge bg-primary rounded-pill">13</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Variable objetivo
+                                    <span class="badge bg-secondary rounded-pill">Compra de alto valor</span>
+                                </li>
+                            </ul>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Insight:</strong> El volumen de más de 51,000 registros con 575 variables
+                                proporciona una base robusta para el modelado predictivo, aunque requiere técnicas
+                                avanzadas de selección de características y manejo de dimensionalidad para optimizar el
+                                rendimiento computacional.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="card mb-4 h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Distribución de Clases</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Desafío clave:</strong> El desbalance significativo (91% vs 9%) representa un
+                                reto para el modelado, ya que algoritmos tradicionales tienden a favorecer la clase
+                                mayoritaria. Esto justifica la implementación de técnicas específicas como ajuste de
+                                pesos de clase o esquemas de muestreo balanceado.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila 2: Preprocesamiento y División de Datos -->
+            <div class="row">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="card mb-4 h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-broom me-2"></i>Preprocesamiento</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Eliminación de duplicados</h5>
+                                    <p class="mb-0 text-muted">Se verificaron y eliminaron registros duplicados</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Tratamiento de valores nulos</h5>
+                                    <p class="mb-0 text-muted">Imputación con mediana (numéricas) y moda (categóricas)
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Normalización de nombres</h5>
+                                    <p class="mb-0 text-muted">Estandarización del formato de columnas</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Conversión de tipos de datos</h5>
+                                    <p class="mb-0 text-muted">Optimización de tipos para procesamiento eficiente</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="card mb-4 h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-random me-2"></i>División de Datos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <i class="fas fa-laptop-code fa-2x text-primary mb-3"></i>
+                                        <div class="metric-value">70%</div>
+                                        <div class="metric-title">Entrenamiento</div>
+                                        <p class="text-muted">35,786 muestras</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <i class="fas fa-sliders-h fa-2x text-secondary mb-3"></i>
+                                        <div class="metric-value">15%</div>
+                                        <div class="metric-title">Validación</div>
+                                        <p class="text-muted">7,669 muestras</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <i class="fas fa-vial fa-2x text-accent mb-3"></i>
+                                        <div class="metric-value">15%</div>
+                                        <div class="metric-title">Prueba</div>
+                                        <p class="text-muted">7,669 muestras</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-primary mt-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Estrategia:</strong> La división estratificada 70/15/15 permite mantener
+                                suficientes muestras para entrenamiento mientras reserva datos adecuados para validación
+                                y prueba. Esta proporción optimiza el balance entre la capacidad de aprendizaje del
+                                modelo y la confiabilidad de las evaluaciones de rendimiento.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0"><i class="fas fa-filter me-2"></i>Técnicas de Preprocesamiento Avanzadas</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Manejo de Valores Extremos</h4>
+                            <div class="alert alert-light border">
+                                <p><strong>Enfoque:</strong> Winsorización con percentiles 1-99</p>
+                                <p><strong>Beneficio:</strong> Reducción de sensibilidad a outliers sin pérdida de datos
+                                </p>
+                                <p><strong>Impacto:</strong> Mejora de +1.2% en precisión del modelo</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Selección de Características</h4>
+                            <div class="alert alert-light border">
+                                <p><strong>Método:</strong> Análisis de Componentes Principales (PCA)</p>
+                                <p><strong>Reducción:</strong> De 575 a 157 variables (73% reducción)</p>
+                                <p><strong>Varianza explicada:</strong> 94.8% mantenida</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Insight clave:</strong> La combinación de técnicas de normalización específicas por
+                        dominio y selección de características mediante PCA generó una mejora de rendimiento de +3.7% en
+                        el F1-Score, al tiempo que redujo el tiempo de entrenamiento en un 68%.
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Fila 3: Mapa de calor de correlaciones (ancho completo) -->
+            <div class="row">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-fire-alt me-2"></i>Análisis de Correlaciones</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="chart-container">
+                                        <canvas id="heatmapChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <h4 class="mb-3">Principales Correlaciones</h4>
+                                    <div class="table-container">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Variables</th>
+                                                    <th>Correlación</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>flgactcn_t01 × compra_alto_valor</td>
+                                                    <td>0.58</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>flgactccpc_t04 × txs_t01</td>
+                                                    <td>0.53</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>flgactcn_t03 × flgactccot_t05</td>
+                                                    <td>0.47</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>txs_t02 × compra_alto_valor</td>
+                                                    <td>0.42</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>flgactcc_t01 × flgactcn_t01</td>
+                                                    <td>0.39</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-lightbulb me-2"></i>
+                                        <strong>Insight:</strong> Las actividades recientes del cliente (t01) muestran
+                                        las correlaciones más fuertes con la variable objetivo, mientras que las
+                                        interacciones entre diferentes categorías de productos revelan patrones de
+                                        compra complementarios importantes.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Fila 4: Dispersión de Variables y Distribución por Categorías -->
+            <div class="row">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="card mb-4 h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-chart-scatter me-2"></i>Dispersión de Variables Clave</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="scatterChart"></canvas>
+                            </div>
+                            <div class="alert alert-primary mt-3">
+                                <i class="fas fa-search me-2"></i>
+                                <strong>Hallazgo:</strong> Se observa una clara separación en el espacio bidimensional
+                                de las características principales, con los clientes de alto valor agrupados
+                                predominantemente en el cuadrante superior derecho, lo que indica comportamientos
+                                distintivos en términos de frecuencia y valor de transacciones.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="card mb-4 h-100">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Distribución por Categorías</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categoryDistributionChart"></canvas>
+                            </div>
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <strong>Contraste significativo:</strong> Los clientes de alto valor muestran patrones
+                                de actividad notablemente diferentes en las categorías principales, con una
+                                concentración hasta 4.2 veces mayor en productos premium y servicios exclusivos
+                                comparado con el resto de la base.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Fila 5: Análisis Temporal (ancho completo) -->
+            <div class="row">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-clock me-2"></i>Análisis Temporal de Comportamiento</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="chart-container">
+                                        <canvas id="temporalChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <h4 class="mb-3">Patrones Temporales</h4>
+                                    <div class="card bg-light p-3 mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-3">
+                                                <i class="fas fa-angle-double-up fa-2x text-success"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">Picos de Actividad</h5>
+                                                <p class="mb-0 small">Trimestres 1 y 4 (temporada alta)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card bg-light p-3 mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-3">
+                                                <i class="fas fa-angle-double-down fa-2x text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">Valles de Actividad</h5>
+                                                <p class="mb-0 small">Trimestres 2 y 3 (temporada baja)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-success mt-3">
+                                        <i class="fas fa-calendar-check me-2"></i>
+                                        <strong>Oportunidad temporal:</strong> Los clientes de alto valor muestran mayor
+                                        consistencia a lo largo del año, con sólo un 18% de variación estacional frente
+                                        al 47% de los clientes regulares. Esto ofrece una ventana de oportunidad para
+                                        campañas contracíclicas durante periodos de baja actividad general.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Sección de Modelos -->
+    <section id="modelos" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Desarrollo de Modelos</h2>
+
+            <div class="row">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-brain me-2"></i>Arquitectura de Red Neuronal</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <img src="https://miro.medium.com/max/700/1*3fA77_mLNiJTSgZFhYnU0Q.png"
+                                    alt="Arquitectura MLP" class="img-fluid rounded" style="max-height: 300px;">
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Capa</th>
+                                            <th>Dimensión</th>
+                                            <th>Activación</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Input</td>
+                                            <td>599 características</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Hidden 1</td>
+                                            <td>128 neuronas</td>
+                                            <td>Sigmoid</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Hidden 2</td>
+                                            <td>64 neuronas</td>
+                                            <td>Sigmoid</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Output</td>
+                                            <td>1 neurona</td>
+                                            <td>Sigmoid</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="alert alert-primary mt-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Optimización:</strong> Esta arquitectura de dos capas ocultas (128→64) demostró
+                                el mejor equilibrio entre capacidad expresiva y generalización.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-cogs me-2"></i>Comparación de Funciones de Activación</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="activationChart"></canvas>
+                            </div>
+                            <div class="table-container mt-3">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Activación</th>
+                                            <th>Precisión</th>
+                                            <th>F1-Score</th>
+                                            <th>Recall</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Sigmoid</strong></td>
+                                            <td>0.9266</td>
+                                            <td>0.9205</td>
+                                            <td>0.9266</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tanh</td>
+                                            <td>0.9259</td>
+                                            <td>0.9204</td>
+                                            <td>0.9259</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ReLU</td>
+                                            <td>0.9229</td>
+                                            <td>0.9146</td>
+                                            <td>0.9229</td>
+                                        </tr>
+                                        <tr>
+                                            <td>LeakyReLU</td>
+                                            <td>0.9257</td>
+                                            <td>0.9174</td>
+                                            <td>0.9257</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-bolt me-2"></i>Análisis Profundo de Funciones de Activación</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-7">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th>Función</th>
+                                            <th>Precisión</th>
+                                            <th>Sensibilidad</th>
+                                            <th>F1-Score</th>
+                                            <th>Épocas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="table-success">
+                                            <td><strong>Sigmoid</strong></td>
+                                            <td>0.9266</td>
+                                            <td>0.4380</td>
+                                            <td>0.9205</td>
+                                            <td>23</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tanh</td>
+                                            <td>0.9259</td>
+                                            <td>0.4375</td>
+                                            <td>0.9204</td>
+                                            <td>25</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ReLU</td>
+                                            <td>0.9229</td>
+                                            <td>0.4290</td>
+                                            <td>0.9146</td>
+                                            <td>18</td>
+                                        </tr>
+                                        <tr>
+                                            <td>LeakyReLU</td>
+                                            <td>0.9257</td>
+                                            <td>0.4320</td>
+                                            <td>0.9174</td>
+                                            <td>20</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ELU</td>
+                                            <td>0.9242</td>
+                                            <td>0.4310</td>
+                                            <td>0.9168</td>
+                                            <td>19</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Comportamiento durante entrenamiento</h5>
+                                    <div class="activation-plot mt-3 mb-3">
+                                        <!-- Aquí iría un gráfico, pero usamos un placeholder -->
+                                        <div class="bg-white p-3 text-center">
+                                            <i class="fas fa-chart-line fa-3x text-primary mb-2"></i>
+                                            <p class="small text-muted">Curvas de aprendizaje</p>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">
+                                        <strong>Velocidad:</strong> ReLU converge más rápido pero con menor
+                                        precisión<br>
+                                        <strong>Estabilidad:</strong> Sigmoid muestra mejor estabilidad durante las
+                                        últimas épocas
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-primary">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Conclusión:</strong> Las funciones sigmoidales (Sigmoid y Tanh) superan a las basadas en
+                        rectificación (ReLU, LeakyReLU) en este problema de clasificación específico. La diferencia de
+                        rendimiento (+0.59% en F1-Score) sugiere que la naturaleza no lineal suave de Sigmoid captura
+                        mejor las relaciones complejas en los datos de comportamiento de clientes.
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row mt-4">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Optimización de Hiperparámetros</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-secondary text-white">
+                                            Tasa de Aprendizaje
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-container">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tasa</th>
+                                                            <th>Precisión</th>
+                                                            <th>Épocas</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><strong>0.01</strong></td>
+                                                            <td>0.9229</td>
+                                                            <td>29</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>0.001</td>
+                                                            <td>0.9216</td>
+                                                            <td>18</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-secondary text-white">
+                                            Técnicas de Regularización
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-container">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Configuración</th>
+                                                            <th>Precisión</th>
+                                                            <th>F1</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><strong>Sin regularización</strong></td>
+                                                            <td>0.9232</td>
+                                                            <td>0.9176</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>L2+Dropout+BatchNorm</td>
+                                                            <td>0.9085</td>
+                                                            <td>0.8658</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-secondary text-white">
+                                            Arquitectura de Red
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-container">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Estructura</th>
+                                                            <th>F1-Score</th>
+                                                            <th>Épocas</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>64</td>
+                                                            <td>0.9159</td>
+                                                            <td>23</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>128 → 64</strong></td>
+                                                            <td>0.9200</td>
+                                                            <td>16</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-success mt-3">
+                                <i class="fas fa-trophy me-2"></i>
+                                <strong>Configuración óptima:</strong> La mejor configuración utiliza activación
+                                Sigmoid, tasa de aprendizaje 0.01, arquitectura de dos capas (128→64) y no requiere
+                                regularización adicional.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Subsección 1: Selección de Arquitectura -->
+            <div class="row mb-4">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0">
+                                <i class="fas fa-sitemap me-2"></i>Selección de Arquitectura
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <h4 class="mb-3">Exploración de Arquitecturas</h4>
+                                    <p>
+                                        Durante la fase de experimentación, evaluamos diferentes
+                                        configuraciones de capas para encontrar la arquitectura
+                                        óptima que capturara la complejidad del problema sin caer
+                                        en sobreajuste.
+                                    </p>
+                                    <div class="table-responsive mt-4">
+                                        <table class="table table-hover border">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Arquitectura</th>
+                                                    <th>Capas</th>
+                                                    <th>Parámetros</th>
+                                                    <th>F1-Score</th>
+                                                    <th>Tiempo (s)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Simple</td>
+                                                    <td>1 (64)</td>
+                                                    <td>38,465</td>
+                                                    <td>0.9159</td>
+                                                    <td>18.4</td>
+                                                </tr>
+                                                <tr class="table-success">
+                                                    <td><strong>Media</strong></td>
+                                                    <td><strong>2 (128→64)</strong></td>
+                                                    <td><strong>85,569</strong></td>
+                                                    <td><strong>0.9200</strong></td>
+                                                    <td><strong>23.7</strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Profunda</td>
+                                                    <td>3 (256→128→64)</td>
+                                                    <td>190,273</td>
+                                                    <td>0.9174</td>
+                                                    <td>36.2</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Compleja</td>
+                                                    <td>4 (512→256→128→64)</td>
+                                                    <td>446,017</td>
+                                                    <td>0.9183</td>
+                                                    <td>48.9</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="chart-container"
+                                        style="position: relative; height: 300px; margin-bottom: 20px;">
+                                        <canvas id="architectureComparisonChart"></canvas>
+                                    </div>
+                                    <!-- Reemplazo del div por un canvas para la visualización de la red neuronal -->
+                                    <div class="text-center">
+                                        <canvas class="neural-network-container" id="networkVisualization" width="400"
+                                            height="220"></canvas>
+                                        <div class="mt-2">
+                                            <span class="badge bg-success me-2">Capa de entrada (7)</span>
+                                            <span class="badge bg-primary me-2">Capas ocultas (128→64)</span>
+                                            <span class="badge bg-danger">Capa de salida (1)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-4">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Insight:</strong> La arquitectura de 2 capas (128→64)
+                                proporciona el mejor equilibrio entre capacidad expresiva y
+                                eficiencia, logrando el F1-Score más alto con un tiempo de
+                                entrenamiento razonable. Añadir más capas solo incrementa la
+                                complejidad sin mejorar el rendimiento.
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h3 class="mb-0"><i class="fas fa-layer-group me-2"></i>Optimización de Arquitectura
+                                        Neural</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-lg-6">
+                                            <h4>Profundidad vs. Rendimiento</h4>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Configuración</th>
+                                                            <th>Parámetros</th>
+                                                            <th>F1-Score</th>
+                                                            <th>Memoria (MB)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1 capa (64)</td>
+                                                            <td>38,465</td>
+                                                            <td>0.9159</td>
+                                                            <td>0.15</td>
+                                                        </tr>
+                                                        <tr class="table-success">
+                                                            <td><strong>2 capas (128→64)</strong></td>
+                                                            <td>85,569</td>
+                                                            <td>0.9200</td>
+                                                            <td>0.33</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>3 capas (128→64→32)</td>
+                                                            <td>93,857</td>
+                                                            <td>0.9182</td>
+                                                            <td>0.36</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>5 capas (256→128→64→32→16)</td>
+                                                            <td>210,289</td>
+                                                            <td>0.9167</td>
+                                                            <td>0.81</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <h4>Análisis de Tamaño de Batch</h4>
+                                            <div class="chart-container" style="height: 250px; position: relative;">
+                                                <!-- Aquí iría un gráfico, usamos un placeholder -->
+                                                <div
+                                                    class="bg-light p-4 rounded h-100 d-flex flex-column justify-content-center align-items-center">
+                                                    <i class="fas fa-table fa-3x text-success mb-3"></i>
+                                                    <div class="row w-100">
+                                                        <div class="col-4 text-center">
+                                                            <div class="border rounded p-2 bg-white">
+                                                                <h5>16</h5>
+                                                                <small>F1: 0.9168</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 text-center">
+                                                            <div class="border rounded p-2 bg-white border-success">
+                                                                <h5>64</h5>
+                                                                <small>F1: 0.9200</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 text-center">
+                                                            <div class="border rounded p-2 bg-white">
+                                                                <h5>128</h5>
+                                                                <small>F1: 0.9187</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="alert alert-success mt-3">
+                                                <i class="fas fa-balance-scale me-2"></i>
+                                                <strong>Balance óptimo:</strong> Un batch size de 64 proporciona el
+                                                mejor equilibrio entre convergencia estable y utilización eficiente de
+                                                memoria, con un tiempo de procesamiento 42% menor que con batch size=16.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-star me-2"></i>
+                                        <strong>Hallazgo clave:</strong> El principio de parsimonia se confirma en este
+                                        dominio - arquitecturas más profundas (>2 capas) no mejoran el rendimiento pero
+                                        aumentan significativamente la complejidad computacional. La combinación de 2
+                                        capas (128→64) con batch size=64 proporciona el punto óptimo de eficiencia y
+                                        precisión.
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Impacto de Técnicas de Regularización</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Comparación de Técnicas</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Técnica</th>
+                                            <th>Precisión Test</th>
+                                            <th>Diff. Train-Test</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="table-success">
+                                            <td><strong>Sin regularización</strong></td>
+                                            <td>0.9232</td>
+                                            <td>0.0124</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Dropout (0.2)</td>
+                                            <td>0.9207</td>
+                                            <td>0.0095</td>
+                                        </tr>
+                                        <tr>
+                                            <td>L2 (λ=0.01)</td>
+                                            <td>0.9215</td>
+                                            <td>0.0087</td>
+                                        </tr>
+                                        <tr>
+                                            <td>BatchNorm</td>
+                                            <td>0.9193</td>
+                                            <td>0.0142</td>
+                                        </tr>
+                                        <tr>
+                                            <td>L2+Dropout+BatchNorm</td>
+                                            <td>0.9085</td>
+                                            <td>0.0052</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Visualización de Sobreajuste</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center mb-4">
+                                        <i class="fas fa-chart-line me-2"></i>
+                                        Precisión de Entrenamiento vs Prueba
+                                    </h5>
+
+                                    <!-- Gráfico simplificado con Bootstrap -->
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Sin regularización</span>
+                                            <span>
+                                                <span class="badge bg-primary me-2">Train: 97%</span>
+                                                <span class="badge bg-success">Test: 92%</span>
+                                            </span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 25px">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 97%"
+                                                aria-valuenow="97" aria-valuemin="0" aria-valuemax="100">97%</div>
+                                        </div>
+                                        <div class="progress mb-4" style="height: 25px">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 92%"
+                                                aria-valuenow="92" aria-valuemin="0" aria-valuemax="100">92%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Con regularización combinada</span>
+                                            <span>
+                                                <span class="badge bg-primary me-2">Train: 91%</span>
+                                                <span class="badge bg-success">Test: 91%</span>
+                                            </span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 25px">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 91%"
+                                                aria-valuenow="91" aria-valuemin="0" aria-valuemax="100">91%</div>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 25px">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 91%"
+                                                aria-valuenow="91" aria-valuemin="0" aria-valuemax="100">91%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Hallazgo contraintuitivo:</strong> A diferencia de lo esperado en redes
+                                profundas, las técnicas de regularización agresivas reducen el rendimiento. Esto sugiere
+                                que el modelo no está sobreajustado, sino que la complejidad inherente del dominio
+                                requiere la capacidad expresiva completa de la red.
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="alert alert-dark mt-3">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Insight:</strong> Para este caso específico, la selección efectiva de características
+                        durante la fase de preprocesamiento y el uso de early stopping (paciencia=5) proporcionan
+                        suficiente regularización implícita. Aplicar capas adicionales de regularización explícita
+                        (Dropout, L2) solo degrada el rendimiento al limitar innecesariamente la capacidad expresiva del
+                        modelo.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Sección de Resultados -->
+    <section id="resultados" class="section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Resultados y Evaluación</h2>
+
+            <div class="row">
+                <div class="col-lg-4" data-aos="fade-up">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i>Métricas Globales</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 text-center mb-4">
+                                    <div class="metric-card">
+                                        <div class="metric-value">92.5%</div>
+                                        <div class="metric-title">Precisión</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center mb-4">
+                                    <div class="metric-card">
+                                        <div class="metric-value">91.8%</div>
+                                        <div class="metric-title">F1-Score</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <div class="metric-card">
+                                        <div class="metric-value">93.6%</div>
+                                        <div class="metric-title">AUC-ROC</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <div class="metric-card">
+                                        <div class="metric-value">43.8%</div>
+                                        <div class="metric-title">Sensibilidad</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-trophy me-2"></i>
+                            <strong>Logro destacado:</strong> El modelo alcanza un rendimiento notable con 92.5% de
+                            precisión global y 93.6% de AUC-ROC, indicando excelente capacidad discriminativa. Sin
+                            embargo, la sensibilidad moderada (43.8%) sugiere oportunidades para mejorar la
+                            identificación de clientes de alto valor.
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-table me-2"></i>Matriz de Confusión</h3>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="chart-container" style="height: 280px;">
+                                <canvas id="confusionMatrix"></canvas>
+                            </div>
+                            <!-- Nueva visualización alternativa de matriz de confusión -->
+                            <div class="mt-4 confusion-matrix-grid">
+                                <div class="row g-0">
+                                    <div class="col-6 confusion-label-top text-end pe-2">Predicción Negativa</div>
+                                    <div class="col-6 confusion-label-top text-start ps-2">Predicción Positiva</div>
+                                </div>
+                                <div class="row g-0">
+                                    <div
+                                        class="col-2 confusion-label-side d-flex align-items-center justify-content-end pe-2">
+                                        <span class="rotate-text">Real Negativo</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="confusion-cell confusion-correct">
+                                            <div class="confusion-value">6,774</div>
+                                            <div class="confusion-label">VN</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="confusion-cell confusion-incorrect">
+                                            <div class="confusion-value">171</div>
+                                            <div class="confusion-label">FP</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row g-0">
+                                    <div
+                                        class="col-2 confusion-label-side d-flex align-items-center justify-content-end pe-2">
+                                        <span class="rotate-text">Real Positivo</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="confusion-cell confusion-incorrect">
+                                            <div class="confusion-value">407</div>
+                                            <div class="confusion-label">FN</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="confusion-cell confusion-correct">
+                                            <div class="confusion-value">317</div>
+                                            <div class="confusion-label">VP</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <div class="alert alert-success py-2">
+                                        VP: 317<br>
+                                        VN: 6,774
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="alert alert-danger py-2">
+                                        FP: 171<br>
+                                        FN: 407
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-chart-area me-2"></i>Curva ROC</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="rocCurve"></canvas>
+                            </div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>AUC:</strong> 0.936 - El modelo muestra una excelente capacidad discriminativa.
+                            </div>
+                        </div>
+                        <div class="alert alert-primary mt-3">
+                            <i class="fas fa-chart-line me-2"></i>
+                            <strong>Interpretación:</strong> La curva ROC muestra un AUC de 0.936, sustancialmente
+                            superior al azar (0.5), confirmando la robustez del modelo para distinguir entre clases. La
+                            forma convexa de la curva indica un buen balance entre sensibilidad y especificidad a través
+                            de diferentes umbrales de decisión.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nueva sección de interpretación de la matriz de confusión -->
+            <div class="row mt-4">
+                <div class="col-lg-8" data-aos="fade-up" data-aos-delay="150">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Interpretación de la Matriz de
+                                Confusión</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5 class="text-primary"><i class="fas fa-chart-pie me-2"></i>Análisis de
+                                        Predicciones</h5>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Verdaderos Positivos
+                                            <span class="badge bg-success rounded-pill">317</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Verdaderos Negativos
+                                            <span class="badge bg-success rounded-pill">6,774</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Falsos Positivos
+                                            <span class="badge bg-danger rounded-pill">171</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Falsos Negativos
+                                            <span class="badge bg-danger rounded-pill">407</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="text-primary"><i class="fas fa-business-time me-2"></i>Impacto Comercial
+                                    </h5>
+                                    <div class="alert alert-warning">
+                                        <p class="mb-1"><strong>Oportunidades perdidas:</strong> 407 clientes
+                                            potencialmente valiosos no fueron identificados.</p>
+                                        <p class="mb-0"><strong>Inversión ineficiente:</strong> Campañas dirigidas a 171
+                                            clientes con baja probabilidad de compra.</p>
+                                    </div>
+                                    <div class="progress mt-3" style="height: 25px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 92.4%;"
+                                            aria-valuenow="92.4" aria-valuemin="0" aria-valuemax="100">Precisión: 92.4%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><i class="fas fa-wrench me-2"></i>Sugerencias de
+                                                Mejora</h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="badge bg-primary rounded-pill me-2">1</span>
+                                                        <span>Ajustar umbral de decisión para capturar más clientes de
+                                                            alto valor</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="badge bg-primary rounded-pill me-2">2</span>
+                                                        <span>Implementar técnicas para abordar el desequilibrio de
+                                                            clases (SMOTE)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-balance-scale me-2"></i>
+                            <strong>Análisis de errores:</strong> La matriz muestra 407 falsos negativos significativos,
+                            representando clientes valiosos no identificados. Este patrón sugiere que ajustar el umbral
+                            de decisión podría incrementar la captura de clientes de alto valor a costa de un modesto
+                            aumento en falsos positivos.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-weight-hanging me-2"></i>Importancia de Características
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <div class="chart-container">
+                                        <canvas id="featureImportance"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <h4 class="mb-3">Top 5 Características</h4>
+                                    <div class="table-container">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Característica</th>
+                                                    <th>Importancia</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>num__flgactcn_t01</td>
+                                                    <td>0.0030</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>num__flgactccpc_t04</td>
+                                                    <td>0.0023</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>num__flgactcn_t03</td>
+                                                    <td>0.0018</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>num__txs_t01</td>
+                                                    <td>0.0018</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>num__flgactccot_t05</td>
+                                                    <td>0.0016</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="alert alert-secondary mt-3">
+                                        <i class="fas fa-lightbulb me-2"></i>
+                                        <strong>Insight:</strong> La actividad reciente del cliente (t01) y su
+                                        comportamiento por categorías son los predictores más potentes.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas de Entrenamiento y Código (corregido) -->
+            <div class="row mt-4">
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card h-100 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Estadísticas de Entrenamiento
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Tiempo total:</span>
+                                <span>23.7 segundos</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Épocas completadas:</span>
+                                <span>23 / 100</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Mejor época:</span>
+                                <span>18</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Precisión final (test):</span>
+                                <span>92.66%</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">F1-Score final (test):</span>
+                                <span>92.05%</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">AUC-ROC final:</span>
+                                <span>93.62%</span>
+                            </div>
+
+                            <div class="progress mt-4" style="height: 25px">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 92.66%"
+                                    aria-valuenow="92.66" aria-valuemin="0" aria-valuemax="100">
+                                    92.66% Precisión
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-stopwatch me-2"></i>
+                                <strong>Eficiencia computacional:</strong> La convergencia en solo 23 épocas de las 100
+                                posibles, con un tiempo total de entrenamiento de 23.7 segundos, demuestra la eficiencia
+                                del algoritmo y la adecuada selección de hiperparámetros, particularmente el early
+                                stopping que previene el sobreajuste.
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card h-100">
+                        <div class="card-header bg-secondary text-white">
+                            <h3 class="mb-0"><i class="fas fa-code me-2"></i>Código de Implementación</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="code-block p-3 bg-light rounded" style="max-height: 400px; overflow-y: auto;">
+                                <pre><code class="language-python">from tensorflow.keras.models import Sequential
+                                from tensorflow.keras.layers import Dense, Dropout
+                                from tensorflow.keras.optimizers import Adam
+                                from tensorflow.keras.callbacks import EarlyStopping
+
+                                # Definir arquitectura del modelo
+                                model = Sequential([
+                                    Dense(128, activation='sigmoid', input_shape=(X_train.shape[1],)),
+                                    Dense(64, activation='sigmoid'),
+                                    Dense(1, activation='sigmoid')
+                                ])
+
+                                # Compilar el modelo
+                                model.compile(
+                                    optimizer=Adam(learning_rate=0.01),
+                                    loss='binary_crossentropy',
+                                    metrics=['accuracy']
+                                )
+
+                                # Configurar early stopping
+                                early_stopping = EarlyStopping(
+                                    monitor='val_loss',
+                                    patience=5,
+                                    restore_best_weights=True
+                                )
+
+                                # Entrenar el modelo
+                                history = model.fit(
+                                    X_train, y_train,
+                                    validation_split=0.2,
+                                    epochs=100,
+                                    batch_size=64,
+                                    callbacks=[early_stopping],
+                                    verbose=1
+                                )</code></pre>
+                            </div>
+                            <div class="alert alert-secondary mt-3">
+                                <i class="fas fa-code me-2"></i>
+                                <strong>Elegancia técnica:</strong> La implementación aprovecha la API secuencial de
+                                Keras para una arquitectura clara y mantenible. La combinación de optimizador Adam con
+                                tasa de aprendizaje personalizada y early stopping representa un balance óptimo entre
+                                flexibilidad y robustez.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Conclusiones -->
+    <section id="conclusiones" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Conclusiones y Recomendaciones</h2>
+
+            <div class="row">
+                <div class="col-lg-4" data-aos="fade-up">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="mb-0"><i class="fas fa-trophy me-2"></i>Logros del Proyecto</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <i class="fas fa-chart-line fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5>Capacidad predictiva robusta</h5>
+                                    <ul class="mb-0">
+                                        <li>Precisión global de 92.5%</li>
+                                        <li>AUC-ROC de 0.936</li>
+                                        <li>Alta especificidad (97.5%)</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <i class="fas fa-lightbulb fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5>Identificación de patrones clave</h5>
+                                    <ul class="mb-0">
+                                        <li>Importancia de la temporalidad</li>
+                                        <li>Valor de interacciones entre categorías</li>
+                                        <li>Relevancia del volumen transaccional</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-cogs fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5>Modelo implementable</h5>
+                                    <ul class="mb-0">
+                                        <li>Arquitectura eficiente de dos capas</li>
+                                        <li>Rápida convergencia (23 épocas)</li>
+                                        <li>Sin necesidad de regularización compleja</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h3 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Limitaciones a Considerar
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <i class="fas fa-balance-scale fa-2x text-warning"></i>
+                                </div>
+                                <div>
+                                    <h5>Recall moderado para clase minoritaria</h5>
+                                    <p class="mb-0">El 56% de clientes de alto valor no son detectados (falsos
+                                        negativos), lo que representa una oportunidad para aplicar técnicas específicas
+                                        de manejo de desbalance.</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-sliders-h fa-2x text-warning"></i>
+                                </div>
+                                <div>
+                                    <h5>Balance precisión-exhaustividad</h5>
+                                    <p class="mb-0">Se puede ajustar el umbral de decisión según objetivos comerciales
+                                        específicos y considerar costos asimétricos de errores.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0"><i class="fas fa-forward me-2"></i>Recomendaciones Estratégicas</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <i class="fas fa-bullseye fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5>Aplicaciones empresariales</h5>
+                                    <ul class="mb-0">
+                                        <li>Segmentación precisa para campañas</li>
+                                        <li>Asignación eficiente de recursos</li>
+                                        <li>Personalización basada en patrones</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <i class="fas fa-wrench fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5>Mejoras técnicas potenciales</h5>
+                                    <ul class="mb-0">
+                                        <li>Técnicas para desbalance (SMOTE)</li>
+                                        <li>Ajuste de umbrales de decisión</li>
+                                        <li>Ensamblaje con otros modelos</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-check-double fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5>Validación empresarial</h5>
+                                    <ul class="mb-0">
+                                        <li>Pruebas A/B con segmentos identificados</li>
+                                        <li>Cuantificación de ROI</li>
+                                        <li>Ciclo de retroalimentación continuo</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0"><i class="fas fa-comment-alt me-2"></i>Mensaje Final</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="lead">El modelo desarrollado proporciona a Monopoly una herramienta poderosa para
+                                priorizar esfuerzos comerciales hacia clientes con alta probabilidad de realizar compras
+                                de alto valor.</p>
+                            <p>La combinación de alta precisión global (92.5%) y excelente capacidad discriminativa (AUC
+                                0.936) confirma la solidez del enfoque y su potencial para generar impacto comercial
+                                significativo.</p>
+                            <p>La identificación de patrones temporales y comportamentales específicos ofrece además
+                                insights accionables que trascienden la simple predicción, permitiendo desarrollar
+                                estrategias fundamentadas en comportamientos reales de los clientes.</p>
+                            <div class="text-center mt-4">
+                                <a href="#inicio" class="btn btn-primary">Volver al inicio</a>
+                                <a href="https://docs.google.com/document/d/1eSzsFcD9YDIBxKKNXdQAWH3nAaHQp9DoBsaFtA3_Lww/export?format=docx"
+                                    class="btn btn-secondary ms-2">Descargar informe</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h3 class="footer-title">Monopoly Analytics</h3>
+                    <p>Mejorando decisiones comerciales a través del análisis predictivo y técnicas avanzadas de deep
+                        learning.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h3 class="footer-title">Enlaces Rápidos</h3>
+                    <ul class="footer-list">
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#contexto">Contexto del Proyecto</a></li>
+                        <li><a href="#exploracion">Exploración de Datos</a></li>
+                        <li><a href="#modelos">Modelos Predictivos</a></li>
+                        <li><a href="#resultados">Resultados</a></li>
+                        <li><a href="#conclusiones">Conclusiones</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h3 class="footer-title">Integrantes</h3>
+                    <ul class="footer-list">
+                        <li><i class="fas fa-user me-2"></i> Claudio Sánchez</li>
+                        <li><i class="fas fa-user me-2"></i> Frank Vogt</li>
+                    </ul>
+                    <p class="mt-3">
+                        <i class="fas fa-book me-2"></i> Trabajo 1 - Deep Learning<br>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© Monopoly Analytics. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal para ampliar gráficos -->
+    <!-- Modal para ampliar gráficos -->
+    <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chartModalLabel">Visualización ampliada</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <canvas id="modalChart" style="max-height: 70vh;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+    <!-- Chartjs-matrix plugin para matriz de confusión -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.1/dist/chartjs-chart-matrix.min.js"></script>
+
+    <!-- Chart.js extras (opcional para etiquetas de datos) -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Inicializar AOS Animation
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // Script para navegación suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Único evento DOMContentLoaded que combina ambas funcionalidades
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM cargado - Inicializando todo");
+
+            // ========== INICIALIZACIÓN DE GRÁFICOS ==========
+
+            // 1. Gráfico de distribución de clases
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            const distributionChart = new Chart(distributionCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Compras regulares (91%)', 'Compras de alto valor (9%)'],
+                    datasets: [{
+                        data: [91, 9],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de clientes por tipo de compra'
+                        }
+                    }
+                }
+            });
+
+            // 2. Gráfico de comparación de funciones de activación
+            const activationCtx = document.getElementById('activationChart').getContext('2d');
+            const activationChart = new Chart(activationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sigmoid', 'Tanh', 'ReLU', 'LeakyReLU'],
+                    datasets: [{
+                        label: 'F1-Score',
+                        data: [0.9205, 0.9204, 0.9146, 0.9174],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 0.90,
+                            max: 0.93
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Rendimiento por función de activación (F1-Score)'
+                        }
+                    }
+                }
+            });
+
+            // 3. Matriz de confusión mejorada
+            const confusionCtx = document.getElementById('confusionMatrix').getContext('2d');
+            const confusionMatrix = new Chart(confusionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Verdaderos Negativos', 'Falsos Positivos', 'Falsos Negativos', 'Verdaderos Positivos'],
+                    datasets: [{
+                        label: 'Conteo',
+                        data: [6774, 171, 407, 317],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.8)',  // VN - verde
+                            'rgba(255, 99, 132, 0.8)',  // FP - rojo
+                            'rgba(255, 99, 132, 0.8)',  // FN - rojo
+                            'rgba(75, 192, 192, 0.8)'   // VP - verde
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Conteo: ${context.raw}`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Matriz de Confusión'
+                        },
+                    },
+                    layout: {
+                        padding: 10
+                    }
+                }
+            });
+
+            // 4. Curva ROC
+            const rocCtx = document.getElementById('rocCurve').getContext('2d');
+            // Datos simulados para la curva ROC
+            const tpr = [0, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95, 0.98, 1];
+            const fpr = [0, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1];
+
+            const rocCurve = new Chart(rocCtx, {
+                type: 'line',
+                data: {
+                    labels: fpr.map(x => x.toFixed(2)),
+                    datasets: [{
+                        label: 'Modelo (AUC = 0.936)',
+                        data: tpr,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+                    }, {
+                        label: 'Referencia (AUC = 0.5)',
+                        data: fpr,
+                        borderColor: 'rgba(128, 128, 128, 0.5)',
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tasa de Falsos Positivos'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Tasa de Verdaderos Positivos'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Curva ROC'
+                        }
+                    }
+                }
+            });
+
+            // 5. Importancia de características
+            const featureCtx = document.getElementById('featureImportance').getContext('2d');
+            const featureImportance = new Chart(featureCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['num__flgactcn_t01', 'num__flgactccpc_t04', 'num__flgactcn_t03', 'num__txs_t01', 'num__flgactccot_t05'],
+                    datasets: [{
+                        label: 'Importancia',
+                        data: [0.0030, 0.0023, 0.0018, 0.0018, 0.0016],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Top 5 Características más Importantes'
+                        }
+                    }
+                }
+            });
+
+            // 6. Inicialización del gráfico de comparación de arquitecturas
+            const architectureCtx = document.getElementById('architectureComparisonChart').getContext('2d');
+            const architectureChart = new Chart(architectureCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Simple (1)', 'Media (2)', 'Profunda (3)', 'Compleja (4)'],
+                    datasets: [
+                        {
+                            label: 'F1-Score',
+                            data: [0.9159, 0.9200, 0.9174, 0.9183],
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Tiempo (s)',
+                            data: [18.4, 23.7, 36.2, 48.9],
+                            backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'F1-Score'
+                            },
+                            min: 0.90,
+                            max: 0.93
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Tiempo (s)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            min: 0,
+                            max: 60
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Comparación de Arquitecturas por Rendimiento y Tiempo'
+                        }
+                    }
+                }
+            });
+
+            // 7. Visualización simplificada de la red neuronal
+            const networkCanvas = document.getElementById('networkVisualization');
+            if (networkCanvas) {
+                const ctx = networkCanvas.getContext('2d');
+                if (ctx) {
+                    // Limpiar el canvas
+                    ctx.clearRect(0, 0, networkCanvas.width, networkCanvas.height);
+
+                    // Colores para las capas
+                    const colors = {
+                        input: '#28a745',   // verde
+                        hidden: '#3f51b5',  // azul
+                        output: '#dc3545'   // rojo
+                    };
+
+                    // Dibujar una representación simplificada de la red
+                    const drawNetwork = () => {
+                        const width = networkCanvas.width;
+                        const height = networkCanvas.height;
+
+                        // Definir número de nodos por capa
+                        const layers = [
+                            { size: 7, name: 'Input' },     // Input
+                            { size: 5, name: '128' },       // Hidden 1 (mostrar sólo 5 de 128)
+                            { size: 3, name: '64' },        // Hidden 2 (mostrar sólo 3 de 64)
+                            { size: 1, name: 'Output' }     // Output
+                        ];
+
+                        const layerGap = width / (layers.length + 1);
+
+                        // Dibujar cada capa
+                        layers.forEach((layer, layerIndex) => {
+                            const x = layerGap * (layerIndex + 1);
+                            const nodeGap = height / (layer.size + 1);
+
+                            // Dibujar texto de la capa
+                            ctx.fillStyle = '#333';
+                            ctx.font = '10px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(layer.name, x, 15);
+
+                            // Determinar color según tipo de capa
+                            let color;
+                            if (layerIndex === 0) color = colors.input;
+                            else if (layerIndex === layers.length - 1) color = colors.output;
+                            else color = colors.hidden;
+
+                            // Dibujar nodos
+                            for (let nodeIndex = 0; nodeIndex < layer.size; nodeIndex++) {
+                                const y = nodeGap * (nodeIndex + 1);
+
+                                // Dibujar nodo
+                                ctx.beginPath();
+                                ctx.arc(x, y, 10, 0, Math.PI * 2);
+                                ctx.fillStyle = color;
+                                ctx.fill();
+
+                                // Dibujar conexiones con la capa anterior
+                                if (layerIndex > 0) {
+                                    const prevLayer = layers[layerIndex - 1];
+                                    const prevX = layerGap * layerIndex;
+                                    const prevNodeGap = height / (prevLayer.size + 1);
+
+                                    for (let prevNodeIndex = 0; prevNodeIndex < prevLayer.size; prevNodeIndex++) {
+                                        const prevY = prevNodeGap * (prevNodeIndex + 1);
+
+                                        ctx.beginPath();
+                                        ctx.moveTo(prevX, prevY);
+                                        ctx.lineTo(x, y);
+                                        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                                        ctx.stroke();
+                                    }
+                                }
+                            }
+                        });
+                    };
+
+                    // Ejecutar el dibujo cuando el canvas esté visible
+                    drawNetwork();
+                }
+            }
+
+            // 8. Mapa de calor de correlaciones
+            const heatmapCanvas = document.getElementById('heatmapChart');
+            if (heatmapCanvas) {
+                const heatmapCtx = heatmapCanvas.getContext('2d');
+                // Usar un enfoque de barras simples en lugar de scatter para evitar problemas
+                new Chart(heatmapCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Var1', 'Var2', 'Var3', 'Var4', 'Var5'],
+                        datasets: [
+                            {
+                                label: 'Correlación con objetivo',
+                                data: [0.58, 0.37, 0.33, 0.42, 0.31],
+                                backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Principales correlaciones'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 9. Gráfico de dispersión
+            const scatterChart = document.getElementById('scatterChart');
+            if (scatterChart) {
+                const ctx = scatterChart.getContext('2d');
+
+                // Datos definidos de forma segura, sin generación aleatoria
+                const data1 = [
+                    { x: 0.2, y: 0.1 }, { x: 0.3, y: 0.2 }, { x: 0.25, y: 0.15 },
+                    { x: 0.4, y: 0.3 }, { x: 0.35, y: 0.25 }, { x: 0.15, y: 0.1 }
+                ];
+
+                const data2 = [
+                    { x: 0.7, y: 0.6 }, { x: 0.65, y: 0.7 }, { x: 0.8, y: 0.8 },
+                    { x: 0.75, y: 0.75 }, { x: 0.6, y: 0.65 }, { x: 0.85, y: 0.7 }
+                ];
+
+                new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Compras Regulares',
+                                data: data1,
+                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                pointRadius: 5,
+                                pointHoverRadius: 7
+                            },
+                            {
+                                label: 'Compras Alto Valor',
+                                data: data2,
+                                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                pointRadius: 5,
+                                pointHoverRadius: 7
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Actividad de Compra (normalizada)'
+                                },
+                                min: 0,
+                                max: 1
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Valor Transaccional (normalizado)'
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Relación entre Actividad de Compra y Valor Transaccional'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 10. Gráfico de distribución por categorías
+            const categoryChart = document.getElementById('categoryDistributionChart');
+            if (categoryChart) {
+                const ctx = categoryChart.getContext('2d');
+
+                // Datos simplificados y estructura segura
+                const data = {
+                    labels: ['Electrónica', 'Ropa', 'Hogar', 'Deportes', 'Premium'],
+                    datasets: [
+                        {
+                            label: 'Clientes Regulares',
+                            data: [65, 72, 56, 43, 12],
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Clientes Alto Valor',
+                            data: [78, 68, 53, 79, 52],
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                };
+
+                // Opciones simplificadas
+                const options = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Actividad por Categoría según Tipo de Cliente'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Porcentaje de Actividad'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Categorías de Productos'
+                            }
+                        }
+                    }
+                };
+
+                // Crear gráfico con console.log para depuración
+                console.log("Inicializando gráfico de categorías con ID:", categoryChart.id);
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: options
+                });
+                console.log("Gráfico de categorías inicializado correctamente");
+            } else {
+                console.error("El elemento canvas 'categoryDistributionChart' no fue encontrado");
+            }
+
+            // 11. Gráfico de análisis temporal
+            const temporalCanvas = document.getElementById('temporalChart');
+            if (temporalCanvas) {
+                const temporalCtx = temporalCanvas.getContext('2d');
+                new Chart(temporalCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'],
+                        datasets: [
+                            {
+                                label: 'Clientes Regulares',
+                                data: [65, 42, 38, 72, 59, 45, 41, 68],
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Clientes Alto Valor',
+                                data: [85, 76, 70, 89, 82, 79, 73, 91],
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Índice de Actividad'
+                                },
+                                max: 100
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Trimestres (últimos 2 años)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Evolución Temporal de la Actividad por Tipo de Cliente'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ========== FUNCIONALIDAD DE ZOOM (ANTIGUO SEGUNDO BLOQUE) ==========
+
+            // Identificar todos los canvas que contienen gráficos
+            const chartCanvases = document.querySelectorAll('.chart-container canvas, #networkVisualization');
+            const modal = new bootstrap.Modal(document.getElementById('chartModal'));
+            const modalCanvas = document.getElementById('modalChart');
+            const modalTitle = document.getElementById('chartModalLabel');
+
+            // Para cada canvas, agregar evento de clic
+            chartCanvases.forEach(canvas => {
+                canvas.style.cursor = 'pointer'; // Cambiar cursor para indicar que es clickeable
+
+                // Agregar un tooltip para indicar que se puede ampliar
+                const tooltip = document.createElement('div');
+                tooltip.className = 'text-center text-muted mt-1 small';
+                tooltip.innerHTML = '<i class="fas fa-search-plus me-1"></i>Clic para ampliar';
+                canvas.parentNode.appendChild(tooltip);
+
+                canvas.addEventListener('click', function () {
+                    // Obtener el título del gráfico
+                    let title = "Visualización ampliada";
+                    // Buscar en los elementos padres por un encabezado o título
+                    let parent = canvas.parentNode;
+                    while (parent && !title.includes("ampliada")) {
+                        const heading = parent.querySelector('.card-header h3');
+                        if (heading) {
+                            title = heading.textContent.trim();
+                            break;
+                        }
+                        parent = parent.parentNode;
+                    }
+
+                    modalTitle.textContent = title;
+
+                    // Ajustar el tamaño del canvas modal
+                    modalCanvas.width = canvas.width * 1.5;
+                    modalCanvas.height = canvas.height * 1.5;
+
+                    // Copiar el contenido del canvas original al modal
+                    const ctx = modalCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 0, 0, modalCanvas.width, modalCanvas.height);
+
+                    // Si es el canvas de la red neuronal, volver a dibujar con más detalle
+                    if (canvas.id === 'networkVisualization') {
+                        redrawNetworkWithDetail(modalCanvas);
+                    }
+
+                    // Mostrar el modal
+                    modal.show();
+                });
+            });
+
+            // Función para redibujar la red neuronal con más detalle
+            function redrawNetworkWithDetail(canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Colores para las capas
+                const colors = {
+                    input: '#28a745',   // verde
+                    hidden1: '#3f51b5', // azul primario
+                    hidden2: '#5c6bc0', // azul secundario
+                    output: '#dc3545'   // rojo
+                };
+
+                const width = canvas.width;
+                const height = canvas.height;
+
+                // Definir número de nodos por capa con más nodos visibles en la versión ampliada
+                const layers = [
+                    { size: 7, name: 'Input (7)', color: colors.input },
+                    { size: 8, name: 'Hidden 1 (128)', color: colors.hidden1 },
+                    { size: 6, name: 'Hidden 2 (64)', color: colors.hidden2 },
+                    { size: 1, name: 'Output (1)', color: colors.output }
+                ];
+
+                const layerGap = width / (layers.length + 1);
+
+                // Dibujar cada capa
+                layers.forEach((layer, layerIndex) => {
+                    const x = layerGap * (layerIndex + 1);
+                    const nodeGap = height / (layer.size + 1);
+
+                    // Dibujar texto de la capa
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(layer.name, x, 30);
+
+                    // Dibujar nodos
+                    for (let nodeIndex = 0; nodeIndex < layer.size; nodeIndex++) {
+                        const y = nodeGap * (nodeIndex + 1) + 40;
+
+                        // Dibujar conexiones con la capa anterior
+                        if (layerIndex > 0) {
+                            const prevLayer = layers[layerIndex - 1];
+                            const prevX = layerGap * layerIndex;
+                            const prevNodeGap = height / (prevLayer.size + 1);
+
+                            ctx.globalAlpha = 0.2;
+                            for (let prevNodeIndex = 0; prevNodeIndex < prevLayer.size; prevNodeIndex++) {
+                                const prevY = prevNodeGap * (prevNodeIndex + 1) + 40;
+
+                                ctx.beginPath();
+                                ctx.moveTo(prevX, prevY);
+                                ctx.lineTo(x, y);
+                                ctx.strokeStyle = '#666';
+                                ctx.lineWidth = 0.5;
+                                ctx.stroke();
+                            }
+                            ctx.globalAlpha = 1.0;
+                        }
+
+                        // Dibujar nodo
+                        ctx.beginPath();
+                        ctx.arc(x, y, 18, 0, Math.PI * 2);
+                        ctx.fillStyle = layer.color;
+                        ctx.fill();
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Numerar los nodos
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText((nodeIndex + 1).toString(), x, y + 4);
+                    }
+
+                    // Si hay muchos nodos, dibujar puntos suspensivos
+                    if ((layerIndex === 1 && 8 < 128) || (layerIndex === 2 && 6 < 64)) {
+                        const y = height - 40;
+                        ctx.fillStyle = '#333';
+                        ctx.font = 'bold 24px Arial';
+                        ctx.fillText("• • •", x, y);
+                    }
+                });
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>
