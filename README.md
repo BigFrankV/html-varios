@@ -8,5 +8,9 @@ Cómo acceder
 Todos los archivos HTML de este repositorio están disponibles en línea a través de GitHub Pages:
 
 https://BigFrankV.github.io/html-varios/guia-consulta-bd.html
-
 https://BigFrankV.github.io/html-varios/Presentacion-Final.html
+https://BigFrankV.github.io/html-varios/agiV2.html
+https://BigFrankV.github.io/html-varios/alphazero.html
+https://BigFrankV.github.io/html-varios/agi.html
+https://BigFrankV.github.io/html-varios/actividad.html
+https://BigFrankV.github.io/html-varios/riesgos.html
