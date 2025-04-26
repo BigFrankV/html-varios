@@ -25,3 +25,5 @@ https://BigFrankV.github.io/html-varios/riesgos.html
 
 https://BigFrankV.github.io/html-varios/proyecto-museo/index.html
 
+https://BigFrankV.github.io/html-varios/Entrega-5.html
+
