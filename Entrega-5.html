@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Gestión de Riesgos - Restaurante "El Glotón"</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            background-color: #f8f9fa;
+        }
+
+        /* Navbar custom styles */
+        .navbar-custom {
+            background-color: var(--primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        /* Hero section */
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        /* Card styles */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+
+        /* Table styles */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: rgba(236, 240, 241, 0.5);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--secondary);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .timeline-container.left {
+            left: 0;
+        }
+
+        .timeline-container.right {
+            left: 50%;
+        }
+
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -13px;
+            background-color: white;
+            border: 4px solid var(--secondary);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-container.left::after {
+            right: -13px;
+        }
+
+        .timeline-container.right::after {
+            left: -13px;
+        }
+
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Path visualization */
+        .path-box {
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            background-color: var(--light);
+        }
+
+        .path-arrow {
+            margin: 0 10px;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .critical-path {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Scroll to top button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+        }
+
+        /* Section separators */
+        .section-divider {
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--light));
+            margin: 40px 0;
+            border-radius: 3px;
+        }
+
+        /* Badge styles */
+        .badge-custom {
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        /* Decision tree colors */
+        .decision-node {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .chance-node {
+            background-color: #f39c12;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .terminal-node {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Back to top button -->
+    <div class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2"></i>
+                El Glotón
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduccion"><i class="fas fa-home me-1"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analisis-pert"><i class="fas fa-project-diagram me-1"></i> Análisis
+                            PERT</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#arbol-decision"><i class="fas fa-code-branch me-1"></i> Árbol de
+                            Decisión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#monte-carlo"><i class="fas fa-random me-1"></i> Monte Carlo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusiones"><i class="fas fa-clipboard-check me-1"></i>
+                            Conclusiones</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="introduccion">
+        <div class="container" data-aos="fade-up">
+            <h1 class="display-4">Análisis de Riesgos - Restaurante "El Glotón"</h1>
+            <p class="lead">Evaluación Formativa N°5: Cuantificando los riesgos de mayor gravedad</p>
+            <div class="mt-4">
+                <span class="badge bg-light text-dark me-2"><i class="fas fa-user me-1"></i> Frank Vogt</span>
+                <span class="badge bg-light text-dark me-2"><i class="fas fa-user me-1"></i> Matías Román</span>
+                <span class="badge bg-light text-dark me-2"><i class="fas fa-user me-1"></i> Zaida König</span>
+                <span class="badge bg-light text-dark"><i class="fas fa-user me-1"></i> Johanna Hernández</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introducción -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card" data-aos="fade-up">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle me-2"></i>Introducción al Caso
+                        </div>
+                        <div class="card-body">
+                            <p>El restaurante "El Glotón" se especializa en sándwiches tradicionales y completos,
+                                operando con cinco carros móviles en diferentes ubicaciones de la Región Metropolitana
+                                de Santiago. El negocio enfrenta una serie de desafíos, tales como la demora en la
+                                recepción de pedidos, errores en los pedidos y la falta de personal en horas de alta
+                                demanda.</p>
+
+                            <h5 class="mt-4">Situación actual del negocio:</h5>
+                            <ul>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>Los carros móviles están
+                                    distribuidos por la Región Metropolitana.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>Los pedidos son gestionados
+                                    manualmente a través de WhatsApp.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>Existen quejas relacionadas con
+                                    la eficiencia operativa y la falta de estandarización en los procesos.</li>
+                            </ul>
+
+                            <p>En respuesta a estos problemas, el restaurante tiene la intención de mejorar sus procesos
+                                mediante la incorporación de tecnología, con el objetivo de agilizar los pedidos y
+                                facilitar la expansión a otras comunas y regiones.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Análisis PERT -->
+    <section class="py-5 bg-light" id="analisis-pert">
+        <div class="container">
+            <h2 class="text-center mb-5" data-aos="fade-up"><i class="fas fa-project-diagram me-2"></i>Análisis PERT
+            </h2>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card mb-4" data-aos="fade-up">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle me-2"></i>¿Qué es el Análisis PERT?
+                        </div>
+                        <div class="card-body">
+                            <p>El Análisis PERT (Program Evaluation and Review Technique) es una herramienta utilizada
+                                para estimar los tiempos de ejecución de las actividades de un proyecto, ayudando a
+                                prever los tiempos realistas para cada tarea. Mediante este análisis, podemos
+                                identificar la ruta crítica del proyecto y gestionar mejor los recursos disponibles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-header">
+                            <i class="fas fa-table me-2"></i>Tabla de Estimaciones de Tiempo (en días)
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Actividad</th>
+                                            <th>Descripción</th>
+                                            <th>Tiempo Optimista (TO)</th>
+                                            <th>Tiempo Más Probable (TM)</th>
+                                            <th>Tiempo Pesimista (TP)</th>
+                                            <th>Tiempo Esperado (TE)</th>
+                                            <th>Predecesoras</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>A1</td>
+                                            <td>Implementar sistema de pedidos en línea</td>
+                                            <td>15</td>
+                                            <td>20</td>
+                                            <td>30</td>
+                                            <td>21</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A2</td>
+                                            <td>Capacitar al personal</td>
+                                            <td>3</td>
+                                            <td>5</td>
+                                            <td>10</td>
+                                            <td>5.5</td>
+                                            <td>A1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A3</td>
+                                            <td>Establecer sistema estándar de comandas</td>
+                                            <td>5</td>
+                                            <td>8</td>
+                                            <td>14</td>
+                                            <td>8.5</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A4</td>
+                                            <td>Evaluar delivery interno vs externo</td>
+                                            <td>4</td>
+                                            <td>7</td>
+                                            <td>10</td>
+                                            <td>7</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A5</td>
+                                            <td>Implementar sistema de registro de clientes</td>
+                                            <td>10</td>
+                                            <td>15</td>
+                                            <td>25</td>
+                                            <td>16</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A6</td>
+                                            <td>Integrar sistema de pedidos con delivery</td>
+                                            <td>12</td>
+                                            <td>18</td>
+                                            <td>30</td>
+                                            <td>19</td>
+                                            <td>A1, A3, A4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A7</td>
+                                            <td>Realizar pruebas del sistema</td>
+                                            <td>5</td>
+                                            <td>7</td>
+                                            <td>12</td>
+                                            <td>7.5</td>
+                                            <td>A6, A5, A2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>A8</td>
+                                            <td>Expansión a nuevos carros móviles</td>
+                                            <td>20</td>
+                                            <td>30</td>
+                                            <td>45</td>
+                                            <td>31</td>
+                                            <td>A7</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="alert alert-info mt-3" role="alert">
+                                <i class="fas fa-info-circle me-2"></i> Fórmula del Tiempo Esperado: TE = (TO + 4TM +
+                                TP) / 6
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header">
+                            <i class="fas fa-route me-2"></i>Ruta Crítica
+                        </div>
+                        <div class="card-body">
+                            <p>La ruta crítica está formada por aquellas actividades que tienen holgura cero. Cualquier
+                                retraso en estas actividades afectará directamente la duración total del proyecto.</p>
+
+                            <div class="text-center my-4">
+                                <div class="path-box critical-path">A1</div>
+                                <i class="fas fa-arrow-right path-arrow"></i>
+                                <div class="path-box critical-path">A6</div>
+                                <i class="fas fa-arrow-right path-arrow"></i>
+                                <div class="path-box critical-path">A7</div>
+                                <i class="fas fa-arrow-right path-arrow"></i>
+                                <div class="path-box critical-path">A8</div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i> La duración total del proyecto es de
+                                aproximadamente <strong>79 días</strong> (21 + 19 + 7.5 + 31).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line me-2"></i>Diagrama de Gantt
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="ganttChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Árbol de Decisión -->
+    <section class="py-5" id="arbol-decision">
+        <div class="container">
+            <h2 class="text-center mb-5" data-aos="fade-up"><i class="fas fa-code-branch me-2"></i>Árbol de Decisión
+            </h2>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card mb-4" data-aos="fade-up">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle me-2"></i>¿Qué es un Árbol de Decisión?
+                        </div>
+                        <div class="card-body">
+                            <p>El Árbol de Decisión es una herramienta visual que ayuda a tomar decisiones basadas en
+                                múltiples alternativas y sus posibles consecuencias. Para este caso, hemos analizado las
+                                opciones para manejar los pedidos de delivery: contratar personal interno o utilizar una
+                                empresa externa.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-header">
+                            <i class="fas fa-sitemap me-2"></i>Estructura del Árbol
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="decisionTreeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header">
+                            <i class="fas fa-calculator me-2"></i>Cálculo del Valor Monetario Esperado (VME)
+                        </div>
+                        <div class="card-body">
+                            <h5 class="mb-3">Alternativa 1: Personal Interno</h5>
+                            <ul class="list-group mb-4">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-money-bill-wave me-2 text-success"></i>Inversión
+                                        inicial</span>
+                                    <span class="badge bg-danger rounded-pill">$5,000,000</span>
+                                </li>
+                                <li class="list-group-item">
+                                    <div>Escenarios:</div>
+                                    <ul class="list-unstyled ms-4 mt-2">
+                                        <li class="mb-2 d-flex justify-content-between">
+                                            <span><i class="fas fa-star me-2 text-warning"></i>Éxito Alto (25%)</span>
+                                            <span class="badge bg-success rounded-pill">$3,000,000</span>
+                                        </li>
+                                        <li class="mb-2 d-flex justify-content-between">
+                                            <span><i class="fas fa-star-half-alt me-2 text-warning"></i>Éxito Medio
+                                                (45%)</span>
+                                            <span class="badge bg-success rounded-pill">$1,800,000</span>
+                                        </li>
+                                        <li class="d-flex justify-content-between">
+                                            <span><i class="far fa-star me-2 text-warning"></i>Éxito Bajo (30%)</span>
+                                            <span class="badge bg-success rounded-pill">$800,000</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Valor Mensual Esperado:</strong>
+                                        <span>$1,800,000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>VME (primer mes):</strong>
+                                        <span class="text-danger">-$3,200,000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>VME (3 meses):</strong>
+                                        <span class="text-success">$400,000</span>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <h5 class="mb-3">Alternativa 2: Empresa Externa</h5>
+                            <ul class="list-group mb-4">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-money-bill-wave me-2 text-success"></i>Costos iniciales
+                                        (integración)</span>
+                                    <span class="badge bg-danger rounded-pill">$2,000,000</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-percentage me-2 text-info"></i>Comisión por pedido</span>
+                                    <span class="badge bg-warning rounded-pill">25%</span>
+                                </li>
+                                <li class="list-group-item">
+                                    <div>Escenarios:</div>
+                                    <ul class="list-unstyled ms-4 mt-2">
+                                        <li class="mb-2 d-flex justify-content-between">
+                                            <span><i class="fas fa-star me-2 text-warning"></i>Éxito Alto (40%)</span>
+                                            <span class="badge bg-success rounded-pill">$2,500,000</span>
+                                        </li>
+                                        <li class="mb-2 d-flex justify-content-between">
+                                            <span><i class="fas fa-star-half-alt me-2 text-warning"></i>Éxito Medio
+                                                (50%)</span>
+                                            <span class="badge bg-success rounded-pill">$1,600,000</span>
+                                        </li>
+                                        <li class="d-flex justify-content-between">
+                                            <span><i class="far fa-star me-2 text-warning"></i>Éxito Bajo (10%)</span>
+                                            <span class="badge bg-success rounded-pill">$500,000</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Valor Mensual Esperado:</strong>
+                                        <span>$1,850,000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>VME (primer mes):</strong>
+                                        <span class="text-danger">-$150,000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>VME (2 meses):</strong>
+                                        <span class="text-success">$1,700,000</span>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle me-2"></i> <strong>Decisión recomendada:</strong> Empresa
+                                Externa, ya que presenta un mejor VME a corto plazo, menor inversión inicial y menor
+                                riesgo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Simulación de Monte Carlo -->
+    <section class="py-5 bg-light" id="monte-carlo">
+        <div class="container">
+            <h2 class="text-center mb-5" data-aos="fade-up"><i class="fas fa-random me-2"></i>Simulación de Monte Carlo
+            </h2>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card mb-4" data-aos="fade-up">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle me-2"></i>¿Qué es la Simulación de Monte Carlo?
+                        </div>
+                        <div class="card-body">
+                            <p>La Simulación de Monte Carlo es una técnica de modelado que utiliza la aleatoriedad para
+                                generar una variedad de posibles resultados en función de las variables inciertas. Para
+                                este caso, hemos simulado el tiempo de entrega de los pedidos a domicilio, utilizando
+                                una distribución normal para modelar el tiempo de entrega esperado.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-2"></i>Distribución de Tiempos de Entrega
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="monteCarloChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header">
+                            <i class="fas fa-table me-2"></i>Resultados Estadísticos
+                        </div>
+                        <div class="card-body">
+                            <h5>Parámetros de la simulación:</h5>
+                            <ul class="list-group mb-4">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-stopwatch me-2 text-primary"></i>Variable</span>
+                                    <span>Tiempo de entrega de pedidos</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-chart-line me-2 text-primary"></i>Distribución</span>
+                                    <span>Normal</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-balance-scale me-2 text-primary"></i>Media</span>
+                                    <span>45 minutos</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-arrows-alt-h me-2 text-primary"></i>Desviación
+                                        estándar</span>
+                                    <span>5 minutos</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-redo me-2 text-primary"></i>Número de iteraciones</span>
+                                    <span>1,000</span>
+                                </li>
+                            </ul>
+
+                            <h5>Resultados por percentil:</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Percentil</th>
+                                            <th>Tiempo de entrega (min)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>10%</td>
+                                            <td>38.6</td>
+                                        </tr>
+                                        <tr>
+                                            <td>25%</td>
+                                            <td>41.7</td>
+                                        </tr>
+                                        <tr>
+                                            <td>50% (mediana)</td>
+                                            <td>45.1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>75%</td>
+                                            <td>48.4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>90%</td>
+                                            <td>51.3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>95%</td>
+                                            <td>53.2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="alert alert-info mt-3" role="alert">
+                                <i class="fas fa-lightbulb me-2"></i> <strong>Interpretación:</strong> Hay un 90% de
+                                probabilidad de que las entregas se realicen en menos de 51.3 minutos. Para prometer
+                                tiempos de entrega confiables, se recomienda informar a los clientes un tiempo de 55
+                                minutos.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-header">
+                            <i class="fas fa-sliders-h me-2"></i>Análisis de Sensibilidad
+                        </div>
+                        <div class="card-body">
+                            <p>Cambiando la desviación estándar a 7 minutos, los tiempos de entrega en el percentil 90
+                                aumentan a 54.1 minutos, lo que indica que la variabilidad en los tiempos de entrega es
+                                un factor crítico.</p>
+
+                            <div class="chart-container">
+                                <canvas id="sensitivityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Conclusiones -->
+    <section class="py-5" id="conclusiones">
+        <div class="container">
+            <h2 class="text-center mb-5" data-aos="fade-up"><i class="fas fa-clipboard-check me-2"></i>Conclusiones y
+                Recomendaciones</h2>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-header">
+                            <i class="fas fa-check-double me-2"></i>Conclusiones
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered mb-0">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Duración del proyecto</div>
+                                        El proyecto completo tomará aproximadamente 79 días si se siguen los tiempos
+                                        esperados, siendo críticas las actividades A1, A6, A7 y A8.
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Gestión de delivery</div>
+                                        La contratación de una empresa externa para el servicio de delivery ofrece
+                                        mejores resultados económicos a corto plazo y menor riesgo inicial.
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Tiempos de entrega</div>
+                                        Los tiempos de entrega pueden estimarse con bastante precisión, con el 95% de
+                                        las entregas completándose en menos de 53.2 minutos.
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header">
+                            <i class="fas fa-lightbulb me-2"></i>Recomendaciones
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <i class="fas fa-tasks me-2 text-primary"></i> Implementar el proyecto siguiendo la
+                                    ruta crítica identificada, prestando especial atención a las actividades A1, A6, A7
+                                    y A8.
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-truck me-2 text-primary"></i> Contratar una empresa externa para el
+                                    servicio de delivery, asegurando que el contrato incluya niveles de servicio que
+                                    garanticen entregas dentro de los tiempos estimados.
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-desktop me-2 text-primary"></i> Implementar un sistema de
+                                    seguimiento en tiempo real para monitorear las entregas y ajustar los tiempos
+                                    estimados basados en datos reales.
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-clipboard-check me-2 text-primary"></i> Establecer un periodo de
+                                    prueba de 3 meses para evaluar el rendimiento de la empresa externa, con opción de
+                                    reconsiderar la decisión basándose en los resultados.
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-exclamation-triangle me-2 text-primary"></i> Diseñar un plan de
+                                    contingencia para los periodos de alta demanda, que incluya procedimientos manuales
+                                    temporales si el sistema presenta fallos.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-0">&copy; 2023 Evaluación Formativa N°5 - Gestión de Riesgos</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Scroll to top button
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 300) {
+                $('.scroll-to-top').addClass('visible');
+            } else {
+                $('.scroll-to-top').removeClass('visible');
+            }
+        });
+
+        $('.scroll-to-top').click(function () {
+            $('html, body').animate({ scrollTop: 0 }, 800);
+            return false;
+        });
+
+        // Smooth scroll for navbar links
+        $('a.nav-link').click(function (e) {
+            if (this.hash !== "") {
+                e.preventDefault();
+                var hash = this.hash;
+                $('html, body').animate({
+                    scrollTop: $(hash).offset().top - 80
+                }, 800);
+            }
+        });
+
+        // Gantt Chart
+        const ganttCtx = document.getElementById('ganttChart').getContext('2d');
+        const ganttChart = new Chart(ganttCtx, {
+            type: 'bar',
+            data: {
+                labels: ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
+                datasets: [{
+                    label: 'Duración (días)',
+                    data: [21, 5.5, 8.5, 7, 16, 19, 7.5, 31],
+                    backgroundColor: [
+                        '#e74c3c', // Ruta crítica
+                        '#3498db',
+                        '#3498db',
+                        '#3498db',
+                        '#3498db',
+                        '#e74c3c', // Ruta crítica
+                        '#e74c3c', // Ruta crítica
+                        '#e74c3c'  // Ruta crítica
+                    ],
+                    borderColor: [
+                        '#c0392b',
+                        '#2980b9',
+                        '#2980b9',
+                        '#2980b9',
+                        '#2980b9',
+                        '#c0392b',
+                        '#c0392b',
+                        '#c0392b'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function (context) {
+                                const activities = [
+                                    'Implementar sistema de pedidos en línea',
+                                    'Capacitar al personal',
+                                    'Establecer sistema estándar de comandas',
+                                    'Evaluar delivery interno vs externo',
+                                    'Implementar sistema de registro de clientes',
+                                    'Integrar sistema de pedidos con delivery',
+                                    'Realizar pruebas del sistema',
+                                    'Expansión a nuevos carros móviles'
+                                ];
+                                return 'Actividad: ' + activities[context.dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Duración (días)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Decision Tree Chart (simplified visualization)
+        const decisionTreeCtx = document.getElementById('decisionTreeChart').getContext('2d');
+
+        // Monte Carlo Simulation Chart
+        const monteCarloCtx = document.getElementById('monteCarloChart').getContext('2d');
+        const monteCarloChart = new Chart(monteCarloCtx, {
+            type: 'bar',
+            data: {
+                labels: ['35-37', '37-39', '39-41', '41-43', '43-45', '45-47', '47-49', '49-51', '51-53', '53-55', '55-57'],
+                datasets: [{
+                    label: 'Frecuencia',
+                    data: [5, 25, 75, 150, 220, 230, 150, 90, 40, 10, 5],
+                    backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Distribución de tiempos de entrega (minutos)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Frecuencia'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tiempo de entrega (min)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Sensitivity Analysis Chart
+        const sensitivityCtx = document.getElementById('sensitivityChart').getContext('2d');
+        const sensitivityChart = new Chart(sensitivityCtx, {
+            type: 'line',
+            data: {
+                labels: ['35', '40', '45', '50', '55', '60'],
+                datasets: [{
+                    label: 'Desviación: 5 min',
+                    data: [5, 30, 50, 30, 10, 2],
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Desviación: 7 min',
+                    data: [8, 25, 40, 35, 20, 10],
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Análisis de sensibilidad - Influencia de la desviación estándar'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Porcentaje (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tiempo de entrega (min)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Simplified Decision Tree Visualization
+        const drawDecisionTree = function () {
+            const decisionTree = {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        // Nodes
+                        {
+                            label: 'Nodos de decisión',
+                            data: [
+                                { x: 0, y: 50, r: 10, type: 'decision', name: 'Gestión Delivery' }
+                            ],
+                            backgroundColor: '#3498db',
+                            pointRadius: 15,
+                            pointHoverRadius: 20
+                        },
+                        // Chance nodes - Personal interno
+                        {
+                            label: 'Nodos de chance - Personal Interno',
+                            data: [
+                                { x: 2, y: 75, r: 10, type: 'chance', name: 'Personal Interno' }
+                            ],
+                            backgroundColor: '#f39c12',
+                            pointRadius: 15,
+                            pointHoverRadius: 20
+                        },
+                        // Terminal nodes - Personal interno
+                        {
+                            label: 'Resultados - Personal Interno',
+                            data: [
+                                { x: 4, y: 90, r: 8, value: '$3M', prob: '25%' },
+                                { x: 4, y: 75, r: 8, value: '$1.8M', prob: '45%' },
+                                { x: 4, y: 60, r: 8, value: '$0.8M', prob: '30%' }
+                            ],
+                            backgroundColor: '#2ecc71',
+                            pointRadius: 12,
+                            pointHoverRadius: 15
+                        },
+                        // Chance nodes - Empresa externa
+                        {
+                            label: 'Nodos de chance - Empresa Externa',
+                            data: [
+                                { x: 2, y: 25, r: 10, type: 'chance', name: 'Empresa Externa' }
+                            ],
+                            backgroundColor: '#f39c12',
+                            pointRadius: 15,
+                            pointHoverRadius: 20
+                        },
+                        // Terminal nodes - Empresa externa
+                        {
+                            label: 'Resultados - Empresa Externa',
+                            data: [
+                                { x: 4, y: 40, r: 8, value: '$2.5M', prob: '40%' },
+                                { x: 4, y: 25, r: 8, value: '$1.6M', prob: '50%' },
+                                { x: 4, y: 10, r: 8, value: '$0.5M', prob: '10%' }
+                            ],
+                            backgroundColor: '#2ecc71',
+                            pointRadius: 12,
+                            pointHoverRadius: 15
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Árbol de Decisión - Gestión de Delivery'
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const point = context.raw;
+                                    if (point.type === 'decision') {
+                                        return 'Decisión: ' + point.name;
+                                    } else if (point.type === 'chance') {
+                                        return 'Opción: ' + point.name;
+                                    } else {
+                                        return 'Valor: ' + point.value + ' (Probabilidad: ' + point.prob + ')';
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(decisionTreeCtx, decisionTree);
+        };
+
+        drawDecisionTree();
+    </script>
+</body>
+
+</html>
