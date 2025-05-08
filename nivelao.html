@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivelao - Proyecto de Análisis de Desniveles con IA</title>
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Prism.js for code highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        code,
+        pre {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .tech-tag {
+            background-color: #dbeafe;
+            /* bg-blue-100 */
+            color: #1e40af;
+            /* text-blue-800 */
+            font-size: 0.75rem;
+            /* text-xs */
+            padding: 0.25rem 0.5rem;
+            /* px-2 py-1 */
+            border-radius: 9999px;
+            /* rounded-full */
+        }
+
+
+        .feature-card {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-window {
+            background-color: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: #0f172a;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 2px;
+        }
+
+        .architecture-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 2px;
+            background-color: #3b82f6;
+            z-index: -1;
+        }
+
+        .timeline-container {
+            position: relative;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 32px;
+            height: 100%;
+            width: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 80px;
+            margin-bottom: 50px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 24px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 4px solid white;
+            z-index: 1;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        }
+
+        .tech-pill {
+            padding-left: 0.75rem;
+            /* px-3 */
+            padding-right: 0.75rem;
+            padding-top: 0.25rem;
+            /* py-1 */
+            padding-bottom: 0.25rem;
+            border-radius: 9999px;
+            /* rounded-full */
+            font-size: 0.875rem;
+            /* text-sm */
+            font-weight: 500;
+            /* font-medium */
+            margin: 0.25rem;
+            /* m-1 */
+            display: inline-block;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <span class="material-icons text-blue-600 mr-2">grid_view</span>
+                <h1 class="text-xl font-bold text-gray-800">Nivelao</h1>
+                <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Dev Preview</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#overview" class="text-gray-600 hover:text-blue-600 flex items-center">
+                    <span class="material-icons text-sm mr-1">home</span> Overview
+                </a>
+                <a href="#architecture" class="text-gray-600 hover:text-blue-600 flex items-center">
+                    <span class="material-icons text-sm mr-1">architecture</span> Architecture
+                </a>
+                <a href="#workflow" class="text-gray-600 hover:text-blue-600 flex items-center">
+                    <span class="material-icons text-sm mr-1">alt_route</span> Workflow
+                </a>
+                <a href="#tech-stack" class="text-gray-600 hover:text-blue-600 flex items-center">
+                    <span class="material-icons text-sm mr-1">memory</span> Tech Stack
+                </a>
+                <a href="#api" class="text-gray-600 hover:text-blue-600 flex items-center">
+                    <span class="material-icons text-sm mr-1">integration_instructions</span> API
+                </a>
+            </div>
+            <div>
+                <a href="https://github.com/yourusername/nivelao" target="_blank"
+                    class="text-gray-500 hover:text-gray-700">
+                    <i class="fab fa-github text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="overview" class="py-20 px-4 gradient-bg text-white">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="inline-block bg-white/10 rounded-lg px-3 py-1 text-sm mb-6">
+                        <span class="text-blue-200">Proyecto</span> • <span class="text-blue-200">Análisis de
+                            Superficies</span> • <span class="text-blue-200">IA</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">Nivelao</h1>
+                    <p class="text-xl text-blue-100 mb-2">Plataforma de análisis de desniveles con IA</p>
+                    <p class="text-lg mb-8 text-blue-100 opacity-90">
+                        Un sistema inteligente que analiza desniveles en pisos a partir de una foto, simula la
+                        instalación de cerámica, y planifica con precisión la nivelación.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">#ComputerVision</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">#DepthEstimation</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">#React</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">#FastAPI</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">#PyTorch</span>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#workflow"
+                            class="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition flex items-center">
+                            <span class="material-icons mr-2">play_arrow</span> Ver flujo completo
+                        </a>
+                        <a href="#"
+                            class="bg-transparent border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition flex items-center">
+                            <span class="material-icons mr-2">engineering</span> Documentación técnica
+                        </a>
+                    </div>
+                </div>
+                <!-- Reemplazar la imagen principal de demostración por un SVG interactivo -->
+                <div class="bg-white rounded-lg shadow-2xl overflow-hidden">
+                    <div class="bg-gray-800 px-4 py-2 flex items-center">
+                        <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                        <div class="text-xs text-gray-400 ml-2">Nivelao Demo</div>
+                    </div>
+                    <div class="w-full relative"
+                        style="height: 400px; background: linear-gradient(135deg, #333 0%, #111 100%);">
+                        <!-- SVG del mapa de nivelación -->
+                        <svg width="100%" height="100%" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Fondo del piso con gradiente -->
+                            <defs>
+                                <linearGradient id="floorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#a3a3a3;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#6b7280;stop-opacity:1" />
+                                </linearGradient>
+                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000"
+                                        flood-opacity="0.3" />
+                                </filter>
+                            </defs>
+
+                            <!-- Base del piso -->
+                            <rect x="50" y="50" width="700" height="400" rx="5" fill="url(#floorGradient)" />
+
+                            <!-- Cuadrículas de nivelación con colores para mostrar desniveles -->
+                            <g id="depthGrid">
+                                <!-- Generamos una grilla 7x4 de áreas de desnivel -->
+                                <rect x="70" y="70" width="90" height="80" fill="#ef4444" opacity="0.7" />
+                                <!-- Área muy baja -->
+                                <rect x="160" y="70" width="90" height="80" fill="#f59e0b" opacity="0.7" />
+                                <rect x="250" y="70" width="90" height="80" fill="#f59e0b" opacity="0.7" />
+                                <rect x="340" y="70" width="90" height="80" fill="#fbbf24" opacity="0.7" />
+                                <rect x="430" y="70" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="520" y="70" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="610" y="70" width="90" height="80" fill="#34d399" opacity="0.7" />
+
+                                <rect x="70" y="150" width="90" height="80" fill="#f59e0b" opacity="0.7" />
+                                <rect x="160" y="150" width="90" height="80" fill="#fbbf24" opacity="0.7" />
+                                <rect x="250" y="150" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="340" y="150" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="430" y="150" width="90" height="80" fill="#34d399" opacity="0.7" />
+                                <rect x="520" y="150" width="90" height="80" fill="#34d399" opacity="0.7" />
+                                <rect x="610" y="150" width="90" height="80" fill="#34d399" opacity="0.7" />
+
+                                <rect x="70" y="230" width="90" height="80" fill="#fbbf24" opacity="0.7" />
+                                <rect x="160" y="230" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="250" y="230" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="340" y="230" width="90" height="80" fill="#34d399" opacity="0.7" />
+                                <rect x="430" y="230" width="90" height="80" fill="#34d399" opacity="0.7" />
+                                <rect x="520" y="230" width="90" height="80" fill="#38bdf8" opacity="0.7" />
+                                <rect x="610" y="230" width="90" height="80" fill="#38bdf8" opacity="0.7" />
+
+                                <rect x="70" y="310" width="90" height="80" fill="#a3e635" opacity="0.7" />
+                                <rect x="160" y="310" width="90" height="80" fill="#34d399" opacity="0.7" />
+                                <rect x="250" y="310" width="90" height="80" fill="#34d399" opacity="0.7" />
+                                <rect x="340" y="310" width="90" height="80" fill="#38bdf8" opacity="0.7" />
+                                <rect x="430" y="310" width="90" height="80" fill="#38bdf8" opacity="0.7" />
+                                <rect x="520" y="310" width="90" height="80" fill="#38bdf8" opacity="0.7" />
+                                <rect x="610" y="310" width="90" height="80" fill="#38bdf8" opacity="0.7" />
+                            </g>
+
+                            <!-- Líneas de la grilla -->
+                            <g id="gridLines" stroke="#fff" stroke-width="1" opacity="0.5">
+                                <!-- Líneas horizontales -->
+                                <line x1="70" y1="70" x2="700" y2="70" />
+                                <line x1="70" y1="150" x2="700" y2="150" />
+                                <line x1="70" y1="230" x2="700" y2="230" />
+                                <line x1="70" y1="310" x2="700" y2="310" />
+                                <line x1="70" y1="390" x2="700" y2="390" />
+
+                                <!-- Líneas verticales -->
+                                <line x1="70" y1="70" x2="70" y2="390" />
+                                <line x1="160" y1="70" x2="160" y2="390" />
+                                <line x1="250" y1="70" x2="250" y2="390" />
+                                <line x1="340" y1="70" x2="340" y2="390" />
+                                <line x1="430" y1="70" x2="430" y2="390" />
+                                <line x1="520" y1="70" x2="520" y2="390" />
+                                <line x1="610" y1="70" x2="610" y2="390" />
+                                <line x1="700" y1="70" x2="700" y2="390" />
+                            </g>
+
+                            <!-- Indicadores de puntos críticos -->
+                            <circle cx="115" cy="110" r="15" fill="#fff" stroke="#ef4444" stroke-width="3"
+                                filter="url(#shadow)" />
+                            <text x="115" y="115" text-anchor="middle" fill="#000" font-size="12"
+                                font-weight="bold">L</text>
+
+                            <circle cx="655" cy="270" r="15" fill="#fff" stroke="#34d399" stroke-width="3"
+                                filter="url(#shadow)" />
+                            <text x="655" y="275" text-anchor="middle" fill="#000" font-size="12"
+                                font-weight="bold">H</text>
+
+                            <!-- Flechas de medición -->
+                            <path d="M50,420 L50,390 M50,405 L40,405 M50,405 L60,405" stroke="#fff" stroke-width="2" />
+                            <text x="80" y="408" fill="#fff" font-size="14">0 cm</text>
+
+                            <path d="M700,420 L700,390 M700,405 L690,405 M700,405 L710,405" stroke="#fff"
+                                stroke-width="2" />
+                            <text x="730" y="408" fill="#fff" font-size="14">6 cm</text>
+                        </svg>
+
+                        <!-- Overlay con efecto 3D -->
+                        <div class="absolute inset-0 bg-blue-600/10"></div>
+                    </div>
+                    <div class="p-4 bg-gray-100 border-t border-gray-200 flex items-center text-sm">
+                        <span class="material-icons text-green-500 mr-2">check_circle</span>
+                        <span class="text-gray-800">Análisis de profundidad completado</span>
+                        <div class="ml-auto flex items-center">
+                            <span class="material-icons text-gray-500 mr-1">data_usage</span>
+                            <span class="text-gray-500">4.2MB</span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="py-16 px-4 bg-white">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4" data-aos="fade-up">Funcionalidades principales</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Nivelao combina tecnologías avanzadas para ofrecer una solución completa al problema de desniveles
+                    en pisos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="feature-card bg-white border border-gray-200 p-6" data-aos="fade-up" data-aos-delay="0">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="material-icons text-blue-600">analytics</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Análisis de profundidad con IA</h3>
+                    <p class="text-gray-600 mb-4">Utiliza modelos avanzados de visión por computadora para detectar
+                        desniveles sin referencias manuales.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <span class="tech-tag">PyTorch</span>
+                        <span class="tech-tag">MiDaS</span>
+                        <span class="tech-tag">Computer Vision</span>
+                    </div>
+                </div>
+
+                <div class="feature-card bg-white border border-gray-200 p-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="material-icons text-blue-600">grid_on</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Mapa de calor por zonas</h3>
+                    <p class="text-gray-600 mb-4">Genera una grilla visual de colores tipo "pintura por número" para
+                        guiar el proceso de nivelación.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <span class="tech-tag">Canvas API</span>
+                        <span class="tech-tag">Heatmaps</span>
+                        <span class="tech-tag">Data Visualization</span>
+                    </div>
+                </div>
+
+                <div class="feature-card bg-white border border-gray-200 p-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="material-icons text-blue-600">view_in_ar</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Visualización 3D interactiva</h3>
+                    <p class="text-gray-600 mb-4">Muestra un modelo 3D interactivo del piso con perspectiva realista
+                        para mejor comprensión.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <span class="tech-tag">Three.js</span>
+                        <span class="tech-tag">WebGL</span>
+                        <span class="tech-tag">3D Rendering</span>
+                    </div>
+                </div>
+
+                <div class="feature-card bg-white border border-gray-200 p-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="material-icons text-blue-600">dashboard_customize</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Simulación de instalación</h3>
+                    <p class="text-gray-600 mb-4">Simula la colocación de cerámicas de diferentes tamaños respetando los
+                        desniveles detectados.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">WebWorkers</span>
+                        <span class="tech-tag">Canvas</span>
+                    </div>
+                </div>
+
+                <div class="feature-card bg-white border border-gray-200 p-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="material-icons text-blue-600">calculate</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Calculadora de materiales</h3>
+                    <p class="text-gray-600 mb-4">Calcula automáticamente la cantidad de material necesario para nivelar
+                        el piso según las alturas.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <span class="tech-tag">NumPy</span>
+                        <span class="tech-tag">Algorithm</span>
+                        <span class="tech-tag">Optimization</span>
+                    </div>
+                </div>
+
+                <div class="feature-card bg-white border border-gray-200 p-6" data-aos="fade-up" data-aos-delay="500">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="material-icons text-blue-600">file_download</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Exportación técnica</h3>
+                    <p class="text-gray-600 mb-4">Exporta los resultados a formatos profesionales como DXF, STL o PDF
+                        para uso técnico.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <span class="tech-tag">ezdxf</span>
+                        <span class="tech-tag">CAD</span>
+                        <span class="tech-tag">PDF Generation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="py-16 px-4 bg-gray-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 section-title" data-aos="fade-up">Arquitectura del Sistema
+            </h2>
+            <p class="text-gray-600 mb-12 max-w-3xl" data-aos="fade-up" data-aos-delay="100">
+                Nivelao utiliza una arquitectura modular basada en microservicios para escalar de forma independiente
+                cada componente según la demanda.
+            </p>
+
+            <!-- Diagrama de arquitectura -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-16" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-full rounded-lg bg-gray-50 p-4" style="height: 500px; position: relative;">
+                    <!-- Diagrama SVG de la arquitectura del sistema -->
+                    <svg width="100%" height="100%" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Estilos y definiciones -->
+                        <defs>
+                            <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="3" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.3" />
+                            </filter>
+                            <linearGradient id="blueFade" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="purpleFade" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#6d28d9;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="greenFade" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="redFade" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#b91c1c;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Frontend -->
+                        <rect x="50" y="100" width="200" height="100" rx="10" fill="url(#blueFade)"
+                            filter="url(#dropShadow)" />
+                        <text x="150" y="140" text-anchor="middle" fill="#fff" font-weight="bold"
+                            font-size="18">Frontend</text>
+                        <text x="150" y="165" text-anchor="middle" fill="#fff" font-size="14">React + TailwindCSS</text>
+
+                        <!-- API Gateway -->
+                        <rect x="400" y="100" width="200" height="100" rx="10" fill="url(#purpleFade)"
+                            filter="url(#dropShadow)" />
+                        <text x="500" y="140" text-anchor="middle" fill="#fff" font-weight="bold" font-size="18">API
+                            Gateway</text>
+                        <text x="500" y="165" text-anchor="middle" fill="#fff" font-size="14">FastAPI + Redis
+                            Cache</text>
+
+                        <!-- ML Service -->
+                        <rect x="750" y="100" width="200" height="100" rx="10" fill="url(#greenFade)"
+                            filter="url(#dropShadow)" />
+                        <text x="850" y="140" text-anchor="middle" fill="#fff" font-weight="bold" font-size="18">ML
+                            Service</text>
+                        <text x="850" y="165" text-anchor="middle" fill="#fff" font-size="14">PyTorch + MiDaS</text>
+
+                        <!-- Database -->
+                        <rect x="400" y="300" width="200" height="100" rx="10" fill="url(#redFade)"
+                            filter="url(#dropShadow)" />
+                        <text x="500" y="340" text-anchor="middle" fill="#fff" font-weight="bold"
+                            font-size="18">Database</text>
+                        <text x="500" y="365" text-anchor="middle" fill="#fff" font-size="14">PostgreSQL + S3</text>
+
+                        <!-- Conectores -->
+                        <line x1="250" y1="150" x2="400" y2="150" stroke="#64748b" stroke-width="3"
+                            stroke-dasharray="5,5" />
+                        <line x1="600" y1="150" x2="750" y2="150" stroke="#64748b" stroke-width="3"
+                            stroke-dasharray="5,5" />
+                        <line x1="500" y1="200" x2="500" y2="300" stroke="#64748b" stroke-width="3"
+                            stroke-dasharray="5,5" />
+
+                        <!-- Etiquetas de conexión -->
+                        <rect x="300" y="130" width="50" height="25" rx="5" fill="#fff" opacity="0.9" />
+                        <text x="325" y="147" text-anchor="middle" fill="#334155" font-size="12">HTTPS</text>
+
+                        <rect x="650" y="130" width="50" height="25" rx="5" fill="#fff" opacity="0.9" />
+                        <text x="675" y="147" text-anchor="middle" fill="#334155" font-size="12">gRPC</text>
+
+                        <rect x="510" y="240" width="50" height="25" rx="5" fill="#fff" opacity="0.9" />
+                        <text x="535" y="257" text-anchor="middle" fill="#334155" font-size="12">SQL</text>
+
+                        <!-- Ícono de usuario -->
+                        <circle cx="30" cy="150" r="20" fill="#e5e7eb" />
+                        <path d="M30,140 A8,8 0 1,1 30,156 A8,8 0 1,1 30,140 M15,180 A15,15 0 0,1 45,180"
+                            stroke="#64748b" stroke-width="2" fill="none" />
+                    </svg>
+                </div>
+            </div>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="0">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-600 mr-3">devices</span>
+                        <h3 class="text-lg font-semibold">Frontend</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Interfaz de usuario, carga de imágenes, visualizaciones y simulador de
+                        cerámica.</p>
+                    <div class="flex flex-wrap">
+                        <span class="tech-pill">React</span>
+                        <span class="tech-pill">TailwindCSS</span>
+                        <span class="tech-pill">Three.js</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-600 mr-3">dns</span>
+                        <h3 class="text-lg font-semibold">Backend API</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Procesamiento de lógica, control de flujos, usuarios e informes.</p>
+                    <div class="flex flex-wrap">
+                        <span class="tech-pill">FastAPI</span>
+                        <span class="tech-pill">JWT Auth</span>
+                        <span class="tech-pill">Redis</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-600 mr-3">psychology</span>
+                        <h3 class="text-lg font-semibold">Modelo ML</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Procesamiento de imágenes y análisis de profundidad con modelos
+                        pre-entrenados.</p>
+                    <div class="flex flex-wrap">
+                        <span class="tech-pill">PyTorch</span>
+                        <span class="tech-pill">MiDaS</span>
+                        <span class="tech-pill">ONNX</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-600 mr-3">storage</span>
+                        <h3 class="text-lg font-semibold">Persistencia</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Almacenamiento de usuarios, proyectos, imágenes y configuraciones.</p>
+                    <div class="flex flex-wrap">
+                        <span class="tech-pill">PostgreSQL</span>
+                        <span class="tech-pill">S3/MinIO</span>
+                        <span class="tech-pill">Redis Cache</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="400">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="material-icons text-blue-600 mr-2">cloud_circle</span>
+                    Despliegue e Infraestructura
+                </h3>
+                <p class="text-gray-600 mb-6">
+                    El sistema está diseñado para desplegarse como contenedores Docker independientes, permitiendo
+                    escalabilidad horizontal y una arquitectura serverless.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <h4 class="font-medium mb-2 text-gray-800">Desarrollo</h4>
+                        <p class="text-sm text-gray-600">Docker Compose con hot-reload para todos los servicios</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <h4 class="font-medium mb-2 text-gray-800">Staging</h4>
+                        <p class="text-sm text-gray-600">Render.com con despliegue automático desde GitHub</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <h4 class="font-medium mb-2 text-gray-800">Producción</h4>
+                        <p class="text-sm text-gray-600">Kubernetes en proveedores cloud o bare-metal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-16 px-4 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 section-title" data-aos="fade-up">Flujo de trabajo</h2>
+            <p class="text-gray-600 mb-12 max-w-3xl" data-aos="fade-up" data-aos-delay="100">
+                El proceso completo de Nivelao desde la captura de la imagen hasta la generación del informe final se
+                divide en estos pasos:
+            </p>
+
+            <div class="timeline-container py-4">
+                <!-- Step 1 -->
+                <div class="timeline-item" data-aos="fade-right" data-aos-delay="100">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="material-icons text-blue-600">add_a_photo</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">1. Captura de imagen</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            El usuario carga una fotografía del piso desde su dispositivo móvil o computadora.
+                        </p>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-green-500 text-sm mr-2">check_circle</span>
+                                    <span class="text-sm font-medium">Formato soportado</span>
+                                </div>
+                                <p class="text-xs text-gray-600">JPG, PNG, HEIC</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-blue-500 text-sm mr-2">info</span>
+                                    <span class="text-sm font-medium">Tamaño recomendado</span>
+                                </div>
+                                <p class="text-xs text-gray-600">1080p o superior</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <code class="text-sm text-gray-800">
+                                POST /api/v1/projects/new-image
+                            </code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="timeline-item" data-aos="fade-right" data-aos-delay="200">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="material-icons text-blue-600">neurology</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">2. Análisis de profundidad IA</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            El modelo de IA MiDaS analiza la imagen y genera un mapa de profundidad detallado sin
+                            referencias manuales.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <!-- Imagen original -->
+                            <div class="rounded-lg overflow-hidden shadow-md">
+                                <div class="bg-gray-800 px-3 py-1 flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
+                                    <div class="w-2 h-2 rounded-full bg-green-500 mr-1"></div>
+                                    <div class="text-xs text-gray-400 ml-2">Imagen original</div>
+                                </div>
+                                <div
+                                    style="background: linear-gradient(to bottom, #f1f5f9, #e2e8f0); height: 200px; position: relative;">
+                                    <!-- SVG de un piso/habitación simplificado -->
+                                    <svg width="100%" height="100%" viewBox="0 0 400 300"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Fondo/piso -->
+                                        <rect x="0" y="0" width="400" height="300" fill="#e2e8f0" />
+
+                                        <!-- Patrones de baldosas -->
+                                        <pattern id="tilePattern" patternUnits="userSpaceOnUse" width="40" height="40"
+                                            patternTransform="rotate(0)">
+                                            <rect width="40" height="40" fill="#cbd5e1" />
+                                            <rect width="38" height="38" x="1" y="1" fill="#f1f5f9" />
+                                        </pattern>
+
+                                        <!-- Piso con baldosas -->
+                                        <rect x="0" y="120" width="400" height="180" fill="url(#tilePattern)" />
+
+                                        <!-- Paredes -->
+                                        <rect x="0" y="0" width="400" height="120" fill="#f8fafc" />
+                                        <line x1="0" y1="120" x2="400" y2="120" stroke="#94a3b8" stroke-width="2" />
+
+                                        <!-- Puerta -->
+                                        <rect x="150" y="30" width="70" height="90" fill="#d1d5db" />
+                                        <rect x="155" y="35" width="60" height="80" fill="#9ca3af" />
+                                        <circle cx="205" cy="75" r="5" fill="#f8fafc" />
+
+                                        <!-- Ventana -->
+                                        <rect x="260" y="40" width="100" height="60" fill="#bfdbfe" />
+                                        <line x1="310" y1="40" x2="310" y2="100" stroke="#93c5fd" stroke-width="2" />
+                                        <line x1="260" y1="70" x2="360" y2="70" stroke="#93c5fd" stroke-width="2" />
+
+                                        <!-- Mueble -->
+                                        <rect x="30" y="130" width="80" height="40" fill="#64748b" />
+                                        <rect x="35" y="135" width="70" height="35" fill="#475569" />
+
+                                        <!-- Irregularidades en el piso (sutiles)-->
+                                        <rect x="20" y="240" width="50" height="30" fill="#cbd5e1" fill-opacity="0.5" />
+                                        <rect x="200" y="220" width="80" height="40" fill="#94a3b8"
+                                            fill-opacity="0.3" />
+                                        <rect x="320" y="250" width="60" height="30" fill="#cbd5e1"
+                                            fill-opacity="0.3" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Mapa de profundidad -->
+                            <div class="rounded-lg overflow-hidden shadow-md">
+                                <div class="bg-gray-800 px-3 py-1 flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
+                                    <div class="w-2 h-2 rounded-full bg-green-500 mr-1"></div>
+                                    <div class="text-xs text-gray-400 ml-2">Mapa de profundidad</div>
+                                </div>
+                                <div style="background: #1e293b; height: 200px;">
+                                    <svg width="100%" height="100%" viewBox="0 0 400 300"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Gradientes para el mapa de profundidad -->
+                                        <defs>
+                                            <linearGradient id="depthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.8" />
+                                                <stop offset="20%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+                                                <stop offset="40%" style="stop-color:#fbbf24;stop-opacity:0.8" />
+                                                <stop offset="60%" style="stop-color:#a3e635;stop-opacity:0.8" />
+                                                <stop offset="80%" style="stop-color:#34d399;stop-opacity:0.8" />
+                                                <stop offset="100%" style="stop-color:#38bdf8;stop-opacity:0.8" />
+                                            </linearGradient>
+                                        </defs>
+
+                                        <!-- Fondo negro -->
+                                        <rect x="0" y="0" width="400" height="300" fill="#1e293b" />
+
+                                        <!-- Representación del mapa de profundidad (similar a la estructura de la habitación) -->
+                                        <!-- Las áreas se colorean según su profundidad -->
+
+                                        <!-- Pared (lejos) -->
+                                        <rect x="0" y="0" width="400" height="120" fill="#38bdf8" opacity="0.7" />
+
+                                        <!-- Puerta (medio) -->
+                                        <rect x="150" y="30" width="70" height="90" fill="#34d399" opacity="0.8" />
+
+                                        <!-- Ventana (más lejos) -->
+                                        <rect x="260" y="40" width="100" height="60" fill="#60a5fa" opacity="0.9" />
+
+                                        <!-- Piso (principal) con variaciones de profundidad -->
+                                        <rect x="0" y="120" width="400" height="180" fill="#a3e635" opacity="0.7" />
+
+                                        <!-- Mueble (más cercano) -->
+                                        <rect x="30" y="130" width="80" height="40" fill="#f59e0b" opacity="0.8" />
+
+                                        <!-- Irregularidades en el piso (con profundidad más extrema) -->
+                                        <rect x="20" y="240" width="50" height="30" fill="#ef4444" opacity="0.8" />
+                                        <!-- Punto más bajo -->
+                                        <rect x="200" y="220" width="80" height="40" fill="#fbbf24" opacity="0.8" />
+                                        <rect x="320" y="250" width="60" height="30" fill="#f59e0b" opacity="0.8" />
+
+                                        <!-- Escala de profundidad a la derecha -->
+                                        <rect x="380" y="50" width="10" height="200" fill="url(#depthGradient)" />
+                                        <text x="380" y="45" fill="#fff" font-size="10" text-anchor="end">Lejos</text>
+                                        <text x="380" y="260" fill="#fff" font-size="10" text-anchor="end">Cerca</text>
+
+                                        <!-- Indicadores de punto más alto/bajo -->
+                                        <circle cx="300" cy="70" r="8" stroke="#fff" stroke-width="2" fill="none" />
+                                        <!-- Alto -->
+                                        <text x="300" y="70" fill="#fff" font-size="10" text-anchor="middle"
+                                            dominant-baseline="middle">H</text>
+
+                                        <circle cx="45" cy="255" r="8" stroke="#fff" stroke-width="2" fill="none" />
+                                        <!-- Bajo -->
+                                        <text x="45" y="255" fill="#fff" font-size="10" text-anchor="middle"
+                                            dominant-baseline="middle">L</text>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="mt-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <div class="flex items-center">
+                                <span class="material-icons text-blue-600 mr-2">science</span>
+                                <span class="text-sm font-medium text-blue-800">Algoritmo: MiDaS v3</span>
+                            </div>
+                            <p class="text-xs text-blue-600 mt-1">Monocular depth estimation basado en redes neuronales
+                                convolucionales</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="timeline-item" data-aos="fade-right" data-aos-delay="300">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="material-icons text-blue-600">height</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">3. Identificación de puntos altos/bajos</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            El sistema identifica automáticamente el punto más alto y más bajo del piso, calculando las
+                            diferencias de altura.
+                        </p>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-green-600 text-sm mr-2">arrow_upward</span>
+                                    <span class="text-sm font-medium text-green-800">Punto más alto</span>
+                                </div>
+                                <p class="text-xs text-green-700">Referencia para nivelación</p>
+                            </div>
+                            <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-red-600 text-sm mr-2">arrow_downward</span>
+                                    <span class="text-sm font-medium text-red-800">Punto más bajo</span>
+                                </div>
+                                <p class="text-xs text-red-700">Mayor diferencia a nivelar</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <code class="text-sm text-gray-800">
+                                dif_altura = punto_bajo - punto_alto
+                            </code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="timeline-item" data-aos="fade-right" data-aos-delay="400">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="material-icons text-blue-600">settings_suggest</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">4. Configuración del proyecto</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            El usuario configura los parámetros del proyecto: tipo de cerámica (ej. 45×45cm) o altura de
+                            mezcla deseada en el punto más alto.
+                        </p>
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-gray-600 text-sm mr-2">straighten</span>
+                                    <span class="text-sm font-medium">Tamaño cerámica</span>
+                                </div>
+                                <select
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option>30 × 30 cm</option>
+                                    <option selected>45 × 45 cm</option>
+                                    <option>60 × 60 cm</option>
+                                </select>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-gray-600 text-sm mr-2">format_color_fill</span>
+                                    <span class="text-sm font-medium">Altura en punto alto</span>
+                                </div>
+                                <div class="relative mt-1 rounded-md shadow-sm">
+                                    <input type="number"
+                                        class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-12 sm:text-sm border-gray-300 rounded-md"
+                                        placeholder="3.0" value="3">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">cm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="flex items-center mb-2">
+                                    <span class="material-icons text-gray-600 text-sm mr-2">palette</span>
+                                    <span class="text-sm font-medium">Tipo de mezcla</span>
+                                </div>
+                                <select
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option>Estándar</option>
+                                    <option selected>Autonivelante</option>
+                                    <option>Rápido secado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <!-- Grilla visual con mapa de calor -->
+                <div class="mt-4">
+                    <div class="w-full rounded-lg overflow-hidden border border-gray-200"
+                        style="height: 300px; background: #f8fafc;">
+                        <!-- CSS Grid para el mapa de calor -->
+                        <div class="grid-container"
+                            style="display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); height: 100%; gap: 1px; padding: 1px; background: #e2e8f0;">
+                            <!-- Generamos un mapa de calor con valores aleatorios para demostración -->
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const container = document.querySelector('.grid-container');
+
+                                    // Limpiar el contenedor
+                                    container.innerHTML = '';
+
+                                    // Colores para los diferentes niveles
+                                    const colors = ['#38bdf8', '#34d399', '#a3e635', '#fbbf24', '#f59e0b', '#ef4444'];
+
+                                    // Crear un patrón con degradado desde la esquina inferior derecha (nivel bajo) a la superior izquierda (nivel alto)
+                                    for (let i = 0; i < 10; i++) {
+                                        for (let j = 0; j < 10; j++) {
+                                            // Calculamos un valor basado en la distancia desde la esquina
+                                            let value = Math.sqrt((i / 10) * (i / 10) + (j / 10) * (j / 10));
+
+                                            // Ajustamos para tener un buen rango visual
+                                            value = Math.min(0.95, Math.max(0, value * 1.5));
+
+                                            // Elegimos el color basado en el valor
+                                            const colorIndex = Math.min(colors.length - 1, Math.floor(value * colors.length));
+
+                                            const cell = document.createElement('div');
+                                            cell.style.backgroundColor = colors[colorIndex];
+
+                                            // Marcamos el punto más bajo
+                                            if (i === 9 && j === 9) {
+                                                cell.style.position = 'relative';
+                                                const marker = document.createElement('div');
+                                                marker.style.position = 'absolute';
+                                                marker.style.top = '50%';
+                                                marker.style.left = '50%';
+                                                marker.style.transform = 'translate(-50%, -50%)';
+                                                marker.style.width = '15px';
+                                                marker.style.height = '15px';
+                                                marker.style.borderRadius = '50%';
+                                                marker.style.backgroundColor = '#fff';
+                                                marker.style.border = '2px solid #ef4444';
+
+                                                const text = document.createElement('span');
+                                                text.textContent = 'L';
+                                                text.style.position = 'absolute';
+                                                text.style.top = '50%';
+                                                text.style.left = '50%';
+                                                text.style.transform = 'translate(-50%, -50%)';
+                                                text.style.fontSize = '10px';
+                                                text.style.fontWeight = 'bold';
+
+                                                marker.appendChild(text);
+                                                cell.appendChild(marker);
+                                            }
+
+                                            // Marcamos el punto más alto
+                                            if (i === 0 && j === 0) {
+                                                cell.style.position = 'relative';
+                                                const marker = document.createElement('div');
+                                                marker.style.position = 'absolute';
+                                                marker.style.top = '50%';
+                                                marker.style.left = '50%';
+                                                marker.style.transform = 'translate(-50%, -50%)';
+                                                marker.style.width = '15px';
+                                                marker.style.height = '15px';
+                                                marker.style.borderRadius = '50%';
+                                                marker.style.backgroundColor = '#fff';
+                                                marker.style.border = '2px solid #34d399';
+
+                                                const text = document.createElement('span');
+                                                text.textContent = 'H';
+                                                text.style.position = 'absolute';
+                                                text.style.top = '50%';
+                                                text.style.left = '50%';
+                                                text.style.transform = 'translate(-50%, -50%)';
+                                                text.style.fontSize = '10px';
+                                                text.style.fontWeight = 'bold';
+
+                                                marker.appendChild(text);
+                                                cell.appendChild(marker);
+                                            }
+
+                                            container.appendChild(cell);
+                                        }
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Step 6 -->
+                <!-- Simulación 3D -->
+                <div class="mt-4 bg-gray-800 rounded-lg overflow-hidden">
+                    <div class="bg-gray-900 px-4 py-2 flex items-center">
+                        <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                        <div class="text-xs text-gray-400 ml-2">Visor 3D</div>
+                    </div>
+                    <div id="3d-preview" class="h-64 bg-gray-700 relative">
+                        <!-- Canvas para la simulación 3D -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <!-- Representación CSS de un piso 3D con transformaciones -->
+                            <div class="relative perspective" style="perspective: 1000px; width: 300px; height: 200px;">
+                                <div class="transform-3d"
+                                    style="transform-style: preserve-3d; transform: rotateX(60deg) rotateZ(-30deg); width: 100%; height: 100%;">
+                                    <div class="grid-3d"
+                                        style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; position: relative;">
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                const grid = document.querySelector('.grid-3d');
+
+                                                // Limpiar el grid
+                                                grid.innerHTML = '';
+
+                                                // Colores para los diferentes niveles
+                                                const colors = ['#38bdf8', '#34d399', '#a3e635', '#fbbf24', '#f59e0b', '#ef4444'];
+
+                                                // Crear tiles 3D
+                                                for (let i = 0; i < 8; i++) {
+                                                    for (let j = 0; j < 8; j++) {
+                                                        // Altura basada en la distancia desde una esquina
+                                                        let height = Math.sqrt((i / 8) * (i / 8) + (j / 8) * (j / 8));
+                                                        height = Math.min(0.95, Math.max(0, height * 1.5));
+
+                                                        // Convertimos a una altura visual (en píxeles)
+                                                        const pixelHeight = 5 + height * 40;
+
+                                                        // Color basado en la altura
+                                                        const colorIndex = Math.min(colors.length - 1, Math.floor(height * colors.length));
+
+                                                        const tile = document.createElement('div');
+                                                        tile.style.position = 'relative';
+                                                        tile.style.transformStyle = 'preserve-3d';
+
+                                                        // Superficie superior
+                                                        const top = document.createElement('div');
+                                                        top.style.position = 'absolute';
+                                                        top.style.width = '100%';
+                                                        top.style.height = '100%';
+                                                        top.style.backgroundColor = colors[colorIndex];
+                                                        top.style.transform = `translateZ(${pixelHeight}px)`;
+                                                        top.style.opacity = '0.9';
+                                                        top.style.border = '1px solid rgba(255,255,255,0.2)';
+
+                                                        // Lados
+                                                        ['front', 'back', 'left', 'right'].forEach((side, index) => {
+                                                            const face = document.createElement('div');
+                                                            face.style.position = 'absolute';
+                                                            face.style.backgroundColor = colors[colorIndex];
+                                                            face.style.opacity = '0.7';
+
+                                                            if (side === 'front' || side === 'back') {
+                                                                face.style.width = '100%';
+                                                                face.style.height = `${pixelHeight}px`;
+                                                                face.style.left = '0';
+                                                                face.style.transformOrigin = 'bottom';
+                                                            } else {
+                                                                face.style.width = `${pixelHeight}px`;
+                                                                face.style.height = '100%';
+                                                                face.style.top = '0';
+                                                                face.style.transformOrigin = 'left';
+                                                            }
+
+                                                            switch (side) {
+                                                                case 'front':
+                                                                    face.style.bottom = '0';
+                                                                    face.style.transform = 'rotateX(-90deg)';
+                                                                    break;
+                                                                case 'back':
+                                                                    face.style.top = '0';
+                                                                    face.style.transform = 'rotateX(90deg)';
+                                                                    break;
+                                                                case 'left':
+                                                                    face.style.left = '0';
+                                                                    face.style.transform = 'rotateY(-90deg)';
+                                                                    break;
+                                                                case 'right':
+                                                                    face.style.right = '0';
+                                                                    face.style.transform = 'rotateY(90deg)';
+                                                                    break;
+                                                            }
+
+                                                            tile.appendChild(face);
+                                                        });
+
+                                                        tile.appendChild(top);
+                                                        grid.appendChild(tile);
+                                                    }
+                                                }
+
+                                                // Animación simple de rotación
+                                                let angle = -30;
+                                                const transform3d = document.querySelector('.transform-3d');
+
+                                                setInterval(() => {
+                                                    angle = (angle + 0.2) % 360;
+                                                    transform3d.style.transform = `rotateX(60deg) rotateZ(${angle}deg)`;
+                                                }, 50);
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 px-4 py-2 flex justify-between items-center">
+                        <div class="flex">
+                            <button class="text-gray-300 hover:text-white p-1">
+                                <span class="material-icons text-sm">zoom_in</span>
+                            </button>
+                            <button class="text-gray-300 hover:text-white p-1">
+                                <span class="material-icons text-sm">zoom_out</span>
+                            </button>
+                        </div>
+                        <div class="flex">
+                            <button class="text-gray-300 hover:text-white p-1">
+                                <span class="material-icons text-sm">rotate_left</span>
+                            </button>
+                            <button class="text-gray-300 hover:text-white p-1">
+                                <span class="material-icons text-sm">rotate_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Step 7 -->
+                <div class="timeline-item" data-aos="fade-right" data-aos-delay="700">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="material-icons text-blue-600">summarize</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">7. Generación de informe y cotización</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            El sistema genera un informe detallado con el análisis completo, cálculo de costos de
+                            materiales y mano de obra, y una cotización profesional descargable.
+                        </p>
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <h4 class="font-medium text-gray-800 mb-2 flex items-center">
+                                    <span class="material-icons text-blue-600 mr-2 text-sm">description</span>
+                                    Informe técnico
+                                </h4>
+                                <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                                    <li>Análisis completo de desniveles</li>
+                                    <li>Mapa detallado por cuadrantes</li>
+                                    <li>Distribución de cerámicas</li>
+                                    <li>Protocolo de nivelación paso a paso</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <h4 class="font-medium text-gray-800 mb-2 flex items-center">
+                                    <span class="material-icons text-blue-600 mr-2 text-sm">receipt_long</span>
+                                    Cotización automática
+                                </h4>
+                                <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                                    <li>Cálculo de materiales necesarios</li>
+                                    <li>Estimación de mano de obra</li>
+                                    <li>Costos totales del proyecto</li>
+                                    <li>Exportable a PDF o compartible por WhatsApp</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex space-x-3">
+                            <button
+                                class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                                <span class="material-icons mr-2 text-sm">file_download</span>
+                                Descargar PDF
+                            </button>
+                            <button
+                                class="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700">
+                                <span class="material-icons mr-2 text-sm">share</span>
+                                Compartir vía WhatsApp
+                            </button>
+                            <button
+                                class="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm hover:bg-gray-300">
+                                <span class="material-icons mr-2 text-sm">print</span>
+                                Imprimir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section id="tech-stack" class="py-16 px-4 bg-gray-800 text-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-6 text-white section-title" data-aos="fade-up">Stack Tecnológico</h2>
+            <p class="text-gray-300 mb-12 max-w-3xl" data-aos="fade-up" data-aos-delay="100">
+                Nivelao está construido con tecnologías open source modernas, enfocándose en rendimiento, accesibilidad
+                y escalabilidad.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Frontend -->
+                <div class="bg-gray-700/50 p-6 rounded-lg backdrop-blur-sm" data-aos="fade-up" data-aos-delay="0">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-400 mr-3">computer</span>
+                        <h3 class="text-xl font-bold">Frontend</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">React</span>
+                                <span class="text-sm text-gray-400">Biblioteca UI para construcción de interfaces</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">TailwindCSS</span>
+                                <span class="text-sm text-gray-400">Framework CSS utility-first</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">Three.js</span>
+                                <span class="text-sm text-gray-400">Biblioteca JavaScript para gráficos 3D</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">Redux Toolkit</span>
+                                <span class="text-sm text-gray-400">Gestión de estado de la aplicación</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Backend -->
+                <div class="bg-gray-700/50 p-6 rounded-lg backdrop-blur-sm" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-400 mr-3">dns</span>
+                        <h3 class="text-xl font-bold">Backend</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">FastAPI</span>
+                                <span class="text-sm text-gray-400">Framework web Python de alto rendimiento</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">PostgreSQL</span>
+                                <span class="text-sm text-gray-400">Base de datos relacional</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">Redis</span>
+                                <span class="text-sm text-gray-400">Caché en memoria y broker de mensajes</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">JWT Auth</span>
+                                <span class="text-sm text-gray-400">Autenticación basada en tokens</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ML & Visualization -->
+                <div class="bg-gray-700/50 p-6 rounded-lg backdrop-blur-sm" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-blue-400 mr-3">insights</span>
+                        <h3 class="text-xl font-bold">ML & Visualización</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">PyTorch</span>
+                                <span class="text-sm text-gray-400">Framework de ML para procesamiento de
+                                    imágenes</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">MiDaS</span>
+                                <span class="text-sm text-gray-400">Modelo preentrenado de estimación de
+                                    profundidad</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">NumPy</span>
+                                <span class="text-sm text-gray-400">Procesamiento numérico para cálculos de
+                                    nivelación</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-green-400 mr-3 text-sm mt-1">check_circle</span>
+                            <div>
+                                <span class="font-medium block">ezdxf</span>
+                                <span class="text-sm text-gray-400">Generación de archivos CAD y 3D para
+                                    exportación</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-gray-700/50 p-6 rounded-lg backdrop-blur-sm" data-aos="fade-up" data-aos-delay="300">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="material-icons text-blue-400 mr-2">smart_toy</span>
+                    Detalles del procesamiento IA
+                </h3>
+                <div class="mb-6">
+                    <div class="code-window">
+                        <div class="code-header">
+                            <div class="code-dot bg-red-500"></div>
+                            <div class="code-dot bg-yellow-500"></div>
+                            <div class="code-dot bg-green-500"></div>
+                            <div class="ml-2 text-xs text-gray-400">model.py</div>
+                        </div>
+                        <pre class="p-4 text-sm text-gray-300 overflow-x-auto"><code>
+import torch
+from transformers import AutoImageProcessor, AutoModelForDepthEstimation
+
+class DepthAnalyzer:
+    def __init__(self):
+        self.processor = AutoImageProcessor.from_pretrained("Intel/dpt-large")
+        self.model = AutoModelForDepthEstimation.from_pretrained("Intel/dpt-large")
+        
+    def analyze_image(self, image):
+        # Preprocesar imagen
+        inputs = self.processor(images=image, return_tensors="pt")
+        
+        # Predecir mapa de profundidad
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+            predicted_depth = outputs.predicted_depth
+            
+        # Normalizar valores
+        depth_map = torch.nn.functional.interpolate(
+            predicted_depth.unsqueeze(1),
+            size=image.size[::-1],
+            mode="bicubic",
+            align_corners=False,
+        )
+        
+        return depth_map.squeeze().numpy()
+                        </code></pre>
+                    </div>
+                </div>
+                <p class="text-gray-300">
+                    El modelo MiDaS estima la profundidad relativa a partir de una sola imagen mediante una red neuronal
+                    convolucional, sin requerir calibración de cámara o imágenes estéreo.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section id="api" class="py-16 px-4 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 section-title" data-aos="fade-up">Documentación API</h2>
+            <p class="text-gray-600 mb-12 max-w-3xl" data-aos="fade-up" data-aos-delay="100">
+                Nivelao expone una API RESTful completa que permite integrar sus funcionalidades en otros sistemas o
+                desarrollar aplicaciones personalizadas.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-gray-50 p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <span class="material-icons text-green-600 mr-2">post_add</span>
+                            POST /api/v1/projects
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-gray-600 mb-4">
+                            Crea un nuevo proyecto de análisis de nivelación.
+                        </p>
+                        <div class="mb-4">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Request Body:</h4>
+                            <div class="code-window">
+                                <pre class="p-3 text-sm text-gray-800 bg-gray-50 overflow-x-auto rounded"><code>
+{
+  "name": "Proyecto Casa 123",
+  "description": "Nivelación para sala principal",
+  "client_info": {
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "phone": "+1234567890"
+  }
+}
+                                </code></pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Response (200 OK):</h4>
+                            <div class="code-window">
+                                <pre class="p-3 text-sm text-gray-800 bg-gray-50 overflow-x-auto rounded"><code>
+{
+  "project_id": "proj_8f9g2h3j4k",
+  "name": "Proyecto Casa 123",
+  "created_at": "2023-06-15T14:32:21Z",
+  "status": "created",
+  "upload_url": "https://api.nivelao.com/upload/proj_8f9g2h3j4k"
+}
+                                </code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="bg-gray-50 p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <span class="material-icons text-blue-600 mr-2">file_upload</span>
+                            POST /api/v1/projects/:id/images
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-gray-600 mb-4">
+                            Sube una imagen para análisis de nivelación en un proyecto existente.
+                        </p>
+                        <div class="mb-4">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Request:</h4>
+                            <div class="code-window">
+                                <pre class="p-3 text-sm text-gray-800 bg-gray-50 overflow-x-auto rounded"><code>
+# Multipart form data
+Content-Type: multipart/form-data
+image: (binary)
+type: "floor"  # Tipo de imagen: floor, reference, result
+                                </code></pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Response (202 Accepted):</h4>
+                            <div class="code-window">
+                                <pre class="p-3 text-sm text-gray-800 bg-gray-50 overflow-x-auto rounded"><code>
+{
+  "image_id": "img_1a2b3c4d5e",
+  "project_id": "proj_8f9g2h3j4k",
+  "status": "processing",
+  "estimated_completion": "2023-06-15T14:33:21Z",
+  "analysis_url": "https://api.nivelao.com/projects/proj_8f9g2h3j4k/analysis"
+}
+                                </code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="400">
+                <div class="bg-gray-50 p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                        <span class="material-icons text-purple-600 mr-2">analytics</span>
+                        GET /api/v1/projects/:id/analysis
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <p class="text-gray-600 mb-4">
+                        Obtiene los resultados del análisis de nivelación para un proyecto.
+                    </p>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-2">Response (200 OK):</h4>
+                        <div class="code-window">
+                            <pre class="p-3 text-sm text-gray-800 bg-gray-50 overflow-x-auto rounded"><code>
+{
+  "project_id": "proj_8f9g2h3j4k",
+  "status": "completed",
+  "analysis": {
+    "highest_point": {
+      "x": 245,
+      "y": 182,
+      "value": 0.95
+    },
+    "lowest_point": {
+      "x": 532,
+      "y": 328,
+      "value": 0.23
+    },
+    "max_difference_cm": 3.8,
+    "avg_difference_cm": 1.7,
+    "grid": {
+      "rows": 10,
+      "cols": 10,
+      "cell_values": [...],  // Array 2D con valores de altura relativa
+      "cell_absolute_cm": [...],  // Array 2D con valores en cm de llenado
+      "cell_colors": [...]   // Array 2D con códigos hexadecimales para visualización
+    }
+  },
+  "materials": {
+    "area_m2": 24.5,
+    "volume_leveling_m3": 0.42,
+    "cement_bags": 12,
+    "sand_m3": 0.25,
+    "estimated_cost": 185.50,
+    "labor_hours": 8
+  },
+  "urls": {
+    "depth_map": "https://api.nivelao.com/projects/proj_8f9g2h3j4k/depth_map.png",
+    "color_map": "https://api.nivelao.com/projects/proj_8f9g2h3j4k/color_map.png",
+    "report_pdf": "https://api.nivelao.com/projects/proj_8f9g2h3j4k/report.pdf",
+    "dxf_export": "https://api.nivelao.com/projects/proj_8f9g2h3j4k/export.dxf"
+  }
+}
+                            </code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 px-4 gradient-bg text-white">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6" data-aos="fade-up">¿Listo para comenzar a desarrollar?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                Únete al equipo de desarrollo de Nivelao y contribuye a revolucionar la industria de la construcción con
+                IA y análisis visual.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                <a href="https://github.com/yourusername/nivelao" target="_blank"
+                    class="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition flex items-center">
+                    <i class="fab fa-github mr-2"></i> Ver repositorio
+                </a>
+                <a href="#"
+                    class="bg-blue-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-900 transition flex items-center">
+                    <span class="material-icons mr-2">auto_stories</span> Leer documentación
+                </a>
+                <a href="#"
+                    class="bg-transparent border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition flex items-center">
+                    <span class="material-icons mr-2">forum</span> Unirse a Discord
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 px-4">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <span class="material-icons text-blue-400 mr-2">grid_view</span>
+                    <h2 class="text-xl font-bold">Nivelao</h2>
+                    <span class="ml-2 text-xs text-gray-400">v0.1.0-dev</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-gray-800 text-center md:text-left">
+                <p class="text-gray-400 text-sm">
+                    © 2023 Proyecto Nivelao. El código está disponible bajo la licencia MIT.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // This would be where you'd initialize Three.js for the 3D demo
+        // And any other interactive elements
+    </script>
+</body>
+
+</html>
