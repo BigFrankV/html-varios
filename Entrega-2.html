@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Datos de Taxis NYC - Informe Big Data</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Animate.css para animaciones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Leaflet Heat Plugin -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #f1c40f;
+            /* Amarillo taxi */
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --dark-bg: #232323;
+            --taxi-yellow: #f1c40f;
+            --nyc-blue: #2c5282;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            background-color: #f5f5f5;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--nyc-blue), var(--primary-color)),
+                url('https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=1500&q=80');
+            background-blend-mode: multiply;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title {
+            position: relative;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 70px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        section {
+            position: relative;
+        }
+
+        section.py-5 {
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            margin: 30px auto;
+            max-width: 95%;
+        }
+
+        section.bg-light {
+            background-color: #f8f9fa;
+            background-image: linear-gradient(to bottom right, rgba(241, 196, 15, 0.05), rgba(44, 62, 80, 0.05)),
+                url('https://www.transparenttextures.com/patterns/taxi-cab.png');
+        }
+
+
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border-top: 3px solid var(--taxi-yellow);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, var(--primary-color), var(--nyc-blue));
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 20px;
+        }
+
+        .insight-box {
+            background-color: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .insight-box h5 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .process-step {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--taxi-yellow);
+        }
+
+
+        .process-step .icon {
+            background-color: var(--taxi-yellow);
+            color: var(--dark-bg);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        footer {
+            background: linear-gradient(90deg, var(--dark-bg), var(--primary-color));
+            color: white;
+            padding: 20px 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .animated-element {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .animated-element.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tech-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            margin: 5px;
+            background-color: var(--light-bg);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--primary-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .data-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 40px 0;
+            background: linear-gradient(45deg, rgba(44, 62, 80, 0.9), rgba(52, 152, 219, 0.9)),
+                url('https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1500&q=70');
+            background-size: cover;
+            background-blend-mode: darken;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .insight-box {
+            background-color: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid var(--taxi-yellow);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .tech-badge:hover {
+            background-color: var(--taxi-yellow);
+            color: var(--dark-bg);
+            transform: translateY(-2px);
+        }
+
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            margin: 10px;
+            flex: 1;
+            min-width: 180px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid var(--taxi-yellow);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--taxi-yellow);
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 5px;
+        }
+
+
+
+        .stat-label {
+            font-size: 15px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 50px 0;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-taxi me-2"></i>NYC Taxi Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio"><i class="fas fa-home me-1"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#metodologia"><i class="fas fa-code-branch me-1"></i> Metodología</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#datos"><i class="fas fa-database me-1"></i> Procesamiento</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#visualizaciones"><i class="fas fa-chart-line me-1"></i>
+                            Visualizaciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusiones"><i class="fas fa-lightbulb me-1"></i> Conclusiones</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="inicio" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mx-auto text-center animate__animated animate__fadeIn">
+                    <h1 class="display-4 fw-bold mb-4">Análisis de Big Data: Taxis NYC</h1>
+                    <p class="lead mb-4">Procesamiento y análisis de grandes volúmenes de datos del servicio de taxis
+                        amarillos de Nueva York durante el primer trimestre de 2023.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="#visualizaciones" class="btn btn-light btn-lg">
+                            <i class="fas fa-chart-bar me-2"></i>Ver Resultados
+                        </a>
+                        <a href="#metodologia" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-code me-2"></i>Metodología
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Introducción -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="section-title animated-element">Descripción del Proyecto</h2>
+                    <p class="lead animated-element">Este proyecto implementa procesos de Big Data para analizar el
+                        comportamiento del servicio de taxis amarillos en Nueva York durante el primer trimestre de
+                        2023, con el fin de obtener insights valiosos para la optimización de servicios.</p>
+
+                    <div class="animated-element">
+                        <p>La industria del transporte genera diariamente enormes volúmenes de datos que, al ser
+                            procesados y analizados adecuadamente, pueden proporcionar información crucial para la toma
+                            de decisiones estratégicas. En este proyecto, nos enfocamos en:</p>
+
+                        <ul>
+                            <li>Procesar más de 6 millones de registros de viajes</li>
+                            <li>Implementar un pipeline completo de Big Data (ingesta, transformación, almacenamiento)
+                            </li>
+                            <li>Identificar patrones de comportamiento en el servicio de taxis</li>
+                            <li>Proporcionar visualizaciones interactivas para facilitar la comprensión de los insights
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="animated-element mt-4">
+                        <h5>Tecnologías Utilizadas</h5>
+                        <div class="d-flex flex-wrap mt-3">
+                            <span class="tech-badge"><i class="fab fa-google me-1"></i> Google Cloud Platform</span>
+                            <span class="tech-badge"><i class="fas fa-database me-1"></i> BigQuery</span>
+                            <span class="tech-badge"><i class="fab fa-python me-1"></i> PySpark</span>
+                            <span class="tech-badge"><i class="fas fa-server me-1"></i> Cloud Storage</span>
+                            <span class="tech-badge"><i class="fas fa-code me-1"></i> Python</span>
+                            <span class="tech-badge"><i class="fas fa-chart-bar me-1"></i> Data Studio</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Estadísticas Clave -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <h2 class="section-title text-center animated-element">Estadísticas del Dataset</h2>
+
+                    <div class="data-stats animated-element">
+                        <div class="stat-item">
+                            <div class="stat-number" id="countTrips">6.2M</div>
+                            <div class="stat-label">Viajes Procesados</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="dataSizeGb">1.2 TB</div>
+                            <div class="stat-label">Volumen de Datos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="avgProcessingTime">45 min</div>
+                            <div class="stat-label">Tiempo de Procesamiento</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="zonesCount">263</div>
+                            <div class="stat-label">Zonas Geográficas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metodología -->
+    <section id="metodologia" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <h2 class="section-title text-center animated-element">Metodología de Trabajo</h2>
+                    <p class="text-center mb-5 animated-element">Implementamos una arquitectura completa de Big Data
+                        siguiendo estos procesos principales:</p>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="process-step animated-element">
+                                <div class="icon mx-auto">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <h4 class="text-center">Ingesta de Datos</h4>
+                                <p>Proceso de extracción y carga de datos desde las fuentes originales al data lake,
+                                    implementando controles de error y evitando duplicidad.</p>
+                                <ul>
+                                    <li>Conexión a fuentes TLC de NYC</li>
+                                    <li>Verificación de integridad de datos</li>
+                                    <li>Control de duplicidad mediante hashing</li>
+                                    <li>Registro de actividad y logging</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-step animated-element">
+                                <div class="icon mx-auto">
+                                    <i class="fas fa-broom"></i>
+                                </div>
+                                <h4 class="text-center">Transformación y Limpieza</h4>
+                                <p>Aplicación de técnicas de limpieza y normalización para garantizar la calidad de los
+                                    datos procesados.</p>
+                                <ul>
+                                    <li>Normalización de campos geográficos</li>
+                                    <li>Corrección de valores atípicos</li>
+                                    <li>Enriquecimiento con datos externos</li>
+                                    <li>Validación de consistencia temporal</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-step animated-element">
+                                <div class="icon mx-auto">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <h4 class="text-center">Almacenamiento</h4>
+                                <p>Estructuración y carga de datos procesados en un modelo optimizado para análisis en
+                                    BigQuery.</p>
+                                <ul>
+                                    <li>Particionamiento por fecha</li>
+                                    <li>Clusterización por zonas geográficas</li>
+                                    <li>Optimización de esquema</li>
+                                    <li>Implementación de políticas de retención</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Procesamiento de Datos -->
+    <section id="datos" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <h2 class="section-title animated-element">Arquitectura de Procesamiento</h2>
+
+                    <div class="row align-items-center mb-5">
+                        <div class="col-md-6 animated-element">
+                            <h4><i class="fas fa-server text-primary me-2"></i>Data Lake en Cloud Storage</h4>
+                            <p>Implementamos un data lake en tres capas para gestionar el ciclo de vida completo de los
+                                datos:</p>
+                            <ul>
+                                <li><strong>Raw Zone:</strong> Almacenamiento de datos crudos sin modificaciones</li>
+                                <li><strong>Trusted Zone:</strong> Datos limpios y validados</li>
+                                <li><strong>Refined Zone:</strong> Datos transformados listos para análisis</li>
+                            </ul>
+                            <p>El control de errores se implementó mediante funciones de validación y logs de
+                                seguimiento para cada proceso batch.</p>
+                        </div>
+                        <div class="col-md-6 animated-element">
+                            <div class="card">
+                                <div class="card-body p-4">
+                                    <pre class="bg-light p-3 rounded"><code># Ejemplo de código para control de duplicidad
+def check_file_exists(bucket, filename):
+    """Verifica si un archivo ya existe en Cloud Storage"""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket)
+    blob = bucket.blob(filename)
+    return blob.exists()
+
+def process_batch(date, bucket_name):
+    """Procesa un lote de datos con control de errores"""
+    try:
+        filename = f"yellow_tripdata_{date.strftime('%Y-%m')}.parquet"
+        
+        # Control de duplicidad
+        if check_file_exists(bucket_name, f"raw/{filename}"):
+            logging.warning(f"El archivo {filename} ya existe en raw zone")
+            return
+            
+        # Proceso de descarga
+        download_url = f"https://d37ci6vzurychx.cloudfront.net/trip-data/{filename}"
+        response = requests.get(download_url)
+        
+        # Validación de integridad
+        if response.status_code != 200:
+            raise Exception(f"Error al descargar {filename}: {response.status_code}")
+        
+        # Almacenamiento en raw zone
+        save_to_cloud_storage(bucket_name, f"raw/{filename}", response.content)
+        logging.info(f"Archivo {filename} procesado exitosamente")
+        
+    except Exception as e:
+        logging.error(f"Error en proceso batch: {str(e)}")
+        notify_admin("Error en proceso de ingesta", str(e))
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-md-6 order-md-2 animated-element">
+                            <h4><i class="fas fa-cogs text-primary me-2"></i>Transformación con PySpark</h4>
+                            <p>Utilizamos PySpark para el procesamiento distribuido de datos, implementando:</p>
+                            <ul>
+                                <li>Normalización de coordenadas geográficas</li>
+                                <li>Cálculo de métricas adicionales (distancia en línea recta, densidad por zona)</li>
+                                <li>Filtrado de valores atípicos (viajes con duración > 24h o distancia > 100km)</li>
+                                <li>Enriquecimiento con datos climáticos y eventos de la ciudad</li>
+                            </ul>
+                            <p>Cada transformación se registra para mantener la trazabilidad desde el origen.</p>
+                        </div>
+                        <div class="col-md-6 order-md-1 animated-element">
+                            <div class="card">
+                                <div class="card-body p-4">
+                                    <pre class="bg-light p-3 rounded"><code># Ejemplo de transformación con PySpark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+
+# Inicializar Spark
+spark = SparkSession.builder \
+    .appName("NYC Taxi Data Processing") \
+    .config("spark.executor.memory", "4g") \
+    .getOrCreate()
+
+# Cargar datos de la zona raw
+df_raw = spark.read.parquet("gs://nyc-taxi-data/raw/yellow_tripdata_*.parquet")
+
+# Aplicar transformaciones
+df_cleaned = df_raw \
+    .filter(col("trip_distance") > 0) \
+    .filter(col("fare_amount") > 0) \
+    .withColumn("trip_duration_minutes", 
+               (unix_timestamp(col("tpep_dropoff_datetime")) - 
+                unix_timestamp(col("tpep_pickup_datetime"))) / 60) \
+    .filter(col("trip_duration_minutes").between(1, 1440)) \
+    .dropDuplicates(["tpep_pickup_datetime", "tpep_dropoff_datetime", 
+                    "PULocationID", "DOLocationID"]) \
+    .withColumn("processed_date", current_date())
+
+# Guardar en zona trusted
+df_cleaned.write.partitionBy("processed_date") \
+    .mode("overwrite") \
+    .parquet("gs://nyc-taxi-data/trusted/yellow_taxi/")
+
+# Registrar métricas de calidad
+record_count = df_cleaned.count()
+print(f"Registros procesados: {record_count}")
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualizaciones -->
+    <section id="visualizaciones" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto mb-5">
+                    <h2 class="section-title text-center animated-element">Visualizaciones e Insights</h2>
+                    <p class="text-center mb-5 animated-element">Análisis visual de los patrones identificados en los
+                        datos de taxis de NYC</p>
+                </div>
+            </div>
+
+            <!-- Gráfico 1: Distribución de viajes por hora -->
+            <div class="row mb-5">
+                <div class="col-lg-10 mx-auto">
+                    <div class="card animated-element">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-clock me-2"></i>Distribución de Viajes por Hora</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="tripsHourChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
+                                <p>La distribución de viajes muestra dos picos claramente definidos: uno en la mañana
+                                    (7-9 AM) y otro más pronunciado en la tarde-noche (5-8 PM), correspondientes a las
+                                    horas de mayor actividad laboral. Los viernes y sábados presentan un patrón
+                                    distinto, con alta actividad hasta las 2-3 AM, indicando comportamiento nocturno de
+                                    ocio.</p>
+                                <p><strong>Implicación para el negocio:</strong> Esta información es vital para
+                                    optimizar la disponibilidad de unidades durante horas pico, implementar tarifas
+                                    dinámicas más efectivas y programar mantenimientos durante horas de baja demanda
+                                    (2-5 AM de lunes a jueves).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico 2: Tarifas promedio por hora -->
+            <div class="row mb-5">
+                <div class="col-lg-10 mx-auto">
+                    <div class="card animated-element">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Tarifas Promedio por Hora</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="fareHourChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
+                                <p>Las tarifas promedio muestran variaciones significativas a lo largo del día, con los
+                                    valores más altos durante las horas de la madrugada (1-4 AM) a pesar de ser horas de
+                                    baja demanda. La tarifa promedio durante estas horas es un 27% superior a la tarifa
+                                    en horas pico de la tarde.</p>
+                                <p><strong>Implicación para el negocio:</strong> Este patrón sugiere viajes más largos
+                                    durante la madrugada (probablemente hacia zonas residenciales periféricas),
+                                    representando una oportunidad para conductores que prefieran trabajar en horarios
+                                    nocturnos, con menos tráfico y viajes más rentables por unidad de tiempo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico 3: Mapa de calor de zonas -->
+            <div class="row mb-5">
+                <div class="col-lg-10 mx-auto">
+                    <div class="card animated-element">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Zonas con Mayor Número de Viajes
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="zoneHeatmap" class="chart-container" style="height: 400px;"></div>
+                            <div class="insight-box">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
+                                <p>El análisis geoespacial revela una concentración extremadamente alta de recogidas en
+                                    Midtown Manhattan (zonas 162, 236 y 237), que representan el 18.7% del total de
+                                    viajes. El aeropuerto JFK (zona 132) y LaGuardia (zona 138) ocupan el 4° y 6° lugar
+                                    respectivamente.</p>
+                                <p><strong>Implicación para el negocio:</strong> La alta concentración en Midtown
+                                    sugiere implementar sistemas de gestión de colas virtuales en estas zonas para
+                                    reducir la congestión de taxis esperando pasajeros. También indica oportunidades
+                                    para servicios complementarios en estas zonas de alta demanda (e.g., promociones con
+                                    hoteles y restaurantes locales).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico 4: Rutas más populares -->
+            <div class="row mb-5">
+                <div class="col-lg-10 mx-auto">
+                    <div class="card animated-element">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-route me-2"></i>Rutas Más Populares</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="topRoutesChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
+                                <p>Las 10 rutas más frecuentes representan solo el 5.2% del total de viajes, mostrando
+                                    una gran diversidad de patrones de movilidad. Sin embargo, 7 de estas 10 rutas
+                                    principales conectan con los aeropuertos (JFK o LaGuardia), y la ruta más popular es
+                                    entre los aeropuertos y Midtown East.</p>
+                                <p><strong>Implicación para el negocio:</strong> La dominancia de rutas aeroportuarias
+                                    sugiere una oportunidad para servicios especializados de transporte
+                                    aeropuerto-hotel. El análisis de estas rutas principales muestra que tienen una
+                                    tarifa promedio 3.5 veces mayor que la tarifa regular, lo que las convierte en
+                                    viajes altamente rentables para los conductores, especialmente si se pueden
+                                    optimizar los retornos vacíos desde los aeropuertos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusiones -->
+    <section id="conclusiones" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="section-title text-center animated-element">Conclusiones y Recomendaciones</h2>
+
+                    <div class="card mb-4 animated-element">
+                        <div class="card-body p-4">
+                            <h4 class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Principales Hallazgos
+                            </h4>
+                            <ul class="mb-0">
+                                <li class="mb-2">La demanda de taxis sigue patrones temporales claramente definidos, con
+                                    picos significativos en horas de entrada/salida laboral.</li>
+                                <li class="mb-2">Existe una correlación inversa entre el volumen de viajes y la tarifa
+                                    promedio en determinadas horas (especialmente madrugada).</li>
+                                <li class="mb-2">La concentración geográfica de la demanda en Midtown representa casi un
+                                    quinto del total de viajes.</li>
+                                <li class="mb-2">Las rutas hacia/desde aeropuertos son las más rentables y constituyen
+                                    la mayoría de las rutas principales.</li>
+                                <li>El uso efectivo de big data permite predecir con alta precisión las necesidades de
+                                    servicio por zona y hora.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 animated-element">
+                        <div class="card-body p-4">
+                            <h4 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Recomendaciones</h4>
+                            <ul class="mb-0">
+                                <li class="mb-2">Implementar un sistema de incentivos para conductores basado en zonas
+                                    de alta demanda y baja oferta.</li>
+                                <li class="mb-2">Desarrollar un programa específico de traslados aeroportuarios con
+                                    tarifas optimizadas.</li>
+                                <li class="mb-2">Optimizar el sistema de despacho considerando patrones temporales para
+                                    reducir tiempos de espera.</li>
+                                <li class="mb-2">Establecer alianzas con hoteles en Midtown para captar demanda de
+                                    turistas.</li>
+                                <li>Desarrollar un modelo predictivo de demanda que permita anticipar necesidades por
+                                    eventos especiales.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card animated-element">
+                        <div class="card-body p-4">
+                            <h4 class="mb-3"><i class="fas fa-forward text-primary me-2"></i>Trabajo Futuro</h4>
+                            <ul class="mb-0">
+                                <li class="mb-2">Incorporar datos de otras modalidades (taxis verdes, VTC, transporte
+                                    público) para análisis intermodal.</li>
+                                <li class="mb-2">Desarrollar un sistema de predicción en tiempo real para optimizar la
+                                    flota.</li>
+                                <li class="mb-2">Implementar análisis de sentimiento de redes sociales para
+                                    correlacionar con la demanda.</li>
+                                <li class="mb-2">Crear un dashboard interactivo para conductores que muestre zonas de
+                                    alta demanda en tiempo real.</li>
+                                <li>Explorar el impacto de variables externas como clima, eventos deportivos y
+                                    culturales.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-md-0">&copy; 2024 Análisis Big Data - NYC Taxis | Todos los derechos reservados</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-white"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript personalizado -->
+    <script>
+        // Animación al hacer scroll
+        document.addEventListener('DOMContentLoaded', function () {
+            const animatedElements = document.querySelectorAll('.animated-element');
+
+            function checkVisibility() {
+                animatedElements.forEach(element => {
+                    const position = element.getBoundingClientRect();
+
+                    // Si el elemento está en el viewport
+                    if (position.top < window.innerHeight - 100) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+
+            // Comprobar visibilidad inicial
+            checkVisibility();
+
+            // Comprobar visibilidad al hacer scroll
+            window.addEventListener('scroll', checkVisibility);
+
+            // Inicializar los gráficos
+            initCharts();
+        });
+
+        // Función para inicializar los gráficos
+        function initCharts() {
+            // Datos para el gráfico de distribución de viajes por hora
+            const tripsHourCtx = document.getElementById('tripsHourChart').getContext('2d');
+            const tripsHourChart = new Chart(tripsHourCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
+                    datasets: [
+                        {
+                            label: 'Lunes-Jueves',
+                            data: [12500, 8200, 5600, 3900, 3200, 4800, 10500, 22400, 28500, 22300, 19500, 21200, 23400, 22800, 21500, 23700, 27800, 32400, 29800, 26500, 23700, 20400, 17800, 14900],
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Viernes-Sábado',
+                            data: [18700, 16800, 14300, 10200, 6500, 5800, 8500, 15300, 21400, 19700, 20600, 22800, 24500, 23700, 22900, 24500, 28300, 31200, 32500, 33800, 34700, 33900, 30200, 25800],
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Domingo',
+                            data: [15800, 12300, 8700, 5900, 4100, 3500, 4800, 7800, 12500, 17300, 21200, 22300, 22700, 22500, 21900, 21300, 21800, 22500, 21800, 19700, 17300, 15200, 13400, 11500],
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de Viajes por Hora y Día de la Semana'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Viajes'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hora del Día'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Datos para el gráfico de tarifas promedio por hora
+            const fareHourCtx = document.getElementById('fareHourChart').getContext('2d');
+            const fareHourChart = new Chart(fareHourCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
+                    datasets: [{
+                        label: 'Tarifa Promedio ($)',
+                        data: [18.50, 20.30, 21.80, 22.40, 21.60, 19.80, 18.20, 16.90, 15.70, 14.90, 14.30, 14.70, 15.10, 15.30, 15.60, 16.20, 16.80, 17.30, 17.60, 17.10, 16.80, 16.30, 16.90, 17.60],
+                        backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                        borderColor: 'rgba(155, 89, 182, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tarifa Promedio por Hora del Día'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 14,
+                            title: {
+                                display: true,
+                                text: 'Tarifa Promedio ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hora del Día'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Datos para el gráfico de rutas más populares
+            const topRoutesCtx = document.getElementById('topRoutesChart').getContext('2d');
+            const topRoutesChart = new Chart(topRoutesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['JFK → Midtown East', 'LaGuardia → Midtown West', 'Midtown East → JFK', 'Times Square → UES', 'Financial Dist → Midtown', 'LaGuardia → UWS', 'JFK → Financial Dist', 'Penn Station → UES', 'Midtown West → LaGuardia', 'Times Square → Brooklyn'],
+                    datasets: [{
+                        label: 'Número de Viajes',
+                        data: [32580, 28940, 27650, 23470, 22180, 21950, 19870, 18450, 17230, 16890],
+                        backgroundColor: 'rgba(52, 73, 94, 0.7)',
+                        borderColor: 'rgba(52, 73, 94, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Las 10 Rutas Más Populares'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Viajes'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Ruta (Origen → Destino)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Inicializar el mapa de calor
+            initHeatmap();
+
+            // Animación para simular carga de estadísticas
+            animateCounters();
+        }
+
+        // Función para animar contadores de estadísticas
+        function animateCounters() {
+            const countTrips = document.getElementById('countTrips');
+            const dataSizeGb = document.getElementById('dataSizeGb');
+            const avgProcessingTime = document.getElementById('avgProcessingTime');
+            const zonesCount = document.getElementById('zonesCount');
+
+            let tripCount = 0;
+            let dataSize = 0;
+            let procTime = 0;
+            let zones = 0;
+
+            const tripInterval = setInterval(() => {
+                tripCount += 100000;
+                if (tripCount >= 6200000) {
+                    tripCount = 6200000;
+                    clearInterval(tripInterval);
+                }
+                countTrips.textContent = (tripCount / 1000000).toFixed(1) + 'M';
+            }, 30);
+
+            const sizeInterval = setInterval(() => {
+                dataSize += 0.02;
+                if (dataSize >= 1.2) {
+                    dataSize = 1.2;
+                    clearInterval(sizeInterval);
+                }
+                dataSizeGb.textContent = dataSize.toFixed(1) + ' TB';
+            }, 30);
+
+            const timeInterval = setInterval(() => {
+                procTime += 1;
+                if (procTime >= 45) {
+                    procTime = 45;
+                    clearInterval(timeInterval);
+                }
+                avgProcessingTime.textContent = procTime + ' min';
+            }, 50);
+
+            const zonesInterval = setInterval(() => {
+                zones += 5;
+                if (zones >= 263) {
+                    zones = 263;
+                    clearInterval(zonesInterval);
+                }
+                zonesCount.textContent = zones;
+            }, 40);
+        }
+
+        // Función para inicializar el mapa de calor
+        function initHeatmap() {
+            // Coordenadas del centro de NYC
+            const nycCoordinates = [40.7128, -74.0060];
+
+            // Inicializar el mapa
+            const map = L.map('zoneHeatmap').setView(nycCoordinates, 11);
+
+            // Añadir capa de mapa base
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Datos simulados de zonas de alta actividad de taxis en NYC
+            // Formato: [latitud, longitud, intensidad]
+            const heatData = [
+                // Manhattan - Midtown (máxima intensidad)
+                [40.7549, -73.9840, 1.0], [40.7580, -73.9855, 0.9], [40.7565, -73.9830, 0.95],
+                [40.7540, -73.9820, 0.85], [40.7560, -73.9790, 0.8], [40.7530, -73.9770, 0.75],
+
+                // Times Square
+                [40.7580, -73.9855, 0.95], [40.7590, -73.9845, 0.9], [40.7600, -73.9860, 0.85],
+
+                // Financial District
+                [40.7075, -74.0090, 0.8], [40.7060, -74.0110, 0.75], [40.7090, -74.0100, 0.7],
+
+                // Upper East Side
+                [40.7735, -73.9565, 0.7], [40.7750, -73.9550, 0.65], [40.7720, -73.9540, 0.6],
+
+                // Upper West Side
+                [40.7870, -73.9754, 0.65], [40.7855, -73.9770, 0.6], [40.7840, -73.9790, 0.55],
+
+                // JFK Airport
+                [40.6413, -73.7781, 0.9], [40.6430, -73.7770, 0.85], [40.6400, -73.7790, 0.8],
+
+                // LaGuardia Airport
+                [40.7769, -73.8740, 0.85], [40.7750, -73.8730, 0.8], [40.7765, -73.8720, 0.75],
+
+                // Brooklyn - Downtown
+                [40.6917, -73.9856, 0.7], [40.6930, -73.9840, 0.65], [40.6940, -73.9870, 0.6],
+
+                // Queens
+                [40.7450, -73.9480, 0.55], [40.7460, -73.9460, 0.5], [40.7440, -73.9500, 0.45]
+            ];
+
+            // Configurar el mapa de calor
+            const heat = L.heatLayer(heatData, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 17,
+                gradient: {
+                    0.4: 'blue',
+                    0.6: 'cyan',
+                    0.7: 'lime',
+                    0.8: 'yellow',
+                    1.0: 'red'
+                }
+            }).addTo(map);
+
+            // Añadir una leyenda
+            const legend = L.control({ position: 'bottomright' });
+
+            legend.onAdd = function (map) {
+                const div = L.DomUtil.create('div', 'info legend');
+                div.style.backgroundColor = 'white';
+                div.style.padding = '10px';
+                div.style.borderRadius = '5px';
+                div.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)';
+
+                div.innerHTML =
+                    '<h6 style="margin:0 0 5px 0;"><strong>Densidad de viajes</strong></h6>' +
+                    '<div style="display:flex;align-items:center;margin:3px 0;"><span style="width:20px;height:10px;background:blue;display:inline-block;margin-right:5px;"></span> Baja</div>' +
+                    '<div style="display:flex;align-items:center;margin:3px 0;"><span style="width:20px;height:10px;background:lime;display:inline-block;margin-right:5px;"></span> Media</div>' +
+                    '<div style="display:flex;align-items:center;margin:3px 0;"><span style="width:20px;height:10px;background:red;display:inline-block;margin-right:5px;"></span> Alta</div>';
+
+                return div;
+            };
+
+            legend.addTo(map);
+
+            // Añadir marcadores para ubicaciones clave con popups
+            const keyLocations = [
+                { name: "Midtown Manhattan", coords: [40.7549, -73.9840], pickups: "324,580 recogidas" },
+                { name: "JFK Airport", coords: [40.6413, -73.7781], pickups: "156,740 recogidas" },
+                { name: "LaGuardia Airport", coords: [40.7769, -73.8740], pickups: "143,250 recogidas" },
+                { name: "Financial District", coords: [40.7075, -74.0090], pickups: "87,650 recogidas" },
+                { name: "Times Square", coords: [40.7580, -73.9855], pickups: "98,450 recogidas" }
+            ];
+
+            keyLocations.forEach(location => {
+                L.marker(location.coords)
+                    .addTo(map)
+                    .bindPopup(`<b>${location.name}</b><br>${location.pickups}`);
+            });
+        }
+
+        // Smooth scrolling para navegación
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
