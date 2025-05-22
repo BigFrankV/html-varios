@@ -1,111 +1,538 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV - Frank Alexander Reinaldo Vogt Guzmán</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            padding: 20px;
-            border: 1px solid #000;
-            max-width: 800px;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --text-light: #7f8c8d;
         }
-        h1, h2, h3 {
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f5f5f5;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+
+        .contact-item i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .sub-title {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            margin: 15px 0 10px 0;
+            font-weight: 600;
+        }
+
+        .sub-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .skill-item {
+            background-color: var(--light-color);
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .skill-item i {
+            margin-right: 5px;
+        }
+
+        ul li i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .experience-item {
+            margin-bottom: 20px;
+        }
+
+        .experience-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .experience-company {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .experience-duration {
+            font-style: italic;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .project-item {
+            background-color: var(--light-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .project-title i {
+            color: var(--secondary-color);
+            margin-right: 10px;
+        }
+
+        .project-tech {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .tech-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            margin-bottom: 5px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .js {
+            background-color: #f7df1e;
             color: #333;
         }
-        .section {
-            margin-bottom: 20px;
+
+        .py {
+            background-color: #306998;
+        }
+
+        .css {
+            background-color: #264de4;
+        }
+
+        .html {
+            background-color: #e34c26;
+        }
+
+        .tech-icons {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tech-icons span {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .tech-icons i {
+            margin-right: 5px;
+            color: var(--secondary-color);
+        }
+
+        .project-description p {
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+
+            .header,
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .contact-item {
+                margin-right: 10px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <h1>Frank Alexander Reinaldo Vogt Guzmán</h1>
-    <p><strong>Dirección:</strong> Alpatacal 1932, Santiago, San Ramón, Chile</p>
-    <p><strong>Teléfono:</strong> +56 9 2895 9744</p>
-    <p><strong>Correo:</strong> elexfrank17@gmail.com | fr.vogt@duocuc.cl</p>
-    <p><strong>LinkedIn:</strong> [Tu enlace de LinkedIn]</p>
-    <p><strong>GitHub:</strong> [Tu enlace de GitHub]</p>
+    <div class="container">
+        <div class="header">
+            <h1>Frank Alexander Reinaldo Vogt Guzmán</h1>
+            <p>Estudiante de Ingeniería en Informática</p>
 
-    <div class="section">
-        <h2>Perfil Profesional</h2>
-        <p>Estudiante de Ingeniería en Informática en DuocUC con sólidos conocimientos en desarrollo de software, bases de datos y gestión de proyectos informáticos. Busco una oportunidad de práctica o empleo para aplicar mis conocimientos en un entorno profesional y convalidar mi salida intermedia como Técnico Analista Programador.</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Alpatacal 1932, Santiago, San Ramón, Chile</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+56 9 2895 9744</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>elexfrank17@gmail.com | fr.vogt@duocuc.cl</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    <span><a href="#" style="color: white; text-decoration: none;">LinkedIn</a></span>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-github"></i>
+                    <span><a href="https://github.com/BigFrankV"
+                            style="color: white; text-decoration: none;">GitHub</a></span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2 class="section-title">Perfil Profesional</h2>
+                <p>Estudiante de Ingeniería en Informática en DuocUC con sólidos conocimientos en desarrollo de
+                    software, bases de datos y gestión de proyectos informáticos. Soy una persona comprometida que
+                    disfruta aprendiendo y adquiriendo nuevos conocimientos, con especial interés en la resolución de
+                    problemas. Al comprometerme con un proyecto, dedico mi 100% para cumplir lo prometido y no dejar
+                    tareas incompletas. Me desenvuelvo en diversas áreas de la informática, desde el desarrollo full
+                    stack con tecnologías como Django en backend, React, Ionic y Bootstrap en frontend, hasta
+                    aplicaciones de escritorio y desarrollo Android. Manejo diferentes sistemas de bases de datos, tanto
+                    SQL (MySQL, PostgreSQL) como NoSQL (MongoDB, Firebase). Busco una oportunidad de práctica o empleo
+                    para aplicar mis conocimientos en un entorno profesional y convalidar mi salida intermedia como
+                    Técnico Analista Programador.</p>
+
+
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Formación Académica</h2>
+                <div class="experience-item">
+                    <div class="experience-title">Ingeniería en Informática (Cursando)</div>
+                    <div class="experience-company">DuocUC, Sede Plaza Vespucio, Chile</div>
+                    <div class="experience-duration">2021 - Actualidad</div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-title">Educación Media</div>
+                    <div class="experience-company">Colegio King School Cordillera, Santiago, Chile</div>
+                    <div class="experience-duration">2019 - 2020</div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-title">Educación Básica</div>
+                    <div class="experience-company">Colegio Polivalente Siembra, Santiago, Chile</div>
+                    <div class="experience-duration">2013 - 2018</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Habilidades y Competencias</h2>
+
+                <!-- Lenguajes de Programación -->
+                <h3 class="sub-title"><i class="fas fa-code"></i> Lenguajes de Programación</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fab fa-python"></i> Python</span>
+                    <span class="skill-item"><i class="fab fa-java"></i> Java</span>
+                    <span class="skill-item"><i class="fab fa-js"></i> JavaScript</span>
+                    <span class="skill-item"><i class="fas fa-terminal"></i> Programación de Algoritmos</span>
+                </div>
+
+                <!-- Desarrollo Web y Móvil -->
+                <h3 class="sub-title"><i class="fas fa-laptop-code"></i> Desarrollo Web y Móvil</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fab fa-html5"></i> HTML</span>
+                    <span class="skill-item"><i class="fab fa-css3-alt"></i> CSS</span>
+                    <span class="skill-item"><i class="fab fa-bootstrap"></i> Bootstrap</span>
+                    <span class="skill-item"><i class="fab fa-angular"></i> Ionic Angular</span>
+                    <span class="skill-item"><i class="fas fa-globe"></i> Programación Web</span>
+                    <span class="skill-item"><i class="fas fa-mobile-alt"></i> Programación de Aplicaciones
+                        Móviles</span>
+                    <span class="skill-item"><i class="fas fa-desktop"></i> Desarrollo de Software de Escritorio</span>
+                    <span class="skill-item"><i class="fab fa-react"></i> React</span>
+                </div>
+
+                <!-- Bases de Datos -->
+                <h3 class="sub-title"><i class="fas fa-database"></i> Bases de Datos</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fas fa-database"></i> MySQL</span>
+                    <span class="skill-item"><i class="fas fa-database"></i> PostgreSQL</span>
+                    <span class="skill-item"><i class="fas fa-table"></i> Modelamiento de Base de Datos</span>
+                    <span class="skill-item"><i class="fas fa-search"></i> Consultas de Bases de Datos</span>
+                    <span class="skill-item"><i class="fas fa-code"></i> Programación de Base de Datos</span>
+                </div>
+
+                <!-- Frameworks y Tecnologías -->
+                <h3 class="sub-title"><i class="fas fa-layer-group"></i> Frameworks y Tecnologías</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fab fa-python"></i> Django</span>
+                    <span class="skill-item"><i class="fas fa-plug"></i> Integración de Plataformas</span>
+                    <span class="skill-item"><i class="fas fa-shield-alt"></i> Ciberseguridad</span>
+                </div>
+
+                <!-- Metodologías y Gestión -->
+                <h3 class="sub-title"><i class="fas fa-tasks"></i> Metodologías y Gestión</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fas fa-project-diagram"></i> BPM</span>
+                    <span class="skill-item"><i class="fas fa-sync-alt"></i> SCRUM</span>
+                    <span class="skill-item"><i class="fas fa-check-double"></i> Testing</span>
+                    <span class="skill-item"><i class="fas fa-sitemap"></i> UML</span>
+                    <span class="skill-item"><i class="fas fa-clipboard-check"></i> Gestión de errores</span>
+                    <span class="skill-item"><i class="fas fa-tasks"></i> Gestión de Proyectos Informáticos</span>
+                    <span class="skill-item"><i class="fas fa-file-signature"></i> Diseño y Gestión de Requisitos</span>
+                    <span class="skill-item"><i class="fas fa-award"></i> Calidad de Software</span>
+                    <span class="skill-item"><i class="fas fa-chart-line"></i> Evaluación de Proyectos</span>
+                </div>
+
+                <!-- Inteligencia Artificial y Análisis de Datos -->
+                <h3 class="sub-title"><i class="fas fa-brain"></i> Inteligencia Artificial y Análisis de Datos</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fas fa-robot"></i> Machine Learning</span>
+                    <span class="skill-item"><i class="fas fa-book"></i> Fundamentos de Machine Learning</span>
+                    <span class="skill-item"><i class="fas fa-chart-bar"></i> Estadística Descriptiva</span>
+                    <span class="skill-item"><i class="fas fa-network-wired"></i> Deep Learning</span>
+                    <span class="skill-item"><i class="fas fa-database"></i> Big Data</span>
+                    <span class="skill-item"><i class="fas fa-search-dollar"></i> Minería de Datos</span>
+                </div>
+
+                <!-- Ingeniería de Software -->
+                <h3 class="sub-title"><i class="fas fa-cogs"></i> Ingeniería de Software</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fas fa-wrench"></i> Ingeniería de Software</span>
+                    <span class="skill-item"><i class="fas fa-archway"></i> Arquitectura</span>
+                </div>
+
+                <!-- Ética y Profesionalismo -->
+                <h3 class="sub-title"><i class="fas fa-balance-scale"></i> Ética y Profesionalismo</h3>
+                <div class="skill-list">
+                    <span class="skill-item"><i class="fas fa-briefcase"></i> Ética para el Trabajo</span>
+                    <span class="skill-item"><i class="fas fa-user-tie"></i> Ética Profesional</span>
+                </div>
+
+                <!-- Habilidades Blandas -->
+                <h3 class="sub-title"><i class="fas fa-users"></i> Habilidades Blandas</h3>
+                <ul>
+                    <li><i class="fas fa-clock"></i> Responsabilidad y puntualidad</li>
+                    <li><i class="fas fa-puzzle-piece"></i> Capacidad de análisis y resolución de problemas</li>
+                    <li><i class="fas fa-users"></i> Trabajo en equipo y colaboración</li>
+                    <li><i class="fas fa-lightbulb"></i> Proactividad y aprendizaje continuo</li>
+                    <li><i class="fas fa-comments"></i> Habilidades de comunicación efectiva</li>
+                </ul>
+
+
+            </div>
+            <div class="section">
+                <h2 class="section-title">Experiencia Laboral</h2>
+                <div class="experience-item">
+                    <div class="experience-title">Maestro Segunda</div>
+                    <div class="experience-company">Conelse, Ingeniería y Montajes Eléctricos</div>
+                    <div class="experience-duration">12 de septiembre - 1 de noviembre de 2023</div>
+                    <div class="experience-description">
+                        <p><i class="fas fa-check-circle"></i> Instalación de trapezoides para soportes de canalización
+                            eléctrica.</p>
+                        <p><i class="fas fa-check-circle"></i> Montaje de escalerillas para media tensión (MT) en
+                            sistemas
+                            de detección de incendios.</p>
+                        <p><i class="fas fa-check-circle"></i> Instalación de tuberías subterráneas y bancoductos para
+                            distribución eléctrica.</p>
+                        <p><i class="fas fa-check-circle"></i> Manejo de maquinaria JLG (tipo Genie) y Alza Hombre para
+                            trabajos en altura y desplazamiento de materiales.</p>
+                        <p><i class="fas fa-check-circle"></i> Trabajo en equipo para garantizar la seguridad y el
+                            cumplimiento de normativas eléctricas.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2 class="section-title">Proyectos Destacados</h2>
+
+                <div class="project-item">
+                    <div class="project-title"><i class="fas fa-money-bill-wave"></i> Cuentas-Claras</div>
+                    <div class="project-tech">
+                        <span class="tech-badge js">JavaScript</span>
+                        <span class="tech-badge py">Python </span>
+                        <span class="tech-badge css">CSS </span>
+                        <span class="tech-badge html">HTML</span>
+                    </div>
+                    <div class="project-description">
+                        <p>Aplicación de gestión de pagos de gastos comunes de  edificio o condominio con backend en Django y frontend en React. Permite el
+                            seguimiento y control de gastos personales del recidente como multas o pago del gasto comun con roles de recidente y administrador.</p>
+                        <div class="tech-icons">
+                            <span><i class="fab fa-react"></i> React</span>
+                            <span><i class="fab fa-python"></i> Django</span>
+                            <span><i class="fab fa-js"></i> JavaScript</span>
+                            <span><i class="fab fa-html5"></i> HTML</span>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-title"><i class="fas fa-gamepad"></i> PokeAPI Pokedex</div>
+                    <div class="project-tech">
+                        <span class="tech-badge js">JavaScript</span>
+                        <span class="tech-badge py">Python</span>
+                        <span class="tech-badge css">CSS</span>
+                        <span class="tech-badge html">HTML</span>
+                    </div>
+                    <div class="project-description">
+                        <p>Pokedex interactiva construida con datos de la PokeAPI. Backend desarrollado con Django y
+                            frontend con React + Vite para optimizar el rendimiento.</p>
+                        <div class="tech-icons">
+                            <span><i class="fab fa-react"></i> React + Vite</span>
+                            <span><i class="fab fa-python"></i> Django</span>
+                            <span><i class="fas fa-database"></i> API Integration</span>
+                            <span><i class="fab fa-html5"></i> HTML</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-title"><i class="fas fa-globe"></i> API-Multiverse</div>
+                    <div class="project-tech">
+                        <span class="tech-badge js">JavaScript</span>
+                        <span class="tech-badge py">Python</span>
+                        <span class="tech-badge css">CSS</span>
+                        <span class="tech-badge html">HTML</span>
+                    </div>
+                    <div class="project-description">
+                        <p>API web que integra personajes de múltiples franquicias (Rick and Morty, Pokemon, etc.).
+                            Inspirada en PokeAPI pero expandida a un multiverso de contenido.</p>
+                        <div class="tech-icons">
+                            <span><i class="fab fa-python"></i> Django REST Framework</span>
+                            <span><i class="fab fa-js"></i> JavaScript</span>
+                            <span><i class="fas fa-server"></i> API Development</span>
+                            <span><i class="fab fa-html5"></i> HTML</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2 class="section-title">Idiomas</h2>
+                <div class="skill-list">
+                    <span class="skill-item">Español: Nativo</span>
+                    <span class="skill-item">Inglés: Nivel A2 Examen TOEIC</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Disponibilidad</h2>
+                <p>Disponibilidad inmediata para práctica o empleo.</p>
+                <p>Interés en roles de desarrollo de software, administración de bases de datos o análisis de datos.</p>
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="section">
-        <h2>Formación Académica</h2>
-        <p><strong>Ingeniería en Informática (Cursando)</strong> - DuocUC, Sede Plaza Vespucio, Chile (2021 - Actualidad)</p>
-        <p><strong>Educación Media</strong> - Colegio King School Cordillera, Santiago, Chile (2019 - 2020)</p>
-        <p><strong>Educación Básica</strong> - Colegio Polivalente Siembra, Santiago, Chile (2013 - 2018)</p>
-    </div>
-
-    <div class="section">
-        <h2>Habilidades y Competencias</h2>
-        <h3>Habilidades Técnicas</h3>
-        <ul>
-            <li>Lenguajes de Programación: Python, Java, JavaScript</li>
-            <li>Desarrollo Web: HTML, CSS, Bootstrap, JavaScript, Ionic Angular (Móvil)</li>
-            <li>Bases de Datos: MySQL, PostgreSQL, Modelado y consultas de bases de datos</li>
-            <li>Frameworks: Django</li>
-            <li>Ingeniería y Arquitectura de Software</li>
-            <li>Metodologías de Trabajo: BPM, SCRUM, Testing, UML, Casos de Uso</li>
-            <li>Análisis de Datos y Estadística: Estadística descriptiva, Machine Learning, Big Data</li>
-            <li>Gestión de Proyectos Informáticos</li>
-            <li>Ciberseguridad: Seguridad en sistemas computacionales</li>
-        </ul>
-
-        <h3>Habilidades Blandas</h3>
-        <ul>
-            <li>Responsabilidad y puntualidad</li>
-            <li>Capacidad de análisis y resolución de problemas</li>
-            <li>Trabajo en equipo y colaboración</li>
-            <li>Proactividad y aprendizaje continuo</li>
-            <li>Habilidades de comunicación efectiva</li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>Experiencia Laboral</h2>
-   
-        <p><strong>Maestro Segunda</strong> - Conelse, Ingenieria y Montajes Electricos.</p>
-        <p><strong>Duración:</strong> 12 de septiembre - 1 de noviembre de 2024</p>
-        <li>Instalación de trapezoides para soportes de canalización eléctrica.</li>
-        <li>Montaje de escalerillas para media tensión (MT) en sistemas de detección de incendios.</li>
-        <li>Instalación de tuberías subterráneas y bancoductos para distribución eléctrica.</li>
-        <li>Manejo de maquinaria JLG (tipo Genie) y Alza Hombre para trabajos en altura y desplazamiento de materiales.</li>
-    <li>Trabajo en equipo para garantizar la seguridad y el cumplimiento de normativas eléctricas.</li>
-    
-        
-    </div>
-
-    <div class="section">
-        <h2>Proyectos Destacados</h2>
-        <ul>
-            <li><strong>Desarrollo de Aplicación Web para Gestión de Inventario</strong> - Python, Django, PostgreSQL, Bootstrap</li>
-            <li><strong>Aplicación Móvil de Registro de Clientes</strong> - Ionic Angular, Firebase</li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>Idiomas</h2>
-        <p>Español: Nativo</p>
-        <p>Inglés: Nivel Intermedio (Integrated English Practice)</p>
-    </div>
-<!-- Este es un comentario en HTML 
-    <div class="section">
-        <h2>Certificaciones y Cursos Adicionales</h2>
-        <p>(Agregar certificaciones si las tienes, por ejemplo, cursos de AWS, Cisco, Google, etc.)</p>
-    </div>
--->
-    <div class="section">
-        <h2>Disponibilidad</h2>
-        <p>Disponibilidad inmediata para práctica o empleo.</p>
-        <p>Interés en roles de desarrollo de software, administración de bases de datos o análisis de datos.</p>
     </div>
 </body>
-</html>
 
-<div class="section">
-    
-</div>
+</html>
