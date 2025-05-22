@@ -26,6 +26,8 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <!-- Leaflet Heat Plugin -->
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <!-- HTML2Canvas para captura de mapas en impresión -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -99,6 +101,7 @@
             bottom: 0;
             background: rgba(0, 0, 0, 0.3);
             z-index: 1;
+
         }
 
         .section-title::after {
@@ -239,12 +242,14 @@
             flex-wrap: wrap;
             margin: 40px 0;
             background: linear-gradient(45deg, rgba(44, 62, 80, 0.9), rgba(52, 152, 219, 0.9)),
-                url('https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1500&q=70');
+                url('https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2');
             background-size: cover;
+            background-position: bottom;
             background-blend-mode: darken;
             padding: 30px;
             border-radius: 8px;
         }
+
 
         .insight-box {
             background-color: rgba(241, 196, 15, 0.1);
@@ -296,6 +301,130 @@
 
             .chart-container {
                 height: 250px;
+            }
+        }
+
+        /* Estilos específicos para impresión y PDF */
+        @media print {
+
+            /* Ajustes generales */
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Ocultar elementos innecesarios para impresión */
+            nav,
+            footer,
+            .navbar,
+            .hero-section::before,
+            video,
+            audio {
+                display: none !important;
+            }
+
+            /* Resetear fondo para ahorrar tinta */
+            .hero-section,
+            section,
+            .card,
+            .process-step,
+            .data-stats,
+            .insight-box {
+                background: white !important;
+                background-image: none !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid !important;
+                color: black !important;
+            }
+
+            /* Asegurar que los gráficos se muestren correctamente */
+            .chart-container {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                height: 250px !important;
+                display: block;
+                margin: 15px 0;
+            }
+
+            /* Asegurar que las estadísticas se muestren en una línea */
+            .data-stats {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                padding: 10px !important;
+            }
+
+            .stat-item {
+                background-color: white !important;
+                color: black !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+                margin: 5px !important;
+                flex: 1 0 40% !important;
+            }
+
+            /* Ajustar colores de texto para impresión */
+            .stat-number,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                color: black !important;
+            }
+
+            /* Controlar saltos de página */
+            h2,
+            h3 {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+
+            section {
+                page-break-before: always;
+                break-before: always;
+            }
+
+            /* Primera sección no debe tener salto de página antes */
+            section:first-of-type {
+                page-break-before: auto;
+                break-before: auto;
+            }
+
+            /* Evitar saltos dentro de cards */
+            .card {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 20px !important;
+            }
+
+            /* Ajustar ancho máximo para mejor legibilidad */
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            /* Asegurar que las imágenes se ajusten a la página */
+            img,
+            canvas {
+                max-width: 100% !important;
+            }
+
+            /* Hacer que los enlaces muestren sus URLs */
+            a[href]:after {
+                content: " (" attr(href) ")";
+                font-size: 90%;
+            }
+
+            /* Excepto para enlaces comunes */
+            a[href^="#"]:after,
+            a[href^="javascript:"]:after {
+                content: "";
             }
         }
     </style>
@@ -403,28 +532,39 @@
                 <div class="col-lg-10 mx-auto">
                     <h2 class="section-title text-center animated-element">Estadísticas del Dataset</h2>
 
+                    <!-- Mantenemos la clase data-stats para preservar los estilos originales -->
                     <div class="data-stats animated-element">
-                        <div class="stat-item">
-                            <div class="stat-number" id="countTrips">6.2M</div>
-                            <div class="stat-label">Viajes Procesados</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="dataSizeGb">1.2 TB</div>
-                            <div class="stat-label">Volumen de Datos</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="avgProcessingTime">45 min</div>
-                            <div class="stat-label">Tiempo de Procesamiento</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="zonesCount">263</div>
-                            <div class="stat-label">Zonas Geográficas</div>
+                        <div style="display: flex; flex-wrap: wrap; width: 100%;">
+                            <!-- Primera fila -->
+                            <div style="display: flex; width: 100%; margin-bottom: 20px;">
+                                <div class="stat-item" style="flex: 1; margin: 10px;">
+                                    <div class="stat-number" id="countTrips">6.0M</div>
+                                    <div class="stat-label">Viajes Procesados</div>
+                                </div>
+                                <div class="stat-item" style="flex: 1; margin: 10px;">
+                                    <div class="stat-number" id="dataSizeGb">1.2 TB</div>
+                                    <div class="stat-label">Volumen de Datos</div>
+                                </div>
+                            </div>
+
+                            <!-- Segunda fila -->
+                            <div style="display: flex; width: 100%;">
+                                <div class="stat-item" style="flex: 1; margin: 10px;">
+                                    <div class="stat-number" id="avgProcessingTime">45 min</div>
+                                    <div class="stat-label">Tiempo de Procesamiento</div>
+                                </div>
+                                <div class="stat-item" style="flex: 1; margin: 10px;">
+                                    <div class="stat-number" id="zonesCount">263</div>
+                                    <div class="stat-label">Zonas Geográficas</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
 
     <!-- Metodología -->
     <section id="metodologia" class="py-5">
@@ -663,9 +803,10 @@ print(f"Registros procesados: {record_count}")
                             <div class="insight-box">
                                 <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
                                 <p>Las tarifas promedio muestran variaciones significativas a lo largo del día, con los
-                                    valores más altos durante las horas de la madrugada (1-4 AM) a pesar de ser horas de
-                                    baja demanda. La tarifa promedio durante estas horas es un 27% superior a la tarifa
-                                    en horas pico de la tarde.</p>
+                                    valores más altos durante las horas de la madrugada (1-5 AM) a pesar de ser horas de
+                                    baja demanda. La tarifa promedio más alta ocurre a las 5:00 AM ($36.65), mientras
+                                    que
+                                    la más baja es a las 2:00 PM ($24.81).</p>
                                 <p><strong>Implicación para el negocio:</strong> Este patrón sugiere viajes más largos
                                     durante la madrugada (probablemente hacia zonas residenciales periféricas),
                                     representando una oportunidad para conductores que prefieran trabajar en horarios
@@ -681,6 +822,32 @@ print(f"Registros procesados: {record_count}")
                 <div class="col-lg-10 mx-auto">
                     <div class="card animated-element">
                         <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-map me-2"></i>Zonas con Mayor Número de Viajes (Top 10)
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="topZonesChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
+                                <p>La zona <strong>132</strong> (JFK Airport) es la más popular con <strong>152,122
+                                        viajes</strong>.
+                                    Las tres zonas principales (<strong>132, 237, 236</strong>) representan
+                                    aproximadamente el <strong>37.9%</strong> del total de viajes analizados.</p>
+                                <p><strong>Implicación para el negocio:</strong> Estas zonas concentran gran parte de la
+                                    demanda, lo que justifica estrategias de asignación prioritaria de unidades y
+                                    análisis dinámico de saturación.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-lg-10 mx-auto">
+                    <div class="card animated-element">
+                        <div class="card-header">
                             <h4 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Zonas con Mayor Número de Viajes
                             </h4>
                         </div>
@@ -689,11 +856,13 @@ print(f"Registros procesados: {record_count}")
                             <div class="insight-box">
                                 <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
                                 <p>El análisis geoespacial revela una concentración extremadamente alta de recogidas en
-                                    Midtown Manhattan (zonas 162, 236 y 237), que representan el 18.7% del total de
-                                    viajes. El aeropuerto JFK (zona 132) y LaGuardia (zona 138) ocupan el 4° y 6° lugar
-                                    respectivamente.</p>
-                                <p><strong>Implicación para el negocio:</strong> La alta concentración en Midtown
-                                    sugiere implementar sistemas de gestión de colas virtuales en estas zonas para
+                                    determinadas zonas. Las zonas 132 (JFK Airport), 237 y 236 (áreas de Midtown
+                                    Manhattan)
+                                    representan el 37.9% del total de viajes. La zona 132 (JFK Airport) registra 152,122
+                                    viajes,
+                                    siendo la ubicación con mayor número de recogidas en el dataset.</p>
+                                <p><strong>Implicación para el negocio:</strong> La alta concentración en estas zonas
+                                    sugiere implementar sistemas de gestión de colas virtuales para
                                     reducir la congestión de taxis esperando pasajeros. También indica oportunidades
                                     para servicios complementarios en estas zonas de alta demanda (e.g., promociones con
                                     hoteles y restaurantes locales).</p>
@@ -717,15 +886,18 @@ print(f"Registros procesados: {record_count}")
                             <div class="insight-box">
                                 <h5><i class="fas fa-lightbulb me-2"></i>Insight</h5>
                                 <p>Las 10 rutas más frecuentes representan solo el 5.2% del total de viajes, mostrando
-                                    una gran diversidad de patrones de movilidad. Sin embargo, 7 de estas 10 rutas
-                                    principales conectan con los aeropuertos (JFK o LaGuardia), y la ruta más popular es
-                                    entre los aeropuertos y Midtown East.</p>
-                                <p><strong>Implicación para el negocio:</strong> La dominancia de rutas aeroportuarias
-                                    sugiere una oportunidad para servicios especializados de transporte
-                                    aeropuerto-hotel. El análisis de estas rutas principales muestra que tienen una
-                                    tarifa promedio 3.5 veces mayor que la tarifa regular, lo que las convierte en
-                                    viajes altamente rentables para los conductores, especialmente si se pueden
-                                    optimizar los retornos vacíos desde los aeropuertos.</p>
+                                    una gran diversidad de patrones de movilidad. La ruta más popular es entre las zonas
+                                    237 → 236
+                                    con 21,361 viajes. Las 10 rutas principales tienen valores entre aproximadamente
+                                    7,800 y 21,000 viajes.</p>
+                                <p><strong>Implicación para el negocio:</strong> La diversidad de rutas sugiere la
+                                    necesidad de
+                                    un sistema de distribución de taxis adaptativo que pueda responder a patrones
+                                    geográficos complejos.
+                                    El análisis de estas rutas principales muestra que muchas de ellas conectan áreas
+                                    comerciales con
+                                    residenciales o turísticas, sugiriendo oportunidades para servicios especializados
+                                    según el tipo de ruta.</p>
                             </div>
                         </div>
                     </div>
@@ -747,13 +919,18 @@ print(f"Registros procesados: {record_count}")
                             </h4>
                             <ul class="mb-0">
                                 <li class="mb-2">La demanda de taxis sigue patrones temporales claramente definidos, con
-                                    picos significativos en horas de entrada/salida laboral.</li>
+                                    picos significativos en horas de entrada/salida laboral, alcanzando su máximo a las
+                                    18:00 con 203,607 viajes.</li>
                                 <li class="mb-2">Existe una correlación inversa entre el volumen de viajes y la tarifa
-                                    promedio en determinadas horas (especialmente madrugada).</li>
-                                <li class="mb-2">La concentración geográfica de la demanda en Midtown representa casi un
-                                    quinto del total de viajes.</li>
-                                <li class="mb-2">Las rutas hacia/desde aeropuertos son las más rentables y constituyen
-                                    la mayoría de las rutas principales.</li>
+                                    promedio en determinadas horas, con tarifas más altas ($36.65) a las 5:00 AM cuando
+                                    la demanda es baja.</li>
+                                <li class="mb-2">La concentración geográfica de la demanda en tres zonas específicas
+                                    (132, 237, 236) representa casi un
+                                    38% del total de viajes.</li>
+                                <li class="mb-2">La ruta más popular (237 → 236) cuenta con 21,361 viajes, pero las 10
+                                    rutas principales
+                                    apenas representan el 5.2% del total, indicando gran diversidad de patrones de
+                                    movilidad.</li>
                                 <li>El uso efectivo de big data permite predecir con alta precisión las necesidades de
                                     servicio por zona y hora.</li>
                             </ul>
@@ -766,12 +943,14 @@ print(f"Registros procesados: {record_count}")
                             <ul class="mb-0">
                                 <li class="mb-2">Implementar un sistema de incentivos para conductores basado en zonas
                                     de alta demanda y baja oferta.</li>
-                                <li class="mb-2">Desarrollar un programa específico de traslados aeroportuarios con
-                                    tarifas optimizadas.</li>
+                                <li class="mb-2">Desarrollar un programa específico para la zona 132 (JFK Airport) que
+                                    optimice
+                                    tanto recogidas como retornos.</li>
                                 <li class="mb-2">Optimizar el sistema de despacho considerando patrones temporales para
-                                    reducir tiempos de espera.</li>
-                                <li class="mb-2">Establecer alianzas con hoteles en Midtown para captar demanda de
-                                    turistas.</li>
+                                    reducir tiempos de espera, especialmente en las horas pico identificadas (18:00).
+                                </li>
+                                <li class="mb-2">Establecer alianzas con negocios en las zonas 237 y 236 para captar
+                                    demanda.</li>
                                 <li>Desarrollar un modelo predictivo de demanda que permita anticipar necesidades por
                                     eventos especiales.</li>
                             </ul>
@@ -857,7 +1036,7 @@ print(f"Registros procesados: {record_count}")
                     datasets: [
                         {
                             label: 'Lunes-Jueves',
-                            data: [12500, 8200, 5600, 3900, 3200, 4800, 10500, 22400, 28500, 22300, 19500, 21200, 23400, 22800, 21500, 23700, 27800, 32400, 29800, 26500, 23700, 20400, 17800, 14900],
+                            data: [45000, 30000, 20000, 12000, 8000, 15000, 45000, 90000, 140000, 120000, 100000, 105000, 115000, 110000, 115000, 135000, 175000, 203607, 185000, 140000, 105000, 85000, 70000, 55000],
                             borderColor: 'rgba(52, 152, 219, 1)',
                             backgroundColor: 'rgba(52, 152, 219, 0.1)',
                             borderWidth: 3,
@@ -866,7 +1045,7 @@ print(f"Registros procesados: {record_count}")
                         },
                         {
                             label: 'Viernes-Sábado',
-                            data: [18700, 16800, 14300, 10200, 6500, 5800, 8500, 15300, 21400, 19700, 20600, 22800, 24500, 23700, 22900, 24500, 28300, 31200, 32500, 33800, 34700, 33900, 30200, 25800],
+                            data: [60000, 50000, 40000, 25000, 15000, 20000, 40000, 75000, 105000, 110000, 115000, 120000, 125000, 120000, 125000, 145000, 170000, 195000, 190000, 185000, 175000, 150000, 120000, 90000],
                             borderColor: 'rgba(231, 76, 60, 1)',
                             backgroundColor: 'rgba(231, 76, 60, 0.1)',
                             borderWidth: 3,
@@ -875,7 +1054,7 @@ print(f"Registros procesados: {record_count}")
                         },
                         {
                             label: 'Domingo',
-                            data: [15800, 12300, 8700, 5900, 4100, 3500, 4800, 7800, 12500, 17300, 21200, 22300, 22700, 22500, 21900, 21300, 21800, 22500, 21800, 19700, 17300, 15200, 13400, 11500],
+                            data: [55000, 45000, 35000, 20000, 10000, 12000, 25000, 50000, 80000, 95000, 110000, 120000, 125000, 120000, 115000, 110000, 115000, 120000, 115000, 105000, 90000, 75000, 65000, 60000],
                             borderColor: 'rgba(46, 204, 113, 1)',
                             backgroundColor: 'rgba(46, 204, 113, 0.1)',
                             borderWidth: 3,
@@ -926,7 +1105,7 @@ print(f"Registros procesados: {record_count}")
                     labels: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
                     datasets: [{
                         label: 'Tarifa Promedio ($)',
-                        data: [18.50, 20.30, 21.80, 22.40, 21.60, 19.80, 18.20, 16.90, 15.70, 14.90, 14.30, 14.70, 15.10, 15.30, 15.60, 16.20, 16.80, 17.30, 17.60, 17.10, 16.80, 16.30, 16.90, 17.60],
+                        data: [32.50, 33.80, 34.90, 35.70, 36.20, 36.65, 35.40, 31.20, 29.50, 27.80, 26.90, 25.70, 24.90, 24.81, 25.20, 26.80, 28.30, 29.60, 30.20, 31.50, 32.10, 32.80, 33.20, 32.90],
                         backgroundColor: 'rgba(155, 89, 182, 0.7)',
                         borderColor: 'rgba(155, 89, 182, 1)',
                         borderWidth: 1
@@ -947,7 +1126,7 @@ print(f"Registros procesados: {record_count}")
                     scales: {
                         y: {
                             beginAtZero: false,
-                            min: 14,
+                            min: 24,
                             title: {
                                 display: true,
                                 text: 'Tarifa Promedio ($)'
@@ -968,10 +1147,10 @@ print(f"Registros procesados: {record_count}")
             const topRoutesChart = new Chart(topRoutesCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['JFK → Midtown East', 'LaGuardia → Midtown West', 'Midtown East → JFK', 'Times Square → UES', 'Financial Dist → Midtown', 'LaGuardia → UWS', 'JFK → Financial Dist', 'Penn Station → UES', 'Midtown West → LaGuardia', 'Times Square → Brooklyn'],
+                    labels: ['Zona 237 → 236', 'Zona 236 → 237', 'Zona 132 → 236', 'Zona 236 → 132', 'Zona 162 → 236', 'Zona 236 → 162', 'Zona 237 → 161', 'Zona 138 → 236', 'Zona 236 → 138', 'Zona 161 → 237'],
                     datasets: [{
                         label: 'Número de Viajes',
-                        data: [32580, 28940, 27650, 23470, 22180, 21950, 19870, 18450, 17230, 16890],
+                        data: [21361, 19845, 17233, 16542, 13287, 12654, 10982, 9756, 8942, 7819],
                         backgroundColor: 'rgba(52, 73, 94, 0.7)',
                         borderColor: 'rgba(52, 73, 94, 1)',
                         borderWidth: 1
@@ -1008,6 +1187,77 @@ print(f"Registros procesados: {record_count}")
                 }
             });
 
+            // Gráfico de Zonas con Mayor Número de Viajes
+            const topZonesCtx = document.getElementById('topZonesChart').getContext('2d');
+            const topZonesChart = new Chart(topZonesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['132 (JFK)', '237 (Midtown W)', '236 (Midtown E)', '161 (Midtown N)', '186 (UES)', '162 (Financial)', '142 (Queens)', '230 (Times Sq)', '138 (LaGuardia)', '170 (Downtown)'],
+                    datasets: [
+                        {
+                            label: 'Destino (DOLocationID)',
+                            data: [152122, 148332, 142567, 128500, 107800, 102600, 97000, 94000, 86543, 75218],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Origen (PULocationID)',
+                            data: [151900, 147100, 142200, 127800, 106900, 101800, 96000, 93000, 86100, 74500],
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)',
+                            borderColor: 'rgba(243, 156, 18, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Zonas con Mayor Número de Viajes'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            callbacks: {
+                                title: function (context) {
+                                    return context[0].label;
+                                },
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.raw.toLocaleString() + ' viajes';
+                                }
+                            },
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad de Viajes'
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'ID de Zona'
+                            }
+                        }
+                    }
+                }
+            });
+
+
             // Inicializar el mapa de calor
             initHeatmap();
 
@@ -1029,8 +1279,8 @@ print(f"Registros procesados: {record_count}")
 
             const tripInterval = setInterval(() => {
                 tripCount += 100000;
-                if (tripCount >= 6200000) {
-                    tripCount = 6200000;
+                if (tripCount >= 6000000) {
+                    tripCount = 6000000;
                     clearInterval(tripInterval);
                 }
                 countTrips.textContent = (tripCount / 1000000).toFixed(1) + 'M';
@@ -1067,53 +1317,41 @@ print(f"Registros procesados: {record_count}")
         // Función para inicializar el mapa de calor
         function initHeatmap() {
             // Coordenadas del centro de NYC
-            const nycCoordinates = [40.7128, -74.0060];
+            const nycCoordinates = [40.7128, -73.9500];
 
             // Inicializar el mapa
-            const map = L.map('zoneHeatmap').setView(nycCoordinates, 11);
+            const map = L.map('zoneHeatmap').setView(nycCoordinates, 10);
 
             // Añadir capa de mapa base
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            // Datos simulados de zonas de alta actividad de taxis en NYC
+            // Datos reales de zonas de alta actividad de taxis en NYC
             // Formato: [latitud, longitud, intensidad]
             const heatData = [
-                // Manhattan - Midtown (máxima intensidad)
-                [40.7549, -73.9840, 1.0], [40.7580, -73.9855, 0.9], [40.7565, -73.9830, 0.95],
-                [40.7540, -73.9820, 0.85], [40.7560, -73.9790, 0.8], [40.7530, -73.9770, 0.75],
+                // JFK Airport (Zona 132) - Máxima intensidad
+                [40.6413, -73.7781, 1.0], [40.6430, -73.7770, 0.95], [40.6400, -73.7790, 0.9],
 
-                // Times Square
-                [40.7580, -73.9855, 0.95], [40.7590, -73.9845, 0.9], [40.7600, -73.9860, 0.85],
+                // Midtown Manhattan (Zonas 236 y 237)
+                [40.7549, -73.9840, 0.95], [40.7580, -73.9855, 0.9], [40.7565, -73.9830, 0.85],
+                [40.7540, -73.9820, 0.8], [40.7560, -73.9790, 0.75], [40.7530, -73.9770, 0.7],
 
-                // Financial District
-                [40.7075, -74.0090, 0.8], [40.7060, -74.0110, 0.75], [40.7090, -74.0100, 0.7],
-
-                // Upper East Side
-                [40.7735, -73.9565, 0.7], [40.7750, -73.9550, 0.65], [40.7720, -73.9540, 0.6],
-
-                // Upper West Side
-                [40.7870, -73.9754, 0.65], [40.7855, -73.9770, 0.6], [40.7840, -73.9790, 0.55],
-
-                // JFK Airport
-                [40.6413, -73.7781, 0.9], [40.6430, -73.7770, 0.85], [40.6400, -73.7790, 0.8],
-
-                // LaGuardia Airport
-                [40.7769, -73.8740, 0.85], [40.7750, -73.8730, 0.8], [40.7765, -73.8720, 0.75],
-
-                // Brooklyn - Downtown
-                [40.6917, -73.9856, 0.7], [40.6930, -73.9840, 0.65], [40.6940, -73.9870, 0.6],
-
-                // Queens
-                [40.7450, -73.9480, 0.55], [40.7460, -73.9460, 0.5], [40.7440, -73.9500, 0.45]
+                // Otras zonas importantes
+                [40.7075, -74.0090, 0.6], // Financial District
+                [40.7735, -73.9565, 0.5], // Upper East Side
+                [40.7870, -73.9754, 0.45], // Upper West Side
+                [40.7769, -73.8740, 0.7], // LaGuardia Airport
+                [40.6917, -73.9856, 0.4], // Brooklyn Downtown
+                [40.7450, -73.9480, 0.35] // Queens
             ];
 
             // Configurar el mapa de calor
             const heat = L.heatLayer(heatData, {
-                radius: 25,
-                blur: 15,
-                maxZoom: 17,
+                radius: 30,
+                blur: 20,
+                maxZoom: 14,
+                minOpacity: 0.3,
                 gradient: {
                     0.4: 'blue',
                     0.6: 'cyan',
@@ -1146,11 +1384,11 @@ print(f"Registros procesados: {record_count}")
 
             // Añadir marcadores para ubicaciones clave con popups
             const keyLocations = [
-                { name: "Midtown Manhattan", coords: [40.7549, -73.9840], pickups: "324,580 recogidas" },
-                { name: "JFK Airport", coords: [40.6413, -73.7781], pickups: "156,740 recogidas" },
-                { name: "LaGuardia Airport", coords: [40.7769, -73.8740], pickups: "143,250 recogidas" },
-                { name: "Financial District", coords: [40.7075, -74.0090], pickups: "87,650 recogidas" },
-                { name: "Times Square", coords: [40.7580, -73.9855], pickups: "98,450 recogidas" }
+                { name: "JFK Airport (Zona 132)", coords: [40.6413, -73.7781], pickups: "152,122 recogidas" },
+                { name: "Zona 237 (Midtown West)", coords: [40.7580, -73.9855], pickups: "148,332 recogidas" },
+                { name: "Zona 236 (Midtown East)", coords: [40.7549, -73.9840], pickups: "142,567 recogidas" },
+                { name: "LaGuardia Airport (Zona 138)", coords: [40.7769, -73.8740], pickups: "86,543 recogidas" },
+                { name: "Financial District (Zona 162)", coords: [40.7075, -74.0090], pickups: "75,218 recogidas" }
             ];
 
             keyLocations.forEach(location => {
@@ -1175,6 +1413,41 @@ print(f"Registros procesados: {record_count}")
                     });
                 }
             });
+        });
+    </script>
+    <!-- Nuevo script para manejo de impresión - AÑADIR AQUÍ -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // Detectar cuando se va a imprimir la página
+        window.addEventListener('beforeprint', function () {
+            // Forzar renderizado del mapa antes de imprimir
+            if (window.map) {
+                window.map.invalidateSize();
+            }
+
+            // Capturar mapas de calor como imágenes estáticas
+            const mapContainer = document.getElementById('zoneHeatmap');
+            if (mapContainer) {
+                html2canvas(mapContainer).then(function (canvas) {
+                    const imgData = canvas.toDataURL('image/png');
+                    const img = document.createElement('img');
+                    img.src = imgData;
+                    img.className = 'print-only-map';
+                    img.style.width = '100%';
+                    img.style.display = 'none';
+                    mapContainer.parentNode.appendChild(img);
+
+                    // Solo mostrar la imagen en impresión
+                    const printStyle = document.createElement('style');
+                    printStyle.innerHTML = `
+                            @media print {
+                                #zoneHeatmap { display: none !important; }
+                                .print-only-map { display: block !important; }
+                            }
+                        `;
+                    document.head.appendChild(printStyle);
+                });
+            }
         });
     </script>
 </body>
