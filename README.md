@@ -7,6 +7,8 @@ Recursos web diversos
 Cómo acceder
 Todos los archivos HTML de este repositorio están disponibles en línea a través de GitHub Pages:
 
+https://BigFrankV.github.io/html-varios/Deep.htm
+
 https://BigFrankV.github.io/html-varios/Entrega-2.html
 
 https://BigFrankV.github.io/html-varios/cv_Frank_Vogt.html
