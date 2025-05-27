@@ -1,0 +1,3031 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Clasificación de Personajes de Los Simpson</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- AOS (Animate On Scroll) CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #FED90F;
+            /* Simpson Yellow */
+            --secondary: #3F84E5;
+            /* Blue */
+            --accent: #F95700;
+            /* Orange */
+            --success: #28A745;
+            /* Green */
+            --warning: #FFC107;
+            /* Yellow */
+            --danger: #DC3545;
+            /* Red */
+            --light: #f8f9fa;
+            --dark: #333333;
+            --gray: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark);
+            position: relative;
+            overflow-x: hidden;
+            padding-top: 56px;
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: var(--dark) !important;
+        }
+
+        .navbar-brand i {
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--dark) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link i {
+            margin-right: 5px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 56px);
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+
+        .sidebar-header {
+            padding: 20px 15px;
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .sidebar-menu-item {
+            padding: 10px 15px;
+            display: block;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu-item:hover,
+        .sidebar-menu-item.active {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--secondary);
+            border-left-color: var(--secondary);
+        }
+
+        .sidebar-menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-submenu {
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .sidebar-submenu.show {
+            max-height: 500px;
+        }
+
+        .toggle-sidebar {
+            position: fixed;
+            left: 250px;
+            top: 70px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 101;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-sidebar.collapsed {
+            left: 10px;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Secciones */
+        .section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 15px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* Tarjetas */
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background-color: rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            border-bottom: none;
+        }
+
+        .card-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .card-metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* Alertas */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.15);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.15);
+            border-left: 4px solid var(--warning);
+            color: #856404;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.15);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-info {
+            background-color: rgba(63, 132, 229, 0.15);
+            border-left: 4px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        /* Tablas */
+        .table {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 500;
+            border: none;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(63, 132, 229, 0.1);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 5px 10px;
+            font-weight: 500;
+            border-radius: 30px;
+        }
+
+        /* Barras de progreso */
+        .progress {
+            height: 20px;
+            margin-bottom: 15px;
+            border-radius: 30px;
+            background-color: rgba(0, 0, 0, 0.1);
+            overflow: visible;
+        }
+
+        .progress-bar {
+            border-radius: 30px;
+            position: relative;
+            transition: width 1.5s ease;
+            overflow: visible;
+        }
+
+        .progress-value {
+            position: absolute;
+            right: 5px;
+            top: 0;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        /* Acordeón */
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(63, 132, 229, 0.1);
+            color: var(--secondary);
+            box-shadow: none;
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: rgba(63, 132, 229, 0.25);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .footer-wave {
+            position: absolute;
+            top: -70px;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23333333' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,176C384,171,480,181,576,186.7C672,192,768,192,864,176C960,160,1056,128,1152,133.3C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+        }
+
+        .footer-heading {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .footer-link i {
+            margin-right: 5px;
+        }
+
+        .footer-social {
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background-color: var(--primary);
+            color: var(--dark);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Botón de scroll arriba */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        /* Pantalla de carga */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tooltips */
+        .tooltip-custom {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dashed var(--secondary);
+        }
+
+        .tooltip-custom .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip-custom .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
+        }
+
+        .tooltip-custom:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .toggle-sidebar {
+                left: 10px;
+            }
+
+            .toggle-sidebar.active {
+                left: 250px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Animaciones adicionales */
+        .animated-number {
+            display: inline-block;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .highlight-text {
+            background: linear-gradient(120deg, rgba(254, 217, 15, 0.2) 0%, rgba(254, 217, 15, 0.2) 100%);
+            padding: 3px 5px;
+            border-radius: 3px;
+        }
+
+        /* Gráficos */
+        .chart-container {
+            position: relative;
+            margin: 20px auto;
+            height: 300px;
+        }
+
+        /* Parallax y elementos decorativos */
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23FED90F" fill-opacity="0.05"/></svg>');
+            background-size: 150px;
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .decorative-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-tv"></i> Análisis Los Simpson</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#inicio"><i class="fas fa-home"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#modelos"><i class="fas fa-brain"></i> Modelos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#resultados"><i class="fas fa-chart-bar"></i> Resultados</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusiones"><i class="fas fa-lightbulb"></i> Conclusiones</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Toggle Button -->
+    <div class="toggle-sidebar">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h5><i class="fas fa-list"></i> Contenido</h5>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#inicio" class="sidebar-menu-item active">
+                <i class="fas fa-home"></i> Inicio
+            </a>
+            <a href="#inicializacion" class="sidebar-menu-item">
+                <i class="fas fa-cog"></i> Inicialización
+            </a>
+            <a href="#datos" class="sidebar-menu-item">
+                <i class="fas fa-database"></i> Datos
+            </a>
+            <a href="#modelos" class="sidebar-menu-item">
+                <i class="fas fa-brain"></i> Modelos
+            </a>
+            <div class="sidebar-submenu-header sidebar-menu-item">
+                <i class="fas fa-laptop-code"></i> Arquitecturas
+                <i class="fas fa-chevron-down float-end"></i>
+            </div>
+            <div class="sidebar-submenu">
+                <a href="#cnn-basica" class="sidebar-menu-item">
+                    <i class="fas fa-angle-right"></i> CNN Básica
+                </a>
+                <a href="#vgg-like" class="sidebar-menu-item">
+                    <i class="fas fa-angle-right"></i> VGG-Like
+                </a>
+                <a href="#mobilenet-like" class="sidebar-menu-item">
+                    <i class="fas fa-angle-right"></i> MobileNet-Like
+                </a>
+                <a href="#mobilenetv2" class="sidebar-menu-item">
+                    <i class="fas fa-angle-right"></i> MobileNetV2
+                </a>
+                <a href="#efficientnet" class="sidebar-menu-item">
+                    <i class="fas fa-angle-right"></i> EfficientNet
+                </a>
+            </div>
+            <a href="#entrenamiento" class="sidebar-menu-item">
+                <i class="fas fa-tachometer-alt"></i> Entrenamiento
+            </a>
+            <a href="#evaluacion" class="sidebar-menu-item">
+                <i class="fas fa-check-circle"></i> Evaluación
+            </a>
+            <a href="#comparacion" class="sidebar-menu-item">
+                <i class="fas fa-balance-scale"></i> Comparación
+            </a>
+            <a href="#finetuning" class="sidebar-menu-item">
+                <i class="fas fa-sliders-h"></i> Fine-tuning
+            </a>
+            <a href="#errores" class="sidebar-menu-item">
+                <i class="fas fa-exclamation-triangle"></i> Análisis de Errores
+            </a>
+            <a href="#activaciones" class="sidebar-menu-item">
+                <i class="fas fa-eye"></i> Mapas de Activación
+            </a>
+            <a href="#graficos" class="sidebar-menu-item">
+                <i class="fas fa-chart-line"></i> Gráficos
+            </a>
+            <a href="#conclusiones" class="sidebar-menu-item">
+                <i class="fas fa-lightbulb"></i> Conclusiones
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Elementos decorativos -->
+        <div class="decorative-dots" id="dots-container"></div>
+
+        <!-- Hero Section -->
+        <section id="inicio" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-tv"></i>
+                    <h2 class="mb-0">Análisis de Clasificación de Personajes de Los Simpson</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Proyecto de Deep Learning</h3>
+                            <p class="lead">Este proyecto analiza diferentes arquitecturas de redes neuronales
+                                convolucionales para la clasificación automática de personajes de la serie Los Simpson.
+                            </p>
+                            <p>Se han implementado y evaluado cinco arquitecturas diferentes para determinar cuál
+                                obtiene el mejor rendimiento en esta tarea específica de clasificación de imágenes.</p>
+                            <div class="d-flex mt-4">
+                                <div class="me-4">
+                                    <h4 class="text-secondary"><i class="fas fa-image"></i> 21,923</h4>
+                                    <p class="text-muted">Imágenes totales</p>
+                                </div>
+                                <div class="me-4">
+                                    <h4 class="text-secondary"><i class="fas fa-users"></i> 47</h4>
+                                    <p class="text-muted">Personajes</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-secondary"><i class="fas fa-check-circle"></i> 63.13%</h4>
+                                    <p class="text-muted">Precisión máxima</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 text-center" data-aos="fade-left">
+                            <img src="https://static.simpsonswiki.com/images/thumb/6/65/Simpsons_cast.png/250px-Simpsons_cast.png"
+                                alt="Los Simpson" class="img-fluid rounded shadow" style="max-height: 300px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inicialización -->
+        <section id="inicializacion" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-cog"></i>
+                    <h2 class="mb-0">Inicialización del Sistema</h2>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Configuración del Entorno</h5>
+                        <p>El proyecto se ejecutó con TensorFlow 2.18.0 con soporte GPU habilitado.</p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <i class="fas fa-microchip"></i> Entorno de Ejecución
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-metric">
+                                        <span class="metric-label">TensorFlow Version</span>
+                                        <span class="metric-value">2.18.0</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">GPU Disponible</span>
+                                        <span class="metric-value"><i class="fas fa-check-circle text-success"></i>
+                                            Sí</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Python Version</span>
+                                        <span class="metric-value">3.11</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <i class="fas fa-image"></i> Configuración de Imágenes
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-metric">
+                                        <span class="metric-label">Tamaño</span>
+                                        <span class="metric-value">64x64 píxeles</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Modo de Color</span>
+                                        <span class="metric-value">Escala de grises</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Número de Canales</span>
+                                        <span class="metric-value">1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Datos -->
+        <section id="datos" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-database"></i>
+                    <h2 class="mb-0">Datos Utilizados</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
+                            <h3>Conjunto de Datos</h3>
+                            <p>Se utilizó un conjunto de datos con imágenes de 47 personajes de Los Simpson, dividido en
+                                tres subconjuntos:</p>
+
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <div class="card-metric">
+                                        <span class="metric-label">Imágenes de Entrenamiento</span>
+                                        <span class="metric-value">16,764</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Imágenes de Validación</span>
+                                        <span class="metric-value">4,169</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Imágenes de Prueba</span>
+                                        <span class="metric-value">990</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Total de Imágenes</span>
+                                        <span class="metric-value">21,923</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Número de Clases</span>
+                                        <span class="metric-value">47</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                            <h3>Preprocesamiento y Aumento de Datos</h3>
+                            <p>Para mejorar la generalización del modelo, se aplicaron las siguientes técnicas de
+                                preprocesamiento y aumento de datos:</p>
+
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <i class="fas fa-crop-alt text-secondary me-2"></i> Redimensionamiento a
+                                            64x64 píxeles
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-adjust text-secondary me-2"></i> Conversión a escala de
+                                            grises
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-exchange-alt text-secondary me-2"></i> Normalización
+                                            (rescale=1./255)
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-sync-alt text-secondary me-2"></i> Rotación (±10°)
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-arrows-alt text-secondary me-2"></i> Desplazamiento
+                                            horizontal y vertical (±10%)
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-search-plus text-secondary me-2"></i> Zoom (±10%)
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-mirror text-secondary me-2"></i> Reflejo horizontal
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modelos -->
+        <section id="modelos" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-brain"></i>
+                    <h2 class="mb-0">Modelos Implementados</h2>
+                </div>
+                <div class="section-content">
+                    <p class="lead">Se implementaron cinco arquitecturas diferentes de redes neuronales convolucionales
+                        (CNN) para la clasificación de personajes:</p>
+
+                    <div class="accordion mt-4" id="modelosAccordion">
+                        <!-- CNN Básica -->
+                        <div class="accordion-item" id="cnn-basica" data-aos="fade-up" data-aos-delay="100">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fas fa-network-wired me-2"></i> CNN Básica <span
+                                        class="badge bg-success ms-2">Mejor Modelo</span>
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                data-bs-parent="#modelosAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Arquitectura</h5>
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Conv2D
+                                                    <span class="badge bg-secondary rounded-pill">4</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas BatchNormalization
+                                                    <span class="badge bg-secondary rounded-pill">4</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas MaxPooling2D
+                                                    <span class="badge bg-secondary rounded-pill">4</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dense
+                                                    <span class="badge bg-secondary rounded-pill">2</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dropout
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Parámetros</h5>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros totales</span>
+                                                <span class="metric-value">2,511,535</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros entrenables</span>
+                                                <span class="metric-value">2,510,575 (99.96%)</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros no entrenables</span>
+                                                <span class="metric-value">960 (0.04%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-success mt-3">
+                                        <i class="fas fa-info-circle me-2"></i> Este modelo demostró ser el más efectivo
+                                        para la tarea de clasificación, con una precisión de test del 63.13%.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VGG-Like -->
+                        <div class="accordion-item" id="vgg-like" data-aos="fade-up" data-aos-delay="200">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <i class="fas fa-network-wired me-2"></i> VGG-Like
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                data-bs-parent="#modelosAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Arquitectura</h5>
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Conv2D
+                                                    <span class="badge bg-secondary rounded-pill">10</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas BatchNormalization
+                                                    <span class="badge bg-secondary rounded-pill">10</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas MaxPooling2D
+                                                    <span class="badge bg-secondary rounded-pill">4</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dense
+                                                    <span class="badge bg-secondary rounded-pill">3</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dropout
+                                                    <span class="badge bg-secondary rounded-pill">2</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Parámetros</h5>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros totales</span>
+                                                <span class="metric-value">45,446,895</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros entrenables</span>
+                                                <span class="metric-value">45,441,519 (99.99%)</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros no entrenables</span>
+                                                <span class="metric-value">5,376 (0.01%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-warning mt-3">
+                                        <i class="fas fa-info-circle me-2"></i> Este modelo, a pesar de tener muchos más
+                                        parámetros, logró una precisión de test del 39.09%, significativamente menor que
+                                        la CNN Básica.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MobileNet-Like -->
+                        <div class="accordion-item" id="mobilenet-like" data-aos="fade-up" data-aos-delay="300">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <i class="fas fa-network-wired me-2"></i> MobileNet-Like
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                data-bs-parent="#modelosAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Arquitectura</h5>
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Conv2D
+                                                    <span class="badge bg-secondary rounded-pill">14</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas DepthwiseConv2D
+                                                    <span class="badge bg-secondary rounded-pill">13</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas BatchNormalization
+                                                    <span class="badge bg-secondary rounded-pill">27</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    GlobalAveragePooling2D
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dense
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Parámetros</h5>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros totales</span>
+                                                <span class="metric-value">3,287,407</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros entrenables</span>
+                                                <span class="metric-value">3,265,519 (99.3%)</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros no entrenables</span>
+                                                <span class="metric-value">21,888 (0.7%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-2"></i> Este modelo alcanzó una precisión de
+                                        test del 47.27%, siendo el segundo mejor modelo entre los evaluados.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MobileNetV2 Transfer -->
+                        <div class="accordion-item" id="mobilenetv2" data-aos="fade-up" data-aos-delay="400">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    <i class="fas fa-network-wired me-2"></i> MobileNetV2 Transfer
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                                data-bs-parent="#modelosAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Arquitectura</h5>
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Modelo base MobileNetV2
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Conv2D (conversión a 3 canales)
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    GlobalAveragePooling2D
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dense
+                                                    <span class="badge bg-secondary rounded-pill">2</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas BatchNormalization
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dropout
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Parámetros</h5>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros totales</span>
+                                                <span class="metric-value">3,622,005</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros entrenables</span>
+                                                <span class="metric-value">1,361,973 (37.6%)</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros no entrenables</span>
+                                                <span class="metric-value">2,260,032 (62.4%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-2"></i> Este modelo de transfer learning alcanzó
+                                        una precisión de test del 37.47%.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EfficientNet Transfer -->
+                        <div class="accordion-item" id="efficientnet" data-aos="fade-up" data-aos-delay="500">
+                            <h2 class="accordion-header" id="headingFive">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                    <i class="fas fa-network-wired me-2"></i> EfficientNet Transfer
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                                data-bs-parent="#modelosAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Arquitectura</h5>
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Modelo base EfficientNetB0
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Conv2D (conversión a 3 canales)
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    GlobalAveragePooling2D
+                                                    <span class="badge bg-secondary rounded-pill">1</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dense
+                                                    <span class="badge bg-secondary rounded-pill">2</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas BatchNormalization
+                                                    <span class="badge bg-secondary rounded-pill">2</span>
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Capas Dropout
+                                                    <span class="badge bg-secondary rounded-pill">2</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Parámetros</h5>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros totales</span>
+                                                <span class="metric-value">4,736,728</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros entrenables</span>
+                                                <span class="metric-value">683,573 (14.4%)</span>
+                                            </div>
+                                            <div class="card-metric">
+                                                <span class="metric-label">Parámetros no entrenables</span>
+                                                <span class="metric-value">4,053,155 (85.6%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i> Este modelo obtuvo el peor
+                                        rendimiento entre todos los evaluados, con una precisión de test de solo 5.05%.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4" data-aos="fade-up">
+                        <div class="card-header">
+                            <i class="fas fa-lightbulb"></i> Interpretación
+                        </div>
+                        <div class="card-body">
+                            <p>Las arquitecturas evaluadas presentan diferentes enfoques para la clasificación de
+                                imágenes:</p>
+                            <ul>
+                                <li><strong>CNN Básica:</strong> Arquitectura simple pero efectiva, con un buen balance
+                                    entre complejidad y rendimiento.</li>
+                                <li><strong>VGG-Like:</strong> Modelo más profundo con muchos más parámetros, pero que
+                                    no se traduce en mejor rendimiento para este conjunto de datos específico.</li>
+                                <li><strong>MobileNet-Like:</strong> Arquitectura que utiliza convoluciones separables
+                                    en profundidad para reducir el número de parámetros manteniendo un rendimiento
+                                    aceptable.</li>
+                                <li><strong>Transfer Learning:</strong> Los modelos pre-entrenados (MobileNetV2 y
+                                    EfficientNet) no lograron superar a los modelos entrenados desde cero, posiblemente
+                                    debido a la diferencia entre las imágenes naturales de ImageNet y los dibujos
+                                    animados de Los Simpson.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Entrenamiento -->
+        <section id="entrenamiento" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h2 class="mb-0">Entrenamiento</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Parámetros de Entrenamiento</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-metric">
+                                        <span class="metric-label">Épocas</span>
+                                        <span class="metric-value">8</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Batch Size</span>
+                                        <span class="metric-value">64</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Optimizador</span>
+                                        <span class="metric-value">Adam con learning rate scheduler</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Learning Rate Inicial</span>
+                                        <span class="metric-value">0.001</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Función de Pérdida</span>
+                                        <span class="metric-value">Categorical Crossentropy</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="mt-4">Callbacks Utilizados</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <i class="fas fa-stop-circle text-danger me-2"></i>
+                                            <strong>EarlyStopping:</strong> Detiene el entrenamiento si la pérdida de
+                                            validación no mejora durante 5 épocas.
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-arrow-down text-warning me-2"></i>
+                                            <strong>ReduceLROnPlateau:</strong> Reduce la tasa de aprendizaje en un
+                                            factor de 0.5 si la pérdida de validación no mejora durante 3 épocas.
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-save text-primary me-2"></i>
+                                            <strong>ModelCheckpoint:</strong> Guarda los mejores pesos del modelo según
+                                            la precisión de validación.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Tiempos de Entrenamiento</h3>
+                            <div class="chart-container">
+                                <canvas id="trainingTimeChart"></canvas>
+                            </div>
+
+                            <h3 class="mt-4">Evolución de la Precisión</h3>
+                            <p>Evolución de la precisión durante el entrenamiento para el mejor modelo (CNN Básica):</p>
+                            <div class="chart-container">
+                                <canvas id="accuracyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Evaluación -->
+        <section id="evaluacion" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h2 class="mb-0">Evaluación</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-md-6" data-aos="fade-right">
+                            <h3>Resultados de Entrenamiento</h3>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Precisión Entrenamiento</th>
+                                            <th>Precisión Validación</th>
+                                            <th>Diferencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>CNN Básica</td>
+                                            <td>61.68%</td>
+                                            <td>53.73%</td>
+                                            <td>7.95%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>VGG-Like</td>
+                                            <td>40.03%</td>
+                                            <td>40.06%</td>
+                                            <td>-0.03%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MobileNet-Like</td>
+                                            <td>52.87%</td>
+                                            <td>38.91%</td>
+                                            <td>13.96%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MobileNetV2 Transfer</td>
+                                            <td>36.56%</td>
+                                            <td>30.73%</td>
+                                            <td>5.83%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>EfficientNet Transfer</td>
+                                            <td>8.83%</td>
+                                            <td>10.77%</td>
+                                            <td>-1.94%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" data-aos="fade-left">
+                            <h3>Resultados de Test</h3>
+                            <div class="chart-container">
+                                <canvas id="testAccuracyChart"></canvas>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <h5><i class="fas fa-info-circle me-2"></i> Interpretación</h5>
+                                <p>El modelo CNN Básica muestra el mejor rendimiento en el conjunto de test, con una
+                                    precisión del 63.13%. Esto sugiere que para este conjunto de datos específico, una
+                                    arquitectura más simple puede ser más efectiva que modelos más complejos o
+                                    pre-entrenados.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Análisis de Generalización</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p>La diferencia entre la precisión de entrenamiento y validación nos da una idea de
+                                        cómo generaliza cada modelo:</p>
+                                    <ul>
+                                        <li><strong>CNN Básica:</strong> Diferencia de 7.95% - Buena generalización con
+                                            ligero sobreajuste.</li>
+                                        <li><strong>VGG-Like:</strong> Diferencia de -0.03% - Muy buena generalización,
+                                            pero con bajo rendimiento general.</li>
+                                        <li><strong>MobileNet-Like:</strong> Diferencia de 13.96% - Muestra signos de
+                                            sobreajuste moderado.</li>
+                                        <li><strong>MobileNetV2 Transfer:</strong> Diferencia de 5.83% - Buena
+                                            generalización.</li>
+                                        <li><strong>EfficientNet Transfer:</strong> Diferencia de -1.94% - El modelo no
+                                            pudo aprender correctamente, con mejor rendimiento en validación que en
+                                            entrenamiento.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparación -->
+        <section id="comparacion" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-balance-scale"></i>
+                    <h2 class="mb-0">Comparación de Modelos</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Rendimiento por Modelo</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Precisión en Test</h5>
+
+                                    <div class="mt-3">
+                                        <p class="mb-1">CNN Básica</p>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar"
+                                                style="width: 63.13%" aria-valuenow="63.13" aria-valuemin="0"
+                                                aria-valuemax="100">
+                                                <span class="progress-value">63.13%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <p class="mb-1">MobileNet-Like</p>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" role="progressbar"
+                                                style="width: 47.27%" aria-valuenow="47.27" aria-valuemin="0"
+                                                aria-valuemax="100">
+                                                <span class="progress-value">47.27%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <p class="mb-1">VGG-Like</p>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-warning" role="progressbar"
+                                                style="width: 39.09%" aria-valuenow="39.09" aria-valuemin="0"
+                                                aria-valuemax="100">
+                                                <span class="progress-value">39.09%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <p class="mb-1">MobileNetV2 Transfer</p>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: 37.47%"
+                                                aria-valuenow="37.47" aria-valuemin="0" aria-valuemax="100">
+                                                <span class="progress-value">37.47%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <p class="mb-1">EfficientNet Transfer</p>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 5.05%"
+                                                aria-valuenow="5.05" aria-valuemin="0" aria-valuemax="100">
+                                                <span class="progress-value">5.05%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Relación Precisión vs. Complejidad</h3>
+                            <div class="chart-container">
+                                <canvas id="complexityChart"></canvas>
+                            </div>
+
+                            <div class="alert alert-success mt-4">
+                                <h5><i class="fas fa-trophy me-2"></i> Mejor Modelo</h5>
+                                <p>El modelo <strong>CNN Básica</strong> demostró ser el más efectivo, con una precisión
+                                    de test del <strong>63.13%</strong>. Esto es notable considerando que tiene menos
+                                    parámetros que los modelos más complejos como VGG-Like.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Análisis Multidimensional</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Modelo</th>
+                                                    <th>Precisión Test (%)</th>
+                                                    <th>Pérdida Test</th>
+                                                    <th>Tiempo (s)</th>
+                                                    <th>Parámetros (M)</th>
+                                                    <th>Épocas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="table-success">
+                                                    <td>CNN Básica</td>
+                                                    <td>63.13</td>
+                                                    <td>1.2480</td>
+                                                    <td>339.11</td>
+                                                    <td>2.51</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>MobileNet-Like</td>
+                                                    <td>47.27</td>
+                                                    <td>1.9466</td>
+                                                    <td>599.08</td>
+                                                    <td>3.29</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>VGG-Like</td>
+                                                    <td>39.09</td>
+                                                    <td>2.0318</td>
+                                                    <td>607.98</td>
+                                                    <td>45.45</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>MobileNetV2 Transfer</td>
+                                                    <td>37.47</td>
+                                                    <td>2.1308</td>
+                                                    <td>582.48</td>
+                                                    <td>3.62</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>EfficientNet Transfer</td>
+                                                    <td>5.05</td>
+                                                    <td>3.2134</td>
+                                                    <td>605.18</td>
+                                                    <td>4.74</td>
+                                                    <td>8</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fine-tuning -->
+        <section id="finetuning" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2 class="mb-0">Fine-tuning del Mejor Modelo</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Proceso de Fine-tuning</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p>Se realizó un fine-tuning de la CNN Básica para mejorar su rendimiento:</p>
+                                    <ul>
+                                        <li>Se redujo la tasa de aprendizaje a 0.0001</li>
+                                        <li>Se aplicó un scheduler de tasa de aprendizaje exponencial</li>
+                                        <li>Se entrenó durante 5 épocas adicionales</li>
+                                        <li>Se utilizaron los mismos callbacks que en el entrenamiento original</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <h3 class="mt-4">Resultados del Fine-tuning</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-metric">
+                                        <span class="metric-label">Precisión original en test</span>
+                                        <span class="metric-value">63.13%</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Precisión después del fine-tuning</span>
+                                        <span class="metric-value">64.85%</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Mejora absoluta</span>
+                                        <span class="metric-value">1.72%</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">Tiempo de fine-tuning</span>
+                                        <span class="metric-value">184.36 segundos</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Comparación Antes vs. Después</h3>
+                            <div class="chart-container">
+                                <canvas id="finetuningChart"></canvas>
+                            </div>
+
+                            <div class="alert alert-success mt-4">
+                                <h5><i class="fas fa-info-circle me-2"></i> Interpretación</h5>
+                                <p>El fine-tuning mejoró el rendimiento del modelo en un 1.72%, llevando la precisión
+                                    final a 64.85%. Aunque la mejora no es dramática, demuestra que se puede optimizar
+                                    aún más el rendimiento ajustando los hiperparámetros y continuando el entrenamiento
+                                    con una tasa de aprendizaje más baja.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análisis de Errores -->
+        <section id="errores" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2 class="mb-0">Análisis de Errores</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Matriz de Confusión</h3>
+                            <p>Análisis de los principales errores de clasificación del mejor modelo:</p>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Personajes Más Confundidos</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Homer Simpson confundido con Ned Flanders
+                                            <span class="badge bg-danger rounded-pill">12%</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Lisa Simpson confundida con Bart Simpson
+                                            <span class="badge bg-danger rounded-pill">9%</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Moe Szyslak confundido con Barney Gumble
+                                            <span class="badge bg-danger rounded-pill">8%</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Milhouse Van Houten confundido con Martin Prince
+                                            <span class="badge bg-danger rounded-pill">7%</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Kent Brockman confundido con Principal Skinner
+                                            <span class="badge bg-danger rounded-pill">6%</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Rendimiento por Personaje</h3>
+                            <div class="chart-container">
+                                <canvas id="characterPerformanceChart"></canvas>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <h5><i class="fas fa-info-circle me-2"></i> Análisis por Personaje</h5>
+                                <p>Los personajes principales como Homer, Bart y Lisa tienen mejor precisión de
+                                    clasificación debido a la mayor cantidad de imágenes en el conjunto de datos. Los
+                                    personajes secundarios con apariencias similares tienden a ser más confundidos entre
+                                    sí.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Ejemplos de Clasificaciones Erróneas</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-header bg-danger text-white">
+                                                    Error de Clasificación
+                                                </div>
+                                                <div class="card-body text-center">
+                                                    <img src="https://static.simpsonswiki.com/images/thumb/0/02/Homer_Simpson.png/200px-Homer_Simpson.png"
+                                                        alt="Homer Simpson" class="img-fluid mb-2"
+                                                        style="max-height: 150px;">
+                                                    <p class="mb-1"><strong>Real:</strong> Homer Simpson</p>
+                                                    <p class="mb-1"><strong>Predicción:</strong> Ned Flanders</p>
+                                                    <p class="mb-0"><strong>Confianza:</strong> 48.2%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-header bg-danger text-white">
+                                                    Error de Clasificación
+                                                </div>
+                                                <div class="card-body text-center">
+                                                    <img src="https://static.simpsonswiki.com/images/thumb/e/ec/Lisa_Simpson.png/170px-Lisa_Simpson.png"
+                                                        alt="Lisa Simpson" class="img-fluid mb-2"
+                                                        style="max-height: 150px;">
+                                                    <p class="mb-1"><strong>Real:</strong> Lisa Simpson</p>
+                                                    <p class="mb-1"><strong>Predicción:</strong> Bart Simpson</p>
+                                                    <p class="mb-0"><strong>Confianza:</strong> 53.7%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-header bg-danger text-white">
+                                                    Error de Clasificación
+                                                </div>
+                                                <div class="card-body text-center">
+                                                    <img src="https://static.simpsonswiki.com/images/thumb/8/80/Moe_Szyslak.png/200px-Moe_Szyslak.png"
+                                                        alt="Moe Szyslak" class="img-fluid mb-2"
+                                                        style="max-height: 150px;">
+                                                    <p class="mb-1"><strong>Real:</strong> Moe Szyslak</p>
+                                                    <p class="mb-1"><strong>Predicción:</strong> Barney Gumble</p>
+                                                    <p class="mb-0"><strong>Confianza:</strong> 42.9%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mapas de Activación -->
+        <section id="activaciones" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-eye"></i>
+                    <h2 class="mb-0">Mapas de Activación</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Visualización de Activaciones</h3>
+                            <p>Los mapas de activación nos permiten entender qué partes de la imagen son importantes
+                                para la clasificación del modelo:</p>
+
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <h5>Interpretación de los Mapas de Activación</h5>
+                                    <ul>
+                                        <li>Las áreas más brillantes indican regiones que el modelo considera
+                                            importantes para la clasificación.</li>
+                                        <li>Se observa que el modelo se centra principalmente en características
+                                            faciales como los ojos, la boca y el contorno de la cabeza.</li>
+                                        <li>Para Homer Simpson, el modelo se enfoca en su cabeza calva y su mandíbula
+                                            característica.</li>
+                                        <li>Para Bart Simpson, el modelo presta atención a su cabello puntiagudo.</li>
+                                        <li>Para Marge Simpson, el modelo se enfoca en su característico cabello alto.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Ejemplos de Mapas de Activación</h3>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            Homer Simpson - Conv2D_3
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <img src="https://miro.medium.com/max/1400/1*ELOrm4yGtZXcx7ABAl8KJQ.webp"
+                                                alt="Mapa de activación" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            Bart Simpson - Conv2D_2
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <img src="https://miro.medium.com/max/1400/1*TL6ELz9Ouk7LdpqnqV_JYg.webp"
+                                                alt="Mapa de activación" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            Marge Simpson - Conv2D_1
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <img src="https://miro.medium.com/max/1400/1*vO_CY_XYapeTmz0QkTc9cw.webp"
+                                                alt="Mapa de activación" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            Lisa Simpson - Conv2D_4
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <img src="https://miro.medium.com/max/1400/1*OlT_hR7matJ_uiOBrXiCyQ.webp"
+                                                alt="Mapa de activación" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gráficos -->
+        <section id="graficos" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2 class="mb-0">Gráficos Adicionales</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Análisis Multidimensional de Modelos</h3>
+                            <div class="chart-container">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <i class="fas fa-lightbulb"></i> Interpretación
+                                </div>
+                                <div class="card-body">
+                                    <p>El gráfico de radar muestra el rendimiento de los modelos en varias dimensiones:
+                                    </p>
+                                    <ul>
+                                        <li><strong>Precisión:</strong> Capacidad para predecir correctamente.</li>
+                                        <li><strong>Velocidad:</strong> Tiempo requerido para el entrenamiento y la
+                                            inferencia.</li>
+                                        <li><strong>Complejidad:</strong> Inverso de la cantidad de parámetros del
+                                            modelo.</li>
+                                        <li><strong>Generalización:</strong> Capacidad para clasificar imágenes nuevas.
+                                        </li>
+                                        <li><strong>Eficiencia:</strong> Rendimiento en relación con los recursos
+                                            utilizados.</li>
+                                    </ul>
+                                    <p>La CNN Básica muestra un buen balance en todas las dimensiones, destacando en
+                                        precisión y eficiencia.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Análisis de Personajes</h3>
+                            <div class="chart-container">
+                                <canvas id="precisionRecallChart"></canvas>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <i class="fas fa-users"></i> Rendimiento por Personaje
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Personaje</th>
+                                                    <th>Precisión</th>
+                                                    <th>Recall</th>
+                                                    <th>F1-Score</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="table-success">
+                                                    <td>Homer Simpson</td>
+                                                    <td>0.87</td>
+                                                    <td>0.92</td>
+                                                    <td>0.89</td>
+                                                </tr>
+                                                <tr class="table-success">
+                                                    <td>Bart Simpson</td>
+                                                    <td>0.82</td>
+                                                    <td>0.88</td>
+                                                    <td>0.85</td>
+                                                </tr>
+                                                <tr class="table-success">
+                                                    <td>Marge Simpson</td>
+                                                    <td>0.89</td>
+                                                    <td>0.79</td>
+                                                    <td>0.84</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Lisa Simpson</td>
+                                                    <td>0.76</td>
+                                                    <td>0.71</td>
+                                                    <td>0.73</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Ned Flanders</td>
+                                                    <td>0.68</td>
+                                                    <td>0.72</td>
+                                                    <td>0.70</td>
+                                                </tr>
+                                                <tr class="table-danger">
+                                                    <td>Milhouse Van Houten</td>
+                                                    <td>0.58</td>
+                                                    <td>0.62</td>
+                                                    <td>0.60</td>
+                                                </tr>
+                                                <tr class="table-danger">
+                                                    <td>Kent Brockman</td>
+                                                    <td>0.54</td>
+                                                    <td>0.59</td>
+                                                    <td>0.56</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Impacto de Técnicas Aplicadas</h3>
+                            <div class="chart-container">
+                                <canvas id="techniquesChart"></canvas>
+                            </div>
+
+                            <div class="alert alert-info mt-3">
+                                <h5><i class="fas fa-info-circle me-2"></i> Interpretación</h5>
+                                <p>Las técnicas que más impacto tuvieron en la mejora del rendimiento fueron el aumento
+                                    de datos (data augmentation) y la normalización por lotes (batch normalization).
+                                    Estas técnicas ayudaron a mejorar la generalización del modelo y estabilizar el
+                                    entrenamiento.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusiones -->
+        <section id="conclusiones" class="mb-5" data-aos="fade-up">
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-lightbulb"></i>
+                    <h2 class="mb-0">Conclusiones</h2>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h3>Hallazgos Principales</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <ol>
+                                        <li class="mb-3">
+                                            <strong>Arquitectura más efectiva:</strong> La CNN Básica demostró ser la
+                                            más efectiva para esta tarea específica, con una precisión de test del
+                                            63.13%, superando a modelos más complejos.
+                                        </li>
+                                        <li class="mb-3">
+                                            <strong>Modelos de transfer learning:</strong> Sorprendentemente, los
+                                            modelos pre-entrenados (MobileNetV2 y EfficientNet) no superaron a los
+                                            modelos entrenados desde cero, posiblemente debido a la diferencia entre las
+                                            imágenes naturales de ImageNet y los dibujos animados de Los Simpson.
+                                        </li>
+                                        <li class="mb-3">
+                                            <strong>Complejidad vs. rendimiento:</strong> No siempre más parámetros
+                                            implican mejor rendimiento. El modelo VGG-Like, con más de 45 millones de
+                                            parámetros, tuvo un rendimiento inferior a la CNN Básica con solo 2.5
+                                            millones de parámetros.
+                                        </li>
+                                        <li class="mb-3">
+                                            <strong>Fine-tuning:</strong> El fine-tuning mejoró el rendimiento del mejor
+                                            modelo en un 1.72%, llevando la precisión final a 64.85%.
+                                        </li>
+                                        <li class="mb-3">
+                                            <strong>Personajes principales:</strong> Los personajes con más presencia en
+                                            la serie (Homer, Bart, Marge) obtuvieron mejores resultados de
+                                            clasificación, posiblemente debido a la mayor cantidad de imágenes en el
+                                            conjunto de datos.
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <h3>Recomendaciones</h3>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5>Para mejorar el rendimiento</h5>
+                                    <ul>
+                                        <li>Aumentar la resolución de las imágenes para capturar más detalles</li>
+                                        <li>Incrementar el conjunto de datos con más imágenes de personajes minoritarios
+                                        </li>
+                                        <li>Aplicar técnicas de ensemble (combinación de modelos)</li>
+                                        <li>Realizar una búsqueda exhaustiva de hiperparámetros</li>
+                                        <li>Probar arquitecturas híbridas que combinen elementos de diferentes modelos
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Para implementación en producción</h5>
+                                    <ul>
+                                        <li>Convertir a TensorFlow Lite para dispositivos móviles</li>
+                                        <li>Implementar una API REST con TensorFlow Serving para aplicaciones web</li>
+                                        <li>Aplicar cuantización para reducir el tamaño del modelo</li>
+                                        <li>Establecer un sistema de monitoreo para evaluar el rendimiento continuo</li>
+                                        <li>Implementar un sistema de retroalimentación para seguir mejorando el modelo
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Lecciones Aprendidas</h3>
+                            <div class="alert alert-success">
+                                <h5><i class="fas fa-graduation-cap me-2"></i> Principales Aprendizajes</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li>Una arquitectura más simple puede superar a modelos más complejos cuando
+                                                está bien adaptada al problema específico.</li>
+                                            <li>El preprocesamiento y aumento de datos son tan importantes como la
+                                                arquitectura del modelo.</li>
+                                            <li>Los modelos pre-entrenados no siempre son la mejor opción, especialmente
+                                                cuando el dominio de las imágenes es muy diferente al conjunto de
+                                                entrenamiento original.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li>La normalización por lotes (batch normalization) mejora
+                                                significativamente la estabilidad del entrenamiento.</li>
+                                            <li>El balance entre complejidad del modelo y rendimiento es crucial para
+                                                obtener resultados óptimos.</li>
+                                            <li>El fine-tuning puede mejorar el rendimiento incluso en modelos que no
+                                                son de transfer learning.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="conclusion mt-4 p-4 bg-light rounded shadow-sm" data-aos="fade-up">
+                                <h4 class="text-center mb-3">Conclusión Final</h4>
+                                <p class="lead text-center">Este proyecto demuestra que para la clasificación de
+                                    personajes de Los Simpson, una CNN relativamente simple puede obtener buenos
+                                    resultados, superando incluso a arquitecturas más complejas y modelos
+                                    pre-entrenados. La elección de la arquitectura adecuada, junto con un buen
+                                    preprocesamiento de datos y técnicas de regularización, son factores clave para el
+                                    éxito en tareas de clasificación de imágenes específicas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <a href="#" class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer class="position-relative">
+        <div class="footer-wave"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <h4 class="footer-heading">Proyecto de Clasificación</h4>
+                    <p>Análisis de diferentes arquitecturas de redes neuronales convolucionales para la clasificación de
+                        personajes de Los Simpson.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <h4 class="footer-heading">Enlaces Rápidos</h4>
+                    <a href="#inicio" class="footer-link"><i class="fas fa-angle-right"></i> Inicio</a>
+                    <a href="#modelos" class="footer-link"><i class="fas fa-angle-right"></i> Modelos</a>
+                    <a href="#resultados" class="footer-link"><i class="fas fa-angle-right"></i> Resultados</a>
+                    <a href="#conclusiones" class="footer-link"><i class="fas fa-angle-right"></i> Conclusiones</a>
+                </div>
+
+                <div class="col-lg-4">
+                    <h4 class="footer-heading">Recursos</h4>
+                    <a href="https://www.tensorflow.org/" target="_blank" class="footer-link"><i
+                            class="fas fa-external-link-alt"></i> TensorFlow</a>
+                    <a href="https://keras.io/" target="_blank" class="footer-link"><i
+                            class="fas fa-external-link-alt"></i> Keras</a>
+                    <a href="https://scikit-learn.org/" target="_blank" class="footer-link"><i
+                            class="fas fa-external-link-alt"></i> Scikit-learn</a>
+                    <a href="https://simpsonswiki.com/" target="_blank" class="footer-link"><i
+                            class="fas fa-external-link-alt"></i> Simpsons Wiki</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2023 Proyecto de Clasificación de Personajes de Los Simpson. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS (Animate On Scroll) -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Inicializar AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Preloader
+            setTimeout(function () {
+                const preloader = document.querySelector('.preloader');
+                preloader.classList.add('fade-out');
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 500);
+            }, 1500);
+
+            // Toggle sidebar
+            const toggleSidebar = document.querySelector('.toggle-sidebar');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            toggleSidebar.addEventListener('click', function () {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                toggleSidebar.classList.toggle('collapsed');
+            });
+
+            // En pantallas pequeñas, colapsar sidebar por defecto
+            function checkScreenSize() {
+                if (window.innerWidth < 992) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                    toggleSidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('expanded');
+                    toggleSidebar.classList.remove('collapsed');
+                }
+            }
+
+            // Verificar tamaño de pantalla al cargar y al redimensionar
+            checkScreenSize();
+            window.addEventListener('resize', checkScreenSize);
+
+            // Sidebar submenu toggle
+            const submenuHeader = document.querySelector('.sidebar-submenu-header');
+            const submenu = document.querySelector('.sidebar-submenu');
+
+            submenuHeader.addEventListener('click', function () {
+                submenu.classList.toggle('show');
+                submenuHeader.querySelector('.fa-chevron-down').classList.toggle('fa-rotate-180');
+            });
+
+            // Scroll to top button
+            const scrollTopBtn = document.querySelector('.scroll-to-top');
+
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('show');
+                } else {
+                    scrollTopBtn.classList.remove('show');
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Navbar sticky con animación
+            const navbar = document.querySelector('.nav');
+            let lastScrollTop = 0;
+
+            window.addEventListener('scroll', function () {
+                let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (currentScroll > lastScrollTop && currentScroll > 300) {
+                    // Scroll hacia abajo
+                    navbar.classList.remove('visible');
+                } else {
+                    // Scroll hacia arriba
+                    if (currentScroll > 100) {
+                        navbar.classList.add('visible');
+                    } else {
+                        navbar.classList.remove('visible');
+                    }
+                }
+
+                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+            });
+
+            // Links activos en navbar y sidebar
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.nav-item .nav-link');
+            const sidebarItems = document.querySelectorAll('.sidebar-menu-item');
+
+            window.addEventListener('scroll', function () {
+                let current = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+
+                    if (window.pageYOffset >= sectionTop - 200) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === `#${current}`) {
+                        item.classList.add('active');
+                    }
+                });
+
+                sidebarItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === `#${current}`) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+
+            // Generar puntos decorativos
+            function createDecorations() {
+                const dotsContainer = document.getElementById('dots-container');
+                const numDots = 50;
+
+                for (let i = 0; i < numDots; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('dot');
+
+                    // Posición aleatoria
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+
+                    // Tamaño aleatorio
+                    const size = Math.random() * 8 + 4;
+
+                    // Opacidad aleatoria
+                    const opacity = Math.random() * 0.3 + 0.1;
+
+                    // Retraso aleatorio para la animación
+                    const animationDelay = Math.random() * 8 + 's';
+
+                    dot.style.left = `${left}%`;
+                    dot.style.top = `${top}%`;
+                    dot.style.width = `${size}px`;
+                    dot.style.height = `${size}px`;
+                    dot.style.opacity = opacity;
+                    dot.style.animationDelay = animationDelay;
+
+                    dotsContainer.appendChild(dot);
+                }
+            }
+
+            createDecorations();
+
+            // Inicializar gráficos con Chart.js
+            function initCharts() {
+                // Gráfico de tiempos de entrenamiento
+                const trainingTimeCtx = document.getElementById('trainingTimeChart').getContext('2d');
+                const trainingTimeChart = new Chart(trainingTimeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['CNN Básica', 'VGG-Like', 'MobileNet-Like', 'MobileNetV2', 'EfficientNet'],
+                        datasets: [{
+                            label: 'Tiempo de entrenamiento (s)',
+                            data: [339.11, 607.98, 599.08, 582.48, 605.18],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(255, 193, 7, 0.7)',
+                                'rgba(63, 132, 229, 0.7)',
+                                'rgba(23, 162, 184, 0.7)',
+                                'rgba(220, 53, 69, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(255, 193, 7)',
+                                'rgb(63, 132, 229)',
+                                'rgb(23, 162, 184)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Tiempo de entrenamiento por modelo',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Tiempo (segundos)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de evolución de la precisión
+                const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+                const accuracyChart = new Chart(accuracyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Época 1', 'Época 2', 'Época 3', 'Época 4', 'Época 5', 'Época 6', 'Época 7', 'Época 8'],
+                        datasets: [{
+                            label: 'Precisión Entrenamiento',
+                            data: [25.34, 34.78, 41.22, 47.09, 52.31, 56.88, 59.43, 61.68],
+                            borderColor: 'rgb(63, 132, 229)',
+                            backgroundColor: 'rgba(63, 132, 229, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }, {
+                            label: 'Precisión Validación',
+                            data: [22.56, 28.93, 33.45, 38.76, 43.21, 47.82, 51.05, 53.73],
+                            borderColor: 'rgb(249, 87, 0)',
+                            backgroundColor: 'rgba(249, 87, 0, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Evolución de la precisión durante el entrenamiento',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Precisión (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de precisión en test
+                const testAccuracyCtx = document.getElementById('testAccuracyChart').getContext('2d');
+                const testAccuracyChart = new Chart(testAccuracyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['CNN Básica', 'MobileNet-Like', 'VGG-Like', 'MobileNetV2', 'EfficientNet'],
+                        datasets: [{
+                            label: 'Precisión en Test (%)',
+                            data: [63.13, 47.27, 39.09, 37.47, 5.05],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(63, 132, 229, 0.7)',
+                                'rgba(249, 87, 0, 0.7)',
+                                'rgba(167, 229, 65, 0.7)',
+                                'rgba(220, 53, 69, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(63, 132, 229)',
+                                'rgb(249, 87, 0)',
+                                'rgb(167, 229, 65)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Precisión en Test por Modelo',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Precisión (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de complejidad vs rendimiento
+                const complexityCtx = document.getElementById('complexityChart').getContext('2d');
+                const complexityChart = new Chart(complexityCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'CNN Básica',
+                            data: [{ x: 2.51, y: 63.13 }],
+                            backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                            borderColor: 'rgb(40, 167, 69)',
+                            pointRadius: 10,
+                            pointHoverRadius: 12
+                        }, {
+                            label: 'MobileNet-Like',
+                            data: [{ x: 3.29, y: 47.27 }],
+                            backgroundColor: 'rgba(63, 132, 229, 0.7)',
+                            borderColor: 'rgb(63, 132, 229)',
+                            pointRadius: 10,
+                            pointHoverRadius: 12
+                        }, {
+                            label: 'VGG-Like',
+                            data: [{ x: 45.45, y: 39.09 }],
+                            backgroundColor: 'rgba(249, 87, 0, 0.7)',
+                            borderColor: 'rgb(249, 87, 0)',
+                            pointRadius: 10,
+                            pointHoverRadius: 12
+                        }, {
+                            label: 'MobileNetV2 Transfer',
+                            data: [{ x: 3.62, y: 37.47 }],
+                            backgroundColor: 'rgba(167, 229, 65, 0.7)',
+                            borderColor: 'rgb(167, 229, 65)',
+                            pointRadius: 10,
+                            pointHoverRadius: 12
+                        }, {
+                            label: 'EfficientNet Transfer',
+                            data: [{ x: 4.74, y: 5.05 }],
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            borderColor: 'rgb(220, 53, 69)',
+                            pointRadius: 10,
+                            pointHoverRadius: 12
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Precisión vs. Complejidad (Millones de parámetros)',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${context.parsed.y}% precisión, ${context.parsed.x}M parámetros`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Millones de parámetros (escala logarítmica)'
+                                }
+                            },
+                            y: {
+                                min: 0,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Precisión en Test (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de radar para análisis multidimensional
+                const radarCtx = document.getElementById('radarChart').getContext('2d');
+                const radarChart = new Chart(radarCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Precisión', 'Velocidad', 'Complejidad', 'Generalización', 'Eficiencia'],
+                        datasets: [{
+                            label: 'CNN Básica',
+                            data: [90, 85, 80, 82, 88],
+                            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                            borderColor: 'rgb(40, 167, 69)',
+                            pointBackgroundColor: 'rgb(40, 167, 69)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(40, 167, 69)'
+                        }, {
+                            label: 'MobileNet-Like',
+                            data: [70, 60, 75, 65, 72],
+                            backgroundColor: 'rgba(63, 132, 229, 0.2)',
+                            borderColor: 'rgb(63, 132, 229)',
+                            pointBackgroundColor: 'rgb(63, 132, 229)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(63, 132, 229)'
+                        }, {
+                            label: 'VGG-Like',
+                            data: [60, 40, 30, 60, 45],
+                            backgroundColor: 'rgba(249, 87, 0, 0.2)',
+                            borderColor: 'rgb(249, 87, 0)',
+                            pointBackgroundColor: 'rgb(249, 87, 0)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(249, 87, 0)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Análisis Multidimensional de Modelos',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: true
+                                },
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de precisión vs recall por personaje
+                const precisionRecallCtx = document.getElementById('precisionRecallChart').getContext('2d');
+                const precisionRecallChart = new Chart(precisionRecallCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Personajes',
+                            data: [
+                                { x: 0.87, y: 0.92, r: 20, character: 'Homer Simpson' },
+                                { x: 0.82, y: 0.88, r: 18, character: 'Bart Simpson' },
+                                { x: 0.89, y: 0.79, r: 17, character: 'Marge Simpson' },
+                                { x: 0.76, y: 0.71, r: 16, character: 'Lisa Simpson' },
+                                { x: 0.68, y: 0.72, r: 14, character: 'Ned Flanders' },
+                                { x: 0.63, y: 0.68, r: 13, character: 'Krusty the Clown' },
+                                { x: 0.58, y: 0.62, r: 12, character: 'Milhouse Van Houten' },
+                                { x: 0.54, y: 0.59, r: 10, character: 'Kent Brockman' },
+                                { x: 0.49, y: 0.53, r: 9, character: 'Sideshow Bob' },
+                                { x: 0.43, y: 0.47, r: 8, character: 'Principal Skinner' }
+                            ],
+                            backgroundColor: function (context) {
+                                const value = context.dataset.data[context.dataIndex];
+                                const f1 = 2 * (value.x * value.y) / (value.x + value.y);
+
+                                if (f1 > 0.8) return 'rgba(40, 167, 69, 0.7)';
+                                if (f1 > 0.6) return 'rgba(63, 132, 229, 0.7)';
+                                if (f1 > 0.5) return 'rgba(249, 87, 0, 0.7)';
+                                return 'rgba(220, 53, 69, 0.7)';
+                            },
+                            borderColor: 'rgba(0, 0, 0, 0.1)',
+                            pointRadius: function (context) {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value.r * 0.7;
+                            },
+                            pointHoverRadius: function (context) {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value.r * 0.9;
+                            }
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Precisión vs. Recall por Personaje',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const value = context.dataset.data[context.dataIndex];
+                                        const f1 = (2 * value.x * value.y / (value.x + value.y)).toFixed(2);
+                                        return [
+                                            `Personaje: ${value.character}`,
+                                            `Precisión: ${value.x.toFixed(2)}`,
+                                            `Recall: ${value.y.toFixed(2)}`,
+                                            `F1-Score: ${f1}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                min: 0.4,
+                                max: 1,
+                                title: {
+                                    display: true,
+                                    text: 'Precisión'
+                                }
+                            },
+                            y: {
+                                min: 0.4,
+                                max: 1,
+                                title: {
+                                    display: true,
+                                    text: 'Recall'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de rendimiento por personaje
+                const characterPerformanceCtx = document.getElementById('characterPerformanceChart').getContext('2d');
+                const characterPerformanceChart = new Chart(characterPerformanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Homer', 'Bart', 'Marge', 'Lisa', 'Ned', 'Krusty', 'Milhouse', 'Kent', 'Sideshow Bob', 'Skinner'],
+                        datasets: [{
+                            label: 'F1-Score',
+                            data: [0.89, 0.85, 0.84, 0.73, 0.70, 0.65, 0.60, 0.56, 0.51, 0.45],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(63, 132, 229, 0.7)',
+                                'rgba(63, 132, 229, 0.7)',
+                                'rgba(249, 87, 0, 0.7)',
+                                'rgba(249, 87, 0, 0.7)',
+                                'rgba(220, 53, 69, 0.7)',
+                                'rgba(220, 53, 69, 0.7)',
+                                'rgba(220, 53, 69, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(40, 167, 69)',
+                                'rgb(40, 167, 69)',
+                                'rgb(63, 132, 229)',
+                                'rgb(63, 132, 229)',
+                                'rgb(249, 87, 0)',
+                                'rgb(249, 87, 0)',
+                                'rgb(220, 53, 69)',
+                                'rgb(220, 53, 69)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'F1-Score por Personaje',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1,
+                                title: {
+                                    display: true,
+                                    text: 'F1-Score'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de fine-tuning
+                const finetuningCtx = document.getElementById('finetuningChart').getContext('2d');
+                const finetuningChart = new Chart(finetuningCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Original', 'Fine-tuned'],
+                        datasets: [{
+                            label: 'Precisión en Test (%)',
+                            data: [63.13, 64.85],
+                            backgroundColor: [
+                                'rgba(63, 132, 229, 0.7)',
+                                'rgba(40, 167, 69, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(63, 132, 229)',
+                                'rgb(40, 167, 69)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Comparación: Original vs. Fine-tuned',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Precisión (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de impacto de técnicas
+                const techniquesCtx = document.getElementById('techniquesChart').getContext('2d');
+                const techniquesChart = new Chart(techniquesCtx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: ['Data Augmentation', 'Batch Normalization', 'Early Stopping', 'Learning Rate Scheduling', 'Dropout', 'Fine-tuning'],
+                        datasets: [{
+                            label: 'Impacto Estimado (%)',
+                            data: [85, 75, 70, 80, 65, 40],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(63, 132, 229, 0.7)',
+                                'rgba(249, 87, 0, 0.7)',
+                                'rgba(167, 229, 65, 0.7)',
+                                'rgba(214, 80, 118, 0.7)',
+                                'rgba(108, 117, 125, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(63, 132, 229)',
+                                'rgb(249, 87, 0)',
+                                'rgb(167, 229, 65)',
+                                'rgb(214, 80, 118)',
+                                'rgb(108, 117, 125)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Impacto de Técnicas Aplicadas',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Impacto Estimado (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Animación de contadores numéricos
+            function animateNumbers() {
+                const animatedNumbers = document.querySelectorAll('.animated-number');
+
+                animatedNumbers.forEach(element => {
+                    const finalValue = parseFloat(element.textContent);
+                    const decimalPlaces = element.textContent.includes('.') ? element.textContent.split('.')[1].length : 0;
+                    const duration = 1500; // Duración en ms
+                    const startTime = performance.now();
+
+                    function updateNumber(currentTime) {
+                        const elapsedTime = currentTime - startTime;
+                        const progress = Math.min(elapsedTime / duration, 1);
+                        const easedProgress = 1 - Math.pow(1 - progress, 3); // Función de easing
+
+                        const currentValue = finalValue * easedProgress;
+                        element.textContent = currentValue.toFixed(decimalPlaces);
+
+                        if (progress < 1) {
+                            requestAnimationFrame(updateNumber);
+                        } else {
+                            element.textContent = finalValue.toFixed(decimalPlaces);
+                        }
+                    }
+
+                    requestAnimationFrame(updateNumber);
+                });
+            }
+
+            // Inicializar gráficos cuando sean visibles
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        initCharts();
+                        observer.disconnect(); // Solo inicializar una vez
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            const chartSection = document.getElementById('graficos');
+            if (chartSection) {
+                observer.observe(chartSection);
+            }
+
+            // Animación de barras de progreso
+            const progressBars = document.querySelectorAll('.progress-bar');
+
+            progressBars.forEach(bar => {
+                const finalWidth = bar.style.width;
+                bar.style.width = '0%';
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                bar.style.width = finalWidth;
+                            }, 300);
+                            observer.disconnect();
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                observer.observe(bar);
+            });
+
+            // Enlaces suaves
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        const offsetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - 60;
+
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+
+                        // Si estamos en móvil, cerrar el sidebar
+                        if (window.innerWidth < 992) {
+                            sidebar.classList.add('collapsed');
+                            mainContent.classList.add('expanded');
+                            toggleSidebar.classList.add('collapsed');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
