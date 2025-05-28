@@ -305,6 +305,18 @@
             color: var(--secondary);
         }
 
+        .alert-primary {
+            background-color: rgba(0, 123, 255, 0.15);
+            border-left: 4px solid #007bff;
+            color: #004085;
+        }
+
+        .alert-secondary {
+            background-color: rgba(108, 117, 125, 0.15);
+            border-left: 4px solid #6c757d;
+            color: #383d41;
+        }
+
         /* Tablas */
         .table {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -772,8 +784,9 @@
                             </div>
                         </div>
                         <div class="col-lg-6 text-center" data-aos="fade-left">
-                            <img src="https://static.simpsonswiki.com/images/thumb/6/65/Simpsons_cast.png/250px-Simpsons_cast.png"
-                                alt="Los Simpson" class="img-fluid rounded shadow" style="max-height: 300px;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/The_Simpsons_yellow_logo.svg"
+                                alt="Logo de Los Simpson" class="img-fluid rounded shadow">
+
                         </div>
                     </div>
                 </div>
@@ -887,6 +900,9 @@
                             <h3>Preprocesamiento y Aumento de Datos</h3>
                             <p>Para mejorar la generalización del modelo, se aplicaron las siguientes técnicas de
                                 preprocesamiento y aumento de datos:</p>
+                            <p class="text-muted mb-2">El preprocesamiento adecuado de las imágenes es fundamental para
+                                el éxito del modelo. La conversión a escala de grises reduce la complejidad y mejora la
+                                eficiencia.</p>
 
                             <div class="card mt-3">
                                 <div class="card-body">
@@ -1302,6 +1318,19 @@
                             </ul>
                         </div>
                     </div>
+
+                    <div class="alert alert-primary mt-3">
+                        <h5><i class="fas fa-code-branch me-2"></i> Arquitecturas CNN para clasificación de imágenes
+                        </h5>
+                        <p>Las redes neuronales convolucionales (CNN) son particularmente efectivas para la
+                            clasificación de imágenes debido a su capacidad para detectar patrones espaciales. Las
+                            arquitecturas evaluadas en este proyecto varían en su complejidad y enfoque.</p>
+                        <p>Mientras que las redes más profundas como VGG suelen funcionar bien en conjuntos de datos
+                            grandes y complejos, para tareas específicas como la clasificación de personajes animados,
+                            una arquitectura más simple y ajustada puede ofrecer mejores resultados con menos recursos
+                            computacionales.</p>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -1339,6 +1368,12 @@
                                         <span class="metric-label">Función de Pérdida</span>
                                         <span class="metric-value">Categorical Crossentropy</span>
                                     </div>
+                                </div>
+
+                                <div class="alert alert-secondary mt-3">
+                                    <i class="fas fa-info-circle me-2"></i> Se utilizó un scheduler de tasa de
+                                    aprendizaje para reducir gradualmente el learning rate a medida que avanza el
+                                    entrenamiento, lo que ayuda a alcanzar un mínimo más estable.
                                 </div>
                             </div>
 
@@ -1773,9 +1808,10 @@
                                                     Error de Clasificación
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/thumb/0/02/Homer_Simpson.png/200px-Homer_Simpson.png"
-                                                        alt="Homer Simpson" class="img-fluid mb-2"
-                                                        style="max-height: 150px;">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png"
+                                                        alt="Homer Simpson" class="img-fluid"
+                                                        style="max-height: 300px;">
+
                                                     <p class="mb-1"><strong>Real:</strong> Homer Simpson</p>
                                                     <p class="mb-1"><strong>Predicción:</strong> Ned Flanders</p>
                                                     <p class="mb-0"><strong>Confianza:</strong> 48.2%</p>
@@ -1789,9 +1825,9 @@
                                                     Error de Clasificación
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/thumb/e/ec/Lisa_Simpson.png/170px-Lisa_Simpson.png"
+                                                    <img src="https://static.simpsonswiki.com/images/e/ec/Lisa_Simpson.png"
                                                         alt="Lisa Simpson" class="img-fluid mb-2"
-                                                        style="max-height: 150px;">
+                                                        style="max-height: 300px;">
                                                     <p class="mb-1"><strong>Real:</strong> Lisa Simpson</p>
                                                     <p class="mb-1"><strong>Predicción:</strong> Bart Simpson</p>
                                                     <p class="mb-0"><strong>Confianza:</strong> 53.7%</p>
@@ -1805,9 +1841,9 @@
                                                     Error de Clasificación
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/thumb/8/80/Moe_Szyslak.png/200px-Moe_Szyslak.png"
+                                                    <img src="https://static.simpsonswiki.com/images/8/80/Moe_Szyslak.png"
                                                         alt="Moe Szyslak" class="img-fluid mb-2"
-                                                        style="max-height: 150px;">
+                                                        style="max-height: 300px;">
                                                     <p class="mb-1"><strong>Real:</strong> Moe Szyslak</p>
                                                     <p class="mb-1"><strong>Predicción:</strong> Barney Gumble</p>
                                                     <p class="mb-0"><strong>Confianza:</strong> 42.9%</p>
@@ -1858,55 +1894,22 @@
                         <div class="col-lg-6" data-aos="fade-left">
                             <h3>Ejemplos de Mapas de Activación</h3>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <div class="card h-100">
                                         <div class="card-header">
-                                            Homer Simpson - Conv2D_3
+                                            Abraham Simpson - Mapa de Activación
                                         </div>
                                         <div class="card-body text-center">
-                                            <img src="https://miro.medium.com/max/1400/1*ELOrm4yGtZXcx7ABAl8KJQ.webp"
-                                                alt="Mapa de activación" class="img-fluid">
-                                        </div>
-                                    </div>
-                                </div>
+                                            <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/activation_heatmap.png"
+                                                alt="Mapa de activación Abraham Simpson" class="img-fluid">
 
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-header">
-                                            Bart Simpson - Conv2D_2
-                                        </div>
-                                        <div class="card-body text-center">
-                                            <img src="https://miro.medium.com/max/1400/1*TL6ELz9Ouk7LdpqnqV_JYg.webp"
-                                                alt="Mapa de activación" class="img-fluid">
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-header">
-                                            Marge Simpson - Conv2D_1
-                                        </div>
-                                        <div class="card-body text-center">
-                                            <img src="https://miro.medium.com/max/1400/1*vO_CY_XYapeTmz0QkTc9cw.webp"
-                                                alt="Mapa de activación" class="img-fluid">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-header">
-                                            Lisa Simpson - Conv2D_4
-                                        </div>
-                                        <div class="card-body text-center">
-                                            <img src="https://miro.medium.com/max/1400/1*OlT_hR7matJ_uiOBrXiCyQ.webp"
-                                                alt="Mapa de activación" class="img-fluid">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -2163,6 +2166,33 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Referencias y Recursos</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <i class="fas fa-book text-secondary me-2"></i> <strong>TensorFlow
+                                                Documentation</strong> - Guía completa sobre implementación de redes
+                                            neuronales convolucionales
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-graduation-cap text-secondary me-2"></i> <strong>Curso de
+                                                Deep Learning</strong> - Conceptos y técnicas avanzadas para
+                                            clasificación de imágenes
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-database text-secondary me-2"></i> <strong>Dataset de Los
+                                                Simpson</strong> - Conjunto de imágenes preprocesadas de personajes de
+                                            la serie
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -2383,6 +2413,21 @@
             }
 
             createDecorations();
+
+            // Fix para Chart.js en Bootstrap 5
+            Chart.defaults.indexAxis = 'x';
+            Chart.defaults.plugins.legend.position = 'top';
+            Chart.defaults.plugins.title.display = true;
+            Chart.defaults.plugins.title.font = {
+                size: 16,
+                weight: 'bold'
+            };
+
+            // Inicializar tooltips de Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
             // Inicializar gráficos con Chart.js
             function initCharts() {
@@ -2880,7 +2925,8 @@
                 // Gráfico de impacto de técnicas
                 const techniquesCtx = document.getElementById('techniquesChart').getContext('2d');
                 const techniquesChart = new Chart(techniquesCtx, {
-                    type: 'horizontalBar',
+                    type: 'bar',
+                    indexAxis: 'y',
                     data: {
                         labels: ['Data Augmentation', 'Batch Normalization', 'Early Stopping', 'Learning Rate Scheduling', 'Dropout', 'Fine-tuning'],
                         datasets: [{
@@ -2906,7 +2952,6 @@
                         }]
                     },
                     options: {
-                        indexAxis: 'y',
                         responsive: true,
                         plugins: {
                             legend: {
@@ -2933,6 +2978,11 @@
                     }
                 });
             }
+
+            // Llamar explícitamente a initCharts para garantizar que se inicialicen
+            window.addEventListener('load', function () {
+                setTimeout(initCharts, 1000); // Retrasarlo un poco para asegurar que los elementos DOM estén listos
+            });
 
             // Animación de contadores numéricos
             function animateNumbers() {
