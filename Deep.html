@@ -640,6 +640,79 @@
             background-color: var(--primary);
             opacity: 0.3;
         }
+
+        /* 📍 UBICACIÓN: MODAL FINAL FOOTER>MODAL>SCRIPT>BODY */
+
+        /* Estilos para carrusel de imágenes en modales */
+        .carousel-item img {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-item img:hover {
+            transform: scale(1.02);
+        }
+
+        .carousel-caption {
+            position: relative !important;
+            left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+        }
+
+        /* Mejorar controles del carrusel */
+        .carousel-control-prev,
+        .carousel-control-next {
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Animación para el botón de visualizaciones */
+        .btn-outline-primary:hover {
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Responsive para modal */
+        @media (max-width: 768px) {
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .carousel-item img {
+                max-height: 50vh !important;
+            }
+
+            .carousel-control-prev,
+            .carousel-control-next {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Indicadores del carrusel más visibles */
+        .carousel-indicators button {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .carousel-indicators .active {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
     </style>
 </head>
 
@@ -890,7 +963,7 @@
                                     </div>
                                     <div class="card-metric">
                                         <span class="metric-label">Número de Clases</span>
-                                        <span class="metric-value">47</span>
+                                        <span class="metric-value">18</span>
                                     </div>
                                 </div>
                             </div>
@@ -960,6 +1033,12 @@
                                     data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     <i class="fas fa-network-wired me-2"></i> CNN Básica <span
                                         class="badge bg-success ms-2">Mejor Modelo</span>
+                                    <button class="btn btn-outline-primary btn-sm ms-auto me-2" data-bs-toggle="modal"
+                                        data-bs-target="#galeriaCNNBasica" onclick="event.stopPropagation()"
+                                        title="Ver visualizaciones del modelo">
+                                        <i class="fas fa-images me-1"></i>
+                                        <span class="d-none d-md-inline">Visualizaciones</span>
+                                    </button>
                                 </button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
@@ -1026,6 +1105,12 @@
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                     <i class="fas fa-network-wired me-2"></i> VGG-Like
+                                    <button class="btn btn-outline-warning btn-sm ms-auto me-2" data-bs-toggle="modal"
+                                        data-bs-target="#galeriaVGGLike" onclick="event.stopPropagation()"
+                                        title="Ver visualizaciones del modelo">
+                                        <i class="fas fa-images me-1"></i>
+                                        <span class="d-none d-md-inline">Visualizaciones</span>
+                                    </button>
                                 </button>
                             </h2>
                             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
@@ -1093,6 +1178,12 @@
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                     <i class="fas fa-network-wired me-2"></i> MobileNet-Like
+                                    <button class="btn btn-outline-info btn-sm ms-auto me-2" data-bs-toggle="modal"
+                                        data-bs-target="#galeriaMobileNetLike" onclick="event.stopPropagation()"
+                                        title="Ver visualizaciones del modelo">
+                                        <i class="fas fa-images me-1"></i>
+                                        <span class="d-none d-md-inline">Visualizaciones</span>
+                                    </button>
                                 </button>
                             </h2>
                             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1159,6 +1250,12 @@
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                     <i class="fas fa-network-wired me-2"></i> MobileNetV2 Transfer
+                                    <button class="btn btn-outline-danger btn-sm ms-auto me-2" data-bs-toggle="modal"
+                                        data-bs-target="#galeriaMobileNetV2" onclick="event.stopPropagation()"
+                                        title="Ver visualizaciones del modelo">
+                                        <i class="fas fa-images me-1"></i>
+                                        <span class="d-none d-md-inline">Visualizaciones</span>
+                                    </button>
                                 </button>
                             </h2>
                             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
@@ -1230,6 +1327,12 @@
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                     <i class="fas fa-network-wired me-2"></i> EfficientNet Transfer
+                                    <button class="btn btn-outline-success btn-sm ms-auto me-2" data-bs-toggle="modal"
+                                        data-bs-target="#galeriaEfficientNet" onclick="event.stopPropagation()"
+                                        title="Ver visualizaciones del modelo">
+                                        <i class="fas fa-images me-1"></i>
+                                        <span class="d-none d-md-inline">Visualizaciones</span>
+                                    </button>
                                 </button>
                             </h2>
                             <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
@@ -2055,8 +2158,7 @@
                                                 </div>
                                                 <div class="card-body text-center">
                                                     <img src="https://static.simpsonswiki.com/images/6/65/Bart_Simpson.png"
-                                                        alt="Bart Simpson" class="img-fluid"
-                                                        style="max-height: 300px;">
+                                                        alt="Bart Simpson" class="img-fluid" style="max-height: 300px;">
                                                     <p class="mb-1"><strong>Real:</strong> Bart Simpson</p>
                                                     <p class="mb-1"><strong>Predicción:</strong> Bart Simpson</p>
                                                     <p class="mb-0"><strong>Confianza:</strong> 88.3%</p>
@@ -2306,9 +2408,440 @@
             </div>
         </div>
     </footer>
+    <!-- 📍 UBICACIÓN: Después de </footer> y antes de los scripts -->
+
+    <!-- Modal CNN Básica -->
+    <div class="modal fade" id="galeriaCNNBasica" tabindex="-1" aria-labelledby="galeriaCNNBasicaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="galeriaCNNBasicaLabel">
+                        <i class="fas fa-network-wired me-2"></i>Visualizaciones - CNN Básica
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="carruselCNNBasica" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carruselCNNBasica" data-bs-slide-to="0"
+                                class="active"></button>
+                            <button type="button" data-bs-target="#carruselCNNBasica" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carruselCNNBasica" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/cnn-basico-matriz.png"
+                                        class="d-block mx-auto img-fluid" alt="Matriz CNN Básica"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-table me-2"></i>Matriz de Confusión
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Análisis detallado de predicciones por clase</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/cnn-basico-curva.png"
+                                        class="d-block mx-auto img-fluid" alt="Curvas CNN Básica"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-chart-line me-2"></i>Curvas de
+                                            Entrenamiento</h5>
+                                        <p class="text-white-50 mb-0">Evolución de pérdida y precisión durante el
+                                            entrenamiento</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/cnn-basico-top5.png"
+                                        class="d-block mx-auto img-fluid" alt="Top5 CNN Básica"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-trophy me-2"></i>Top 5 Análisis de
+                                            Clases</h5>
+                                        <p class="text-white-50 mb-0">Mejores y peores clasificaciones por personaje</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselCNNBasica"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span><span
+                                class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselCNNBasica"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span><span
+                                class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <span class="text-muted"><i class="fas fa-info-circle me-1"></i><strong>3
+                            visualizaciones</strong></span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                            class="fas fa-times me-1"></i>Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal VGG-Like -->
+    <div class="modal fade" id="galeriaVGGLike" tabindex="-1" aria-labelledby="galeriaVGGLikeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="galeriaVGGLikeLabel">
+                        <i class="fas fa-layer-group me-2"></i>Visualizaciones - VGG-Like
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="carruselVGGLike" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carruselVGGLike" data-bs-slide-to="0"
+                                class="active"></button>
+                            <button type="button" data-bs-target="#carruselVGGLike" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carruselVGGLike" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/vgg-curva.png"
+                                        class="d-block mx-auto img-fluid" alt="Curvas VGG-Like"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-chart-line me-2"></i>Curvas de
+                                            Entrenamiento</h5>
+                                        <p class="text-white-50 mb-0">Evolución durante el entrenamiento del modelo
+                                            VGG-Like</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/vgg-matriz.png"
+                                        class="d-block mx-auto img-fluid" alt="Matriz VGG-Like"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-table me-2"></i>Matriz de Confusión
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Análisis de predicciones por clase del modelo
+                                            VGG-Like</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/vgg-top5.png"
+                                        class="d-block mx-auto img-fluid" alt="Top5 VGG-Like"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-trophy me-2"></i>Top 5 Análisis
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Mejores y peores clasificaciones del modelo
+                                            VGG-Like</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselVGGLike"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span><span
+                                class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselVGGLike"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span><span
+                                class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <span class="text-muted"><i class="fas fa-info-circle me-1"></i><strong>3
+                            visualizaciones</strong></span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                            class="fas fa-times me-1"></i>Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MobileNet-Like -->
+    <div class="modal fade" id="galeriaMobileNetLike" tabindex="-1" aria-labelledby="galeriaMobileNetLikeLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="galeriaMobileNetLikeLabel">
+                        <i class="fas fa-mobile-alt me-2"></i>Visualizaciones - MobileNet-Like
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="carruselMobileNetLike" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carruselMobileNetLike" data-bs-slide-to="0"
+                                class="active"></button>
+                            <button type="button" data-bs-target="#carruselMobileNetLike" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carruselMobileNetLike" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/mobilNet-curva.png"
+                                        class="d-block mx-auto img-fluid" alt="Curvas MobileNet-Like"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-chart-line me-2"></i>Curvas de
+                                            Entrenamiento</h5>
+                                        <p class="text-white-50 mb-0">Evolución durante el entrenamiento del modelo
+                                            MobileNet-Like</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/mobilNet-matriz.png"
+                                        class="d-block mx-auto img-fluid" alt="Matriz MobileNet-Like"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-table me-2"></i>Matriz de Confusión
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Análisis de predicciones por clase del modelo
+                                            MobileNet-Like</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/mobilNet-top5.png"
+                                        class="d-block mx-auto img-fluid" alt="Top5 MobileNet-Like"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-trophy me-2"></i>Top 5 Análisis
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Mejores y peores clasificaciones del modelo
+                                            MobileNet-Like</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselMobileNetLike"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span><span
+                                class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselMobileNetLike"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span><span
+                                class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <span class="text-muted"><i class="fas fa-info-circle me-1"></i><strong>3
+                            visualizaciones</strong></span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                            class="fas fa-times me-1"></i>Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MobileNetV2 Transfer -->
+    <div class="modal fade" id="galeriaMobileNetV2" tabindex="-1" aria-labelledby="galeriaMobileNetV2Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="galeriaMobileNetV2Label">
+                        <i class="fas fa-exchange-alt me-2"></i>Visualizaciones - MobileNetV2 Transfer
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="carruselMobileNetV2" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carruselMobileNetV2" data-bs-slide-to="0"
+                                class="active"></button>
+                            <button type="button" data-bs-target="#carruselMobileNetV2" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carruselMobileNetV2" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/mobilNetV2-curva.png"
+                                        class="d-block mx-auto img-fluid" alt="Curvas MobileNetV2"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-chart-line me-2"></i>Curvas de
+                                            Entrenamiento</h5>
+                                        <p class="text-white-50 mb-0">Evolución durante el entrenamiento del modelo
+                                            MobileNetV2 Transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/mobilNetV2-matriz.png"
+                                        class="d-block mx-auto img-fluid" alt="Matriz MobileNetV2"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-table me-2"></i>Matriz de Confusión
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Análisis de predicciones por clase del modelo
+                                            MobileNetV2 Transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/mobilNetV2-top5.png"
+                                        class="d-block mx-auto img-fluid" alt="Top5 MobileNetV2"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-trophy me-2"></i>Top 5 Análisis
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Mejores y peores clasificaciones del modelo
+                                            MobileNetV2 Transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselMobileNetV2"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span><span
+                                class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselMobileNetV2"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span><span
+                                class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <span class="text-muted"><i class="fas fa-info-circle me-1"></i><strong>3
+                            visualizaciones</strong></span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                            class="fas fa-times me-1"></i>Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal EfficientNet Transfer -->
+    <div class="modal fade" id="galeriaEfficientNet" tabindex="-1" aria-labelledby="galeriaEfficientNetLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="galeriaEfficientNetLabel">
+                        <i class="fas fa-rocket me-2"></i>Visualizaciones - EfficientNet Transfer
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="carruselEfficientNet" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carruselEfficientNet" data-bs-slide-to="0"
+                                class="active"></button>
+                            <button type="button" data-bs-target="#carruselEfficientNet" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carruselEfficientNet" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/eficent-curva.png"
+                                        class="d-block mx-auto img-fluid" alt="Curvas EfficientNet"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-chart-line me-2"></i>Curvas de
+                                            Entrenamiento</h5>
+                                        <p class="text-white-50 mb-0">Evolución durante el entrenamiento del modelo
+                                            EfficientNet Transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/eficent-matriz.png"
+                                        class="d-block mx-auto img-fluid" alt="Matriz EfficientNet"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-table me-2"></i>Matriz de Confusión
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Análisis de predicciones por clase del modelo
+                                            EfficientNet Transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="text-center bg-light p-4">
+                                    <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/eficent-top5.png"
+                                        class="d-block mx-auto img-fluid" alt="Top5 EfficientNet"
+                                        style="max-height: 70vh; object-fit: contain;">
+                                    <div
+                                        class="carousel-caption position-relative bg-dark bg-opacity-75 rounded mt-3 p-2">
+                                        <h5 class="text-white mb-1"><i class="fas fa-trophy me-2"></i>Top 5 Análisis
+                                        </h5>
+                                        <p class="text-white-50 mb-0">Mejores y peores clasificaciones del modelo
+                                            EfficientNet Transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselEfficientNet"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span><span
+                                class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselEfficientNet"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span><span
+                                class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <span class="text-muted"><i class="fas fa-info-circle me-1"></i><strong>3
+                            visualizaciones</strong></span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                            class="fas fa-times me-1"></i>Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- AOS (Animate On Scroll) -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -3136,6 +3669,7 @@
             });
         });
     </script>
+
 </body>
 
 </html>
