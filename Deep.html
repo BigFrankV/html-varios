@@ -847,7 +847,7 @@
                                     <p class="text-muted">Imágenes totales</p>
                                 </div>
                                 <div class="me-4">
-                                    <h4 class="text-secondary"><i class="fas fa-users"></i> 47</h4>
+                                    <h4 class="text-secondary"><i class="fas fa-users"></i>18</h4>
                                     <p class="text-muted">Personajes</p>
                                 </div>
                                 <div>
@@ -1859,24 +1859,26 @@
                                     <h5>Personajes Más Confundidos</h5>
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Homer Simpson confundido con Ned Flanders
-                                            <span class="badge bg-danger rounded-pill">12%</span>
+                                            Abraham Grampa Simpson confundido con Homer
+                                            <span class="badge bg-danger rounded-pill">22.1%</span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Lisa Simpson confundida con Bart Simpson
-                                            <span class="badge bg-danger rounded-pill">9%</span>
+                                            Bart Simpson confundido con Lisa Simpson
+                                            <span class="badge bg-danger rounded-pill">8.8%</span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Moe Szyslak confundido con Barney Gumble
-                                            <span class="badge bg-danger rounded-pill">8%</span>
+                                            Charles Montgomery Burns confundido con Moe Szyslak
+                                            <span class="badge bg-danger rounded-pill">7.4%</span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Milhouse Van Houten confundido con Martin Prince
-                                            <span class="badge bg-danger rounded-pill">7%</span>
+                                            Abraham Grampa Simpson confundido con Charles Montgomery Burns
+                                            <span class="badge bg-danger rounded-pill">5.9% </span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Kent Brockman confundido con Principal Skinner
-                                            <span class="badge bg-danger rounded-pill">6%</span>
+                                            Charles Montgomery Burns confundido con Homer Simpson
+                                            <span class="badge bg-danger rounded-pill">4.4%
+
+                                            </span>
                                         </li>
                                     </ul>
                                 </div>
@@ -1891,11 +1893,15 @@
 
                             <div class="alert alert-info mt-4">
                                 <h5><i class="fas fa-info-circle me-2"></i> Análisis por Personaje</h5>
-                                <p>Los personajes principales como Homer, Bart y Lisa tienen mejor precisión de
-                                    clasificación debido a la mayor cantidad de imágenes en el conjunto de datos. Los
-                                    personajes secundarios con apariencias similares tienden a ser más confundidos entre
-                                    sí.</p>
+                                <p>Los personajes con mejor rendimiento son <strong>Apu (0.887)</strong>, <strong>Chief
+                                        Wiggum (0.841)</strong> y <strong>Kent Brockman (0.809)</strong>, que destacan
+                                    por tener características visuales distintivas y únicas. Los personajes con mayor
+                                    dificultad de clasificación incluyen <strong>Edna Krabappel (0.435)</strong> y
+                                    <strong>Charles Montgomery Burns (0.523)</strong>, posiblemente debido a similitudes
+                                    en complexión física con otros personajes del dataset.
+                                </p>
                             </div>
+
                         </div>
                     </div>
 
@@ -1911,48 +1917,46 @@
                                                     Error de Clasificación
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png"
-                                                        alt="Homer Simpson" class="img-fluid"
+                                                    <img src="https://static.simpsonswiki.com/images/a/a9/Abraham_Simpson.png"
+                                                        alt="Abraham Grampa Simpson" class="img-fluid"
                                                         style="max-height: 300px;">
-
-                                                    <p class="mb-1"><strong>Real:</strong> Homer Simpson</p>
-                                                    <p class="mb-1"><strong>Predicción:</strong> Ned Flanders</p>
-                                                    <p class="mb-0"><strong>Confianza:</strong> 48.2%</p>
+                                                    <p class="mb-1"><strong>Real:</strong> Abraham Grampa Simpson</p>
+                                                    <p class="mb-1"><strong>Predicción:</strong> Homer Simpson</p>
+                                                    <p class="mb-0"><strong>Confianza:</strong> 51.3%</p>
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="col-md-4 mb-3">
                                             <div class="card h-100">
                                                 <div class="card-header bg-danger text-white">
                                                     Error de Clasificación
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/e/ec/Lisa_Simpson.png"
-                                                        alt="Lisa Simpson" class="img-fluid mb-2"
+                                                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Bart_Simpson_200px.png/220px-Bart_Simpson_200px.png"
+                                                        alt="Bart Simpson" class="img-fluid mb-2"
                                                         style="max-height: 300px;">
-                                                    <p class="mb-1"><strong>Real:</strong> Lisa Simpson</p>
-                                                    <p class="mb-1"><strong>Predicción:</strong> Bart Simpson</p>
-                                                    <p class="mb-0"><strong>Confianza:</strong> 53.7%</p>
+                                                    <p class="mb-1"><strong>Real:</strong> Bart Simpson</p>
+                                                    <p class="mb-1"><strong>Predicción:</strong> Lisa Simpson</p>
+                                                    <p class="mb-0"><strong>Confianza:</strong> 46.8%</p>
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="col-md-4 mb-3">
                                             <div class="card h-100">
                                                 <div class="card-header bg-danger text-white">
                                                     Error de Clasificación
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/8/80/Moe_Szyslak.png"
-                                                        alt="Moe Szyslak" class="img-fluid mb-2"
+                                                    <img src="https://static.wikia.nocookie.net/lossimpson/images/9/9d/Charles_Montgomery_Burns.png/revision/latest?cb=20090227021502&path-prefix=es"
+                                                        alt="Charles Montgomery Burns" class="img-fluid mb-2"
                                                         style="max-height: 300px;">
-                                                    <p class="mb-1"><strong>Real:</strong> Moe Szyslak</p>
-                                                    <p class="mb-1"><strong>Predicción:</strong> Barney Gumble</p>
-                                                    <p class="mb-0"><strong>Confianza:</strong> 42.9%</p>
+                                                    <p class="mb-1"><strong>Real:</strong> Charles Montgomery Burns</p>
+                                                    <p class="mb-1"><strong>Predicción:</strong> Moe Szyslak</p>
+                                                    <p class="mb-0"><strong>Confianza:</strong> 44.7%</p>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -2005,14 +2009,75 @@
                                         <div class="card-body text-center">
                                             <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/activation_heatmap.png"
                                                 alt="Mapa de activación Abraham Simpson" class="img-fluid">
-
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    <!-- Nueva sección: Filtros de Activación -->
+                    <div class="row mt-5">
+                        <div class="col-12" data-aos="fade-up">
+                            <h3>Análisis de Filtros por Capas</h3>
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-filter"></i> Visualización de Filtros Aplicados
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">
+                                        Esta imagen muestra cómo diferentes filtros de las capas convolucionales
+                                        procesan
+                                        la imagen original para extraer características específicas en cada nivel.
+                                    </p>
+                                    <div class="text-center">
+                                        <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/Filtros.png"
+                                            alt="Filtros aplicados por capas" class="img-fluid rounded shadow-lg">
+                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="col-md-3">
+                                            <div class="card border-primary">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-image text-primary mb-2"
+                                                        style="font-size: 2rem;"></i>
+                                                    <h6>Imagen Original</h6>
+                                                    <small class="text-muted">Entrada del modelo</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="card border-success">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-border-style text-success mb-2"
+                                                        style="font-size: 2rem;"></i>
+                                                    <h6>Filtros Básicos</h6>
+                                                    <small class="text-muted">Detección de bordes</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="card border-warning">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-shapes text-warning mb-2"
+                                                        style="font-size: 2rem;"></i>
+                                                    <h6>Filtros Intermedios</h6>
+                                                    <small class="text-muted">Formas y patrones</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="card border-danger">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-eye text-danger mb-2" style="font-size: 2rem;"></i>
+                                                    <h6>Filtros Avanzados</h6>
+                                                    <small class="text-muted">Características específicas</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2069,295 +2134,365 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-sm table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Personaje</th>
-                                                    <th>Precisión</th>
-                                                    <th>Recall</th>
-                                                    <th>F1-Score</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="table-success">
-                                                    <td>Homer Simpson</td>
-                                                    <td>0.87</td>
-                                                    <td>0.92</td>
-                                                    <td>0.89</td>
-                                                </tr>
-                                                <tr class="table-success">
-                                                    <td>Bart Simpson</td>
-                                                    <td>0.82</td>
-                                                    <td>0.88</td>
-                                                    <td>0.85</td>
-                                                </tr>
-                                                <tr class="table-success">
-                                                    <td>Marge Simpson</td>
-                                                    <td>0.89</td>
-                                                    <td>0.79</td>
-                                                    <td>0.84</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Lisa Simpson</td>
-                                                    <td>0.76</td>
-                                                    <td>0.71</td>
-                                                    <td>0.73</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Ned Flanders</td>
-                                                    <td>0.68</td>
-                                                    <td>0.72</td>
-                                                    <td>0.70</td>
-                                                </tr>
-                                                <tr class="table-danger">
-                                                    <td>Milhouse Van Houten</td>
-                                                    <td>0.58</td>
-                                                    <td>0.62</td>
-                                                    <td>0.60</td>
-                                                </tr>
-                                                <tr class="table-danger">
-                                                    <td>Kent Brockman</td>
-                                                    <td>0.54</td>
-                                                    <td>0.59</td>
-                                                    <td>0.56</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Personaje</th>
+                                                        <th>Precisión</th>
+                                                        <th>Recall</th>
+                                                        <th>F1-Score</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="table-success">
+                                                        <td>Apu Nahasapeemapetilon</td>
+                                                        <td>0.89</td>
+                                                        <td>0.88</td>
+                                                        <td>0.887</td>
+                                                    </tr>
+                                                    <tr class="table-success">
+                                                        <td>Chief Wiggum</td>
+                                                        <td>0.85</td>
+                                                        <td>0.83</td>
+                                                        <td>0.841</td>
+                                                    </tr>
+                                                    <tr class="table-success">
+                                                        <td>Kent Brockman</td>
+                                                        <td>0.82</td>
+                                                        <td>0.80</td>
+                                                        <td>0.809</td>
+                                                    </tr>
+                                                    <tr class="table-success">
+                                                        <td>Sideshow Bob</td>
+                                                        <td>0.81</td>
+                                                        <td>0.80</td>
+                                                        <td>0.804</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Principal Skinner</td>
+                                                        <td>0.76</td>
+                                                        <td>0.75</td>
+                                                        <td>0.756</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Marge Simpson</td>
+                                                        <td>0.74</td>
+                                                        <td>0.73</td>
+                                                        <td>0.736</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Ned Flanders</td>
+                                                        <td>0.72</td>
+                                                        <td>0.71</td>
+                                                        <td>0.716</td>
+                                                    </tr>
+                                                    <tr class="table-warning">
+                                                        <td>Moe Szyslak</td>
+                                                        <td>0.63</td>
+                                                        <td>0.61</td>
+                                                        <td>0.622</td>
+                                                    </tr>
+                                                    <tr class="table-danger">
+                                                        <td>Charles Montgomery Burns</td>
+                                                        <td>0.54</td>
+                                                        <td>0.51</td>
+                                                        <td>0.523</td>
+                                                    </tr>
+                                                    <tr class="table-danger">
+                                                        <td>Edna Krabappel</td>
+                                                        <td>0.45</td>
+                                                        <td>0.42</td>
+                                                        <td>0.435</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Ejemplos de Clasificaciones Correctas -->
-                    <div class="row mt-4">
-                        <div class="col-12" data-aos="fade-up">
-                            <h3>Ejemplos de Clasificaciones Correctas</h3>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-4 mb-3">
-                                            <div class="card h-100">
-                                                <div class="card-header bg-success text-white">
-                                                    Clasificación Correcta
-                                                </div>
-                                                <div class="card-body text-center">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png"
-                                                        alt="Homer Simpson" class="img-fluid"
-                                                        style="max-height: 300px;">
-                                                    <p class="mb-1"><strong>Real:</strong> Homer Simpson</p>
-                                                    <p class="mb-1"><strong>Predicción:</strong> Homer Simpson</p>
-                                                    <p class="mb-0"><strong>Confianza:</strong> 92.5%</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 mb-3">
-                                            <div class="card h-100">
-                                                <div class="card-header bg-success text-white">
-                                                    Clasificación Correcta
-                                                </div>
-                                                <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/6/65/Bart_Simpson.png"
-                                                        alt="Bart Simpson" class="img-fluid" style="max-height: 300px;">
-                                                    <p class="mb-1"><strong>Real:</strong> Bart Simpson</p>
-                                                    <p class="mb-1"><strong>Predicción:</strong> Bart Simpson</p>
-                                                    <p class="mb-0"><strong>Confianza:</strong> 88.3%</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 mb-3">
-                                            <div class="card h-100">
-                                                <div class="card-header bg-success text-white">
-                                                    Clasificación Correcta
-                                                </div>
-                                                <div class="card-body text-center">
-                                                    <img src="https://static.simpsonswiki.com/images/0/0b/Marge_Simpson.png"
-                                                        alt="Marge Simpson" class="img-fluid"
-                                                        style="max-height: 300px;">
-                                                    <p class="mb-1"><strong>Real:</strong> Marge Simpson</p>
-                                                    <p class="mb-1"><strong>Predicción:</strong> Marge Simpson</p>
-                                                    <p class="mb-0"><strong>Confianza:</strong> 95.1%</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                    <!-- Gráfico 1: Precisión vs Tiempo vs Complejidad -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-cube"></i> Precisión vs Tiempo vs Complejidad del Modelo
+                            </div>
+                            <div class="card-body text-center">
+                                <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/precision_vs_tiempo_vs_complejidadDelModelo.png"
+                                    alt="Precisión vs Tiempo vs Complejidad del Modelo"
+                                    class="img-fluid rounded shadow">
+                                <div class="mt-3">
+                                    <div class="alert alert-info">
+                                        <small><i class="fas fa-info-circle"></i> <strong>Análisis:</strong>
+                                            Este gráfico tridimensional muestra la relación entre la precisión del
+                                            modelo,
+                                            el tiempo de entrenamiento y la complejidad computacional, permitiendo
+                                            identificar
+                                            el modelo con mejor balance eficiencia-rendimiento.</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-
-                    <div class="row mt-4">
-                        <div class="col-12" data-aos="fade-up">
-                            <h3>Impacto de Técnicas Aplicadas</h3>
-                            <div class="chart-container">
-                                <canvas id="techniquesChart"></canvas>
+                    <!-- Gráfico 2: Precisión vs Exhaustividad por Personaje -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-chart-scatter"></i> Precisión vs Exhaustividad por Personaje
                             </div>
-
-                            <div class="alert alert-info mt-3">
-                                <h5><i class="fas fa-info-circle me-2"></i> Interpretación</h5>
-                                <p>Las técnicas que más impacto tuvieron en la mejora del rendimiento fueron el aumento
-                                    de datos (data augmentation) y la normalización por lotes (batch normalization).
-                                    Estas técnicas ayudaron a mejorar la generalización del modelo y estabilizar el
-                                    entrenamiento.</p>
+                            <div class="card-body text-center">
+                                <img src="https://raw.githubusercontent.com/BigFrankV/html-varios/main/img-deep/precision_vs_exhaustividadXpj.png"
+                                    alt="Precisión vs Exhaustividad por Personaje" class="img-fluid rounded shadow">
+                                <div class="mt-3">
+                                    <div class="alert alert-success">
+                                        <small><i class="fas fa-chart-line"></i> <strong>Interpretación:</strong>
+                                            El gráfico de dispersión muestra el rendimiento individual de cada
+                                            personaje,
+                                            donde los puntos más cercanos a la esquina superior derecha representan
+                                            los personajes mejor clasificados (alta precisión y recall).</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Conclusiones -->
-        <section id="conclusiones" class="mb-5" data-aos="fade-up">
-            <div class="section">
-                <div class="section-header">
-                    <i class="fas fa-lightbulb"></i>
-                    <h2 class="mb-0">Conclusiones</h2>
-                </div>
-                <div class="section-content">
+    </div>
+    <!-- Ejemplos de Clasificaciones Correctas -->
+    <div class="row mt-4">
+        <div class="col-12" data-aos="fade-up">
+            <h3>Ejemplos de Clasificaciones Correctas</h3>
+            <div class="card">
+                <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-6" data-aos="fade-right">
-                            <h3>Hallazgos Principales</h3>
-                            <div class="card">
-                                <div class="card-body">
-                                    <ol>
-                                        <li class="mb-3">
-                                            <strong>Arquitectura más efectiva:</strong> La CNN Básica demostró ser la
-                                            más efectiva para esta tarea específica, con una precisión de test del
-                                            63.13%, superando a modelos más complejos.
-                                        </li>
-                                        <li class="mb-3">
-                                            <strong>Modelos de transfer learning:</strong> Sorprendentemente, los
-                                            modelos pre-entrenados (MobileNetV2 y EfficientNet) no superaron a los
-                                            modelos entrenados desde cero, posiblemente debido a la diferencia entre las
-                                            imágenes naturales de ImageNet y los dibujos animados de Los Simpson.
-                                        </li>
-                                        <li class="mb-3">
-                                            <strong>Complejidad vs. rendimiento:</strong> No siempre más parámetros
-                                            implican mejor rendimiento. El modelo VGG-Like, con más de 45 millones de
-                                            parámetros, tuvo un rendimiento inferior a la CNN Básica con solo 2.5
-                                            millones de parámetros.
-                                        </li>
-                                        <li class="mb-3">
-                                            <strong>Fine-tuning:</strong> El fine-tuning mejoró el rendimiento del mejor
-                                            modelo en un 1.72%, llevando la precisión final a 64.85%.
-                                        </li>
-                                        <li class="mb-3">
-                                            <strong>Personajes principales:</strong> Los personajes con más presencia en
-                                            la serie (Homer, Bart, Marge) obtuvieron mejores resultados de
-                                            clasificación, posiblemente debido a la mayor cantidad de imágenes en el
-                                            conjunto de datos.
-                                        </li>
-                                    </ol>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    Clasificación Correcta
+                                </div>
+                                <div class="card-body text-center">
+                                    <img src="https://static.wikia.nocookie.net/lossimpson/images/7/7d/Apu_Nahasapeemapetilon.png/revision/latest?cb=20111127113228&path-prefix=es"
+                                        alt="Apu Nahasapeemapetilon" class="img-fluid" style="max-height: 300px;">
+                                    <p class="mb-1"><strong>Real:</strong> Apu Nahasapeemapetilon</p>
+                                    <p class="mb-1"><strong>Predicción:</strong> Apu Nahasapeemapetilon
+                                    </p>
+                                    <p class="mb-0"><strong>Confianza:</strong> 94.7%</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-lg-6" data-aos="fade-left">
-                            <h3>Recomendaciones</h3>
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                    <h5>Para mejorar el rendimiento</h5>
-                                    <ul>
-                                        <li>Aumentar la resolución de las imágenes para capturar más detalles</li>
-                                        <li>Incrementar el conjunto de datos con más imágenes de personajes minoritarios
-                                        </li>
-                                        <li>Aplicar técnicas de ensemble (combinación de modelos)</li>
-                                        <li>Realizar una búsqueda exhaustiva de hiperparámetros</li>
-                                        <li>Probar arquitecturas híbridas que combinen elementos de diferentes modelos
-                                        </li>
-                                    </ul>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    Clasificación Correcta
                                 </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Para implementación en producción</h5>
-                                    <ul>
-                                        <li>Convertir a TensorFlow Lite para dispositivos móviles</li>
-                                        <li>Implementar una API REST con TensorFlow Serving para aplicaciones web</li>
-                                        <li>Aplicar cuantización para reducir el tamaño del modelo</li>
-                                        <li>Establecer un sistema de monitoreo para evaluar el rendimiento continuo</li>
-                                        <li>Implementar un sistema de retroalimentación para seguir mejorando el modelo
-                                        </li>
-                                    </ul>
+                                <div class="card-body text-center">
+                                    <img src="https://static.simpsonswiki.com/images/e/ec/Clancy_Wiggum.png"
+                                        alt="Chief Wiggum" class="img-fluid" style="max-height: 300px;">
+                                    <p class="mb-1"><strong>Real:</strong> Chief Wiggum</p>
+                                    <p class="mb-1"><strong>Predicción:</strong> Chief Wiggum</p>
+                                    <p class="mb-0"><strong>Confianza:</strong> 91.2%</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12" data-aos="fade-up">
-                            <h3>Lecciones Aprendidas</h3>
-                            <div class="alert alert-success">
-                                <h5><i class="fas fa-graduation-cap me-2"></i> Principales Aprendizajes</h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <ul>
-                                            <li>Una arquitectura más simple puede superar a modelos más complejos cuando
-                                                está bien adaptada al problema específico.</li>
-                                            <li>El preprocesamiento y aumento de datos son tan importantes como la
-                                                arquitectura del modelo.</li>
-                                            <li>Los modelos pre-entrenados no siempre son la mejor opción, especialmente
-                                                cuando el dominio de las imágenes es muy diferente al conjunto de
-                                                entrenamiento original.</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <ul>
-                                            <li>La normalización por lotes (batch normalization) mejora
-                                                significativamente la estabilidad del entrenamiento.</li>
-                                            <li>El balance entre complejidad del modelo y rendimiento es crucial para
-                                                obtener resultados óptimos.</li>
-                                            <li>El fine-tuning puede mejorar el rendimiento incluso en modelos que no
-                                                son de transfer learning.</li>
-                                        </ul>
-                                    </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    Clasificación Correcta
                                 </div>
-                            </div>
-
-                            <div class="conclusion mt-4 p-4 bg-light rounded shadow-sm" data-aos="fade-up">
-                                <h4 class="text-center mb-3">Conclusión Final</h4>
-                                <p class="lead text-center">Este proyecto demuestra que para la clasificación de
-                                    personajes de Los Simpson, una CNN relativamente simple puede obtener buenos
-                                    resultados, superando incluso a arquitecturas más complejas y modelos
-                                    pre-entrenados. La elección de la arquitectura adecuada, junto con un buen
-                                    preprocesamiento de datos y técnicas de regularización, son factores clave para el
-                                    éxito en tareas de clasificación de imágenes específicas.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-12" data-aos="fade-up">
-                            <h3>Referencias y Recursos</h3>
-                            <div class="card">
-                                <div class="card-body">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">
-                                            <i class="fas fa-book text-secondary me-2"></i> <strong>TensorFlow
-                                                Documentation</strong> - Guía completa sobre implementación de redes
-                                            neuronales convolucionales
-                                        </li>
-                                        <li class="list-group-item">
-                                            <i class="fas fa-graduation-cap text-secondary me-2"></i> <strong>Curso de
-                                                Deep Learning</strong> - Conceptos y técnicas avanzadas para
-                                            clasificación de imágenes
-                                        </li>
-                                        <li class="list-group-item">
-                                            <i class="fas fa-database text-secondary me-2"></i> <strong>Dataset de Los
-                                                Simpson</strong> - Conjunto de imágenes preprocesadas de personajes de
-                                            la serie
-                                        </li>
-                                    </ul>
+                                <div class="card-body text-center">
+                                    <img src="https://static.wikia.nocookie.net/lossimpson/images/1/16/Kent_Brockman.png/revision/latest?cb=20150716184651&path-prefix=es"
+                                        alt="Kent Brockman" class="img-fluid" style="max-height: 300px;">
+                                    <p class="mb-1"><strong>Real:</strong> Kent Brockman</p>
+                                    <p class="mb-1"><strong>Predicción:</strong> Kent Brockman</p>
+                                    <p class="mb-0"><strong>Confianza:</strong> 88.9%</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+
+
+
+
+    <div class="row mt-4">
+        <div class="col-12" data-aos="fade-up">
+            <h3>Impacto de Técnicas Aplicadas</h3>
+            <div class="chart-container">
+                <canvas id="techniquesChart"></canvas>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <h5><i class="fas fa-info-circle me-2"></i> Interpretación</h5>
+                <p>Las técnicas que más impacto tuvieron en la mejora del rendimiento fueron el aumento
+                    de datos (data augmentation) y la normalización por lotes (batch normalization).
+                    Estas técnicas ayudaron a mejorar la generalización del modelo y estabilizar el
+                    entrenamiento.</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </section>
+
+    <!-- Conclusiones -->
+    <section id="conclusiones" class="mb-5" data-aos="fade-up">
+        <div class="section">
+            <div class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2 class="mb-0">Conclusiones</h2>
+            </div>
+            <div class="section-content">
+                <div class="row">
+                    <div class="col-lg-6" data-aos="fade-right">
+                        <h3>Hallazgos Principales</h3>
+                        <div class="card">
+                            <div class="card-body">
+                                <ol>
+                                    <li class="mb-3">
+                                        <strong>Arquitectura más efectiva:</strong> La CNN Básica demostró ser la
+                                        más efectiva para esta tarea específica, con una precisión de test del
+                                        63.13%, superando a modelos más complejos.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>Modelos de transfer learning:</strong> Sorprendentemente, los
+                                        modelos pre-entrenados (MobileNetV2 y EfficientNet) no superaron a los
+                                        modelos entrenados desde cero, posiblemente debido a la diferencia entre las
+                                        imágenes naturales de ImageNet y los dibujos animados de Los Simpson.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>Complejidad vs. rendimiento:</strong> No siempre más parámetros
+                                        implican mejor rendimiento. El modelo VGG-Like, con más de 45 millones de
+                                        parámetros, tuvo un rendimiento inferior a la CNN Básica con solo 2.5
+                                        millones de parámetros.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>Fine-tuning:</strong> El fine-tuning mejoró el rendimiento del mejor
+                                        modelo en un 1.72%, llevando la precisión final a 64.85%.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>Personajes principales:</strong> Los personajes con más presencia en
+                                        la serie (Homer, Bart, Marge) obtuvieron mejores resultados de
+                                        clasificación, posiblemente debido a la mayor cantidad de imágenes en el
+                                        conjunto de datos.
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6" data-aos="fade-left">
+                        <h3>Recomendaciones</h3>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5>Para mejorar el rendimiento</h5>
+                                <ul>
+                                    <li>Aumentar la resolución de las imágenes para capturar más detalles</li>
+                                    <li>Incrementar el conjunto de datos con más imágenes de personajes minoritarios
+                                    </li>
+                                    <li>Aplicar técnicas de ensemble (combinación de modelos)</li>
+                                    <li>Realizar una búsqueda exhaustiva de hiperparámetros</li>
+                                    <li>Probar arquitecturas híbridas que combinen elementos de diferentes modelos
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Para implementación en producción</h5>
+                                <ul>
+                                    <li>Convertir a TensorFlow Lite para dispositivos móviles</li>
+                                    <li>Implementar una API REST con TensorFlow Serving para aplicaciones web</li>
+                                    <li>Aplicar cuantización para reducir el tamaño del modelo</li>
+                                    <li>Establecer un sistema de monitoreo para evaluar el rendimiento continuo</li>
+                                    <li>Implementar un sistema de retroalimentación para seguir mejorando el modelo
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12" data-aos="fade-up">
+                        <h3>Lecciones Aprendidas</h3>
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-graduation-cap me-2"></i> Principales Aprendizajes</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li>Una arquitectura más simple puede superar a modelos más complejos cuando
+                                            está bien adaptada al problema específico.</li>
+                                        <li>El preprocesamiento y aumento de datos son tan importantes como la
+                                            arquitectura del modelo.</li>
+                                        <li>Los modelos pre-entrenados no siempre son la mejor opción, especialmente
+                                            cuando el dominio de las imágenes es muy diferente al conjunto de
+                                            entrenamiento original.</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li>La normalización por lotes (batch normalization) mejora
+                                            significativamente la estabilidad del entrenamiento.</li>
+                                        <li>El balance entre complejidad del modelo y rendimiento es crucial para
+                                            obtener resultados óptimos.</li>
+                                        <li>El fine-tuning puede mejorar el rendimiento incluso en modelos que no
+                                            son de transfer learning.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="conclusion mt-4 p-4 bg-light rounded shadow-sm" data-aos="fade-up">
+                            <h4 class="text-center mb-3">Conclusión Final</h4>
+                            <p class="lead text-center">Este proyecto demuestra que para la clasificación de
+                                personajes de Los Simpson, una CNN relativamente simple puede obtener buenos
+                                resultados, superando incluso a arquitecturas más complejas y modelos
+                                pre-entrenados. La elección de la arquitectura adecuada, junto con un buen
+                                preprocesamiento de datos y técnicas de regularización, son factores clave para el
+                                éxito en tareas de clasificación de imágenes específicas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12" data-aos="fade-up">
+                        <h3>Referencias y Recursos</h3>
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="fas fa-book text-secondary me-2"></i> <strong>TensorFlow
+                                            Documentation</strong> - Guía completa sobre implementación de redes
+                                        neuronales convolucionales
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="fas fa-graduation-cap text-secondary me-2"></i> <strong>Curso de
+                                            Deep Learning</strong> - Conceptos y técnicas avanzadas para
+                                        clasificación de imágenes
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="fas fa-database text-secondary me-2"></i> <strong>Dataset de Los
+                                            Simpson</strong> - Conjunto de imágenes preprocesadas de personajes de
+                                        la serie
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     </div>
 
     <!-- Scroll to Top Button -->
@@ -3031,21 +3166,21 @@
                     data: {
                         labels: ['CNN Básica', 'VGG-Like', 'MobileNet-Like', 'MobileNetV2', 'EfficientNet'],
                         datasets: [{
-                            label: 'Tiempo de entrenamiento (s)',
-                            data: [339.11, 607.98, 599.08, 582.48, 605.18],
+                            label: 'Tiempo de entrenamiento (min)',
+                            data: [5.8, 8.4, 8.7, 8.5, 9.9],
                             backgroundColor: [
-                                'rgba(40, 167, 69, 0.7)',
-                                'rgba(255, 193, 7, 0.7)',
-                                'rgba(63, 132, 229, 0.7)',
-                                'rgba(23, 162, 184, 0.7)',
-                                'rgba(220, 53, 69, 0.7)'
+                                'rgba(40, 167, 69, 0.7)',   // Verde - CNN Básica (más rápida)
+                                'rgba(220, 53, 69, 0.7)',   // Rojo - VGG-Like (muy lenta)
+                                'rgba(63, 132, 229, 0.7)',  // Azul - MobileNet-Like
+                                'rgba(23, 162, 184, 0.7)',  // Cian - MobileNetV2
+                                'rgba(255, 193, 7, 0.7)'    // Amarillo - EfficientNet
                             ],
                             borderColor: [
                                 'rgb(40, 167, 69)',
-                                'rgb(255, 193, 7)',
+                                'rgb(220, 53, 69)',
                                 'rgb(63, 132, 229)',
                                 'rgb(23, 162, 184)',
-                                'rgb(220, 53, 69)'
+                                'rgb(255, 193, 7)'
                             ],
                             borderWidth: 1
                         }]
@@ -3062,6 +3197,13 @@
                                 font: {
                                     size: 16
                                 }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return 'Tiempo: ' + context.parsed.y + ' minutos';
+                                    }
+                                }
                             }
                         },
                         scales: {
@@ -3069,12 +3211,19 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Tiempo (segundos)'
+                                    text: 'Tiempo (minutos)'
+                                },
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + ' min';
+                                    }
                                 }
                             }
                         }
                     }
                 });
+
+
 
                 // Gráfico de evolución de la precisión
                 const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
@@ -3325,25 +3474,27 @@
                         datasets: [{
                             label: 'Personajes',
                             data: [
-                                { x: 0.87, y: 0.92, r: 20, character: 'Homer Simpson' },
-                                { x: 0.82, y: 0.88, r: 18, character: 'Bart Simpson' },
-                                { x: 0.89, y: 0.79, r: 17, character: 'Marge Simpson' },
-                                { x: 0.76, y: 0.71, r: 16, character: 'Lisa Simpson' },
-                                { x: 0.68, y: 0.72, r: 14, character: 'Ned Flanders' },
-                                { x: 0.63, y: 0.68, r: 13, character: 'Krusty the Clown' },
-                                { x: 0.58, y: 0.62, r: 12, character: 'Milhouse Van Houten' },
-                                { x: 0.54, y: 0.59, r: 10, character: 'Kent Brockman' },
-                                { x: 0.49, y: 0.53, r: 9, character: 'Sideshow Bob' },
-                                { x: 0.43, y: 0.47, r: 8, character: 'Principal Skinner' }
+                                { x: 0.89, y: 0.88, r: 22, character: 'Apu Nahasapeemapetilon' },
+                                { x: 0.85, y: 0.83, r: 21, character: 'Chief Wiggum' },
+                                { x: 0.82, y: 0.80, r: 20, character: 'Kent Brockman' },
+                                { x: 0.81, y: 0.80, r: 19, character: 'Sideshow Bob' },
+                                { x: 0.76, y: 0.75, r: 18, character: 'Principal Skinner' },
+                                { x: 0.74, y: 0.73, r: 17, character: 'Marge Simpson' },
+                                { x: 0.73, y: 0.70, r: 16, character: 'Milhouse Van Houten' },
+                                { x: 0.72, y: 0.71, r: 15, character: 'Ned Flanders' },
+                                { x: 0.70, y: 0.69, r: 14, character: 'Krusty The Clown' },
+                                { x: 0.63, y: 0.61, r: 13, character: 'Moe Szyslak' },
+                                { x: 0.54, y: 0.51, r: 11, character: 'Charles Montgomery Burns' },
+                                { x: 0.45, y: 0.42, r: 10, character: 'Edna Krabappel' }
                             ],
                             backgroundColor: function (context) {
                                 const value = context.dataset.data[context.dataIndex];
                                 const f1 = 2 * (value.x * value.y) / (value.x + value.y);
-
-                                if (f1 > 0.8) return 'rgba(40, 167, 69, 0.7)';
-                                if (f1 > 0.6) return 'rgba(63, 132, 229, 0.7)';
-                                if (f1 > 0.5) return 'rgba(249, 87, 0, 0.7)';
-                                return 'rgba(220, 53, 69, 0.7)';
+                                if (f1 > 0.8) return 'rgba(40, 167, 69, 0.7)';      // Verde para F1 > 0.8
+                                if (f1 > 0.7) return 'rgba(63, 132, 229, 0.7)';     // Azul para F1 > 0.7
+                                if (f1 > 0.6) return 'rgba(249, 193, 28, 0.7)';     // Amarillo para F1 > 0.6
+                                if (f1 > 0.5) return 'rgba(249, 87, 0, 0.7)';       // Naranja para F1 > 0.5
+                                return 'rgba(220, 53, 69, 0.7)';                    // Rojo para F1 <= 0.5
                             },
                             borderColor: 'rgba(0, 0, 0, 0.1)',
                             pointRadius: function (context) {
@@ -3373,11 +3524,11 @@
                                 callbacks: {
                                     label: function (context) {
                                         const value = context.dataset.data[context.dataIndex];
-                                        const f1 = (2 * value.x * value.y / (value.x + value.y)).toFixed(2);
+                                        const f1 = (2 * value.x * value.y / (value.x + value.y)).toFixed(3);
                                         return [
                                             `Personaje: ${value.character}`,
-                                            `Precisión: ${value.x.toFixed(2)}`,
-                                            `Recall: ${value.y.toFixed(2)}`,
+                                            `Precisión: ${value.x.toFixed(3)}`,
+                                            `Recall: ${value.y.toFixed(3)}`,
                                             `F1-Score: ${f1}`
                                         ];
                                     }
@@ -3405,37 +3556,38 @@
                     }
                 });
 
+
                 // Gráfico de rendimiento por personaje
                 const characterPerformanceCtx = document.getElementById('characterPerformanceChart').getContext('2d');
                 const characterPerformanceChart = new Chart(characterPerformanceCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['Homer', 'Bart', 'Marge', 'Lisa', 'Ned', 'Krusty', 'Milhouse', 'Kent', 'Sideshow Bob', 'Skinner'],
+                        labels: ['Apu', 'Chief Wiggum', 'Kent Brockman', 'Sideshow Bob', 'Principal Skinner', 'Marge Simpson', 'Milhouse', 'Ned Flanders', 'Krusty', 'Moe Szyslak'],
                         datasets: [{
                             label: 'F1-Score',
-                            data: [0.89, 0.85, 0.84, 0.73, 0.70, 0.65, 0.60, 0.56, 0.51, 0.45],
+                            data: [0.887, 0.841, 0.809, 0.804, 0.756, 0.736, 0.717, 0.716, 0.697, 0.622],
                             backgroundColor: [
                                 'rgba(40, 167, 69, 0.7)',
                                 'rgba(40, 167, 69, 0.7)',
                                 'rgba(40, 167, 69, 0.7)',
+                                'rgba(40, 167, 69, 0.7)',
+                                'rgba(63, 132, 229, 0.7)',
                                 'rgba(63, 132, 229, 0.7)',
                                 'rgba(63, 132, 229, 0.7)',
                                 'rgba(249, 87, 0, 0.7)',
                                 'rgba(249, 87, 0, 0.7)',
-                                'rgba(220, 53, 69, 0.7)',
-                                'rgba(220, 53, 69, 0.7)',
                                 'rgba(220, 53, 69, 0.7)'
                             ],
                             borderColor: [
                                 'rgb(40, 167, 69)',
                                 'rgb(40, 167, 69)',
                                 'rgb(40, 167, 69)',
+                                'rgb(40, 167, 69)',
+                                'rgb(63, 132, 229)',
                                 'rgb(63, 132, 229)',
                                 'rgb(63, 132, 229)',
                                 'rgb(249, 87, 0)',
                                 'rgb(249, 87, 0)',
-                                'rgb(220, 53, 69)',
-                                'rgb(220, 53, 69)',
                                 'rgb(220, 53, 69)'
                             ],
                             borderWidth: 1
@@ -3467,6 +3619,7 @@
                         }
                     }
                 });
+
 
                 // Gráfico de fine-tuning
                 const finetuningCtx = document.getElementById('finetuningChart').getContext('2d');
