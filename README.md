@@ -7,7 +7,7 @@ Recursos web diversos
 Cómo acceder
 Todos los archivos HTML de este repositorio están disponibles en línea a través de GitHub Pages:
 
-
+https://bigfrankv.github.io/html-varios/Deep-examen.html
 
 https://BigFrankV.github.io/html-varios/Deep-3-home.html
 
