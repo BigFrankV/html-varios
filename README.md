@@ -11,6 +11,7 @@ https://bigfrankv.github.io/html-varios/Deep-3-home.html
 
 https://BigFrankV.github.io/html-varios/Deep-examen.html
 
+https://BigFrankV.github.io/html-varios/Deep-3.1.html
 
 https://BigFrankV.github.io/html-varios/Deep-3.2.html
 
