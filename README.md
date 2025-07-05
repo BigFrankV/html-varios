@@ -9,6 +9,7 @@ Todos los archivos HTML de este repositorio están disponibles en línea a trav�
 
 https://bigfrankv.github.io/html-varios/Deep.html
 
+https://bigfrankv.github.io/html-varios/Deep-3-home.html
 
 https://BigFrankV.github.io/html-varios/Deep-examen.html
 
