@@ -7,6 +7,8 @@ Recursos web diversos
 Cómo acceder
 Todos los archivos HTML de este repositorio están disponibles en línea a través de GitHub Pages:
 
+https://bigfrankv.github.io/html-varios/proyecto%20(1).html
+
 https://bigfrankv.github.io/html-varios/Deep.html
 
 https://bigfrankv.github.io/html-varios/Deep-3-home.html
