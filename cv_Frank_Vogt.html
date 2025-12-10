@@ -77,6 +77,7 @@
 
         .section {
             margin-bottom: 30px;
+            padding-left: 32px;
         }
 
         .section-title {
@@ -86,6 +87,7 @@
             padding-bottom: 10px;
             border-bottom: 2px solid var(--secondary-color);
             font-weight: 600;
+            padding-left: 0;
         }
 
         .sub-title {
@@ -130,12 +132,13 @@
         }
 
         ul {
-            padding-left: 20px;
+            padding-left: 0;
             margin-bottom: 15px;
         }
 
         li {
             margin-bottom: 8px;
+            list-style-position: inside;
         }
 
         .experience-item {
@@ -167,6 +170,9 @@
             border-radius: 8px;
             border-left: 4px solid var(--secondary-color);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 95%;
+            margin-right: auto;
+            margin-left: auto;
         }
 
         .project-title {
@@ -216,6 +222,27 @@
             background-color: #e34c26;
         }
 
+        .next {
+            background-color: #000000;
+            color: white;
+        }
+
+        .ts {
+            background-color: #3178c6;
+        }
+
+        .node {
+            background-color: #339933;
+        }
+
+        .mysql {
+            background-color: #4479a1;
+        }
+
+        .docker {
+            background-color: #2496ed;
+        }
+
         .tech-icons {
             display: flex;
             flex-wrap: wrap;
@@ -234,6 +261,16 @@
         .tech-icons i {
             margin-right: 5px;
             color: var(--secondary-color);
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--secondary-color) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .project-description p {
@@ -263,7 +300,7 @@
     <div class="container">
         <div class="header">
             <h1>Frank Alexander Reinaldo Vogt Guzmán</h1>
-            <p>Estudiante de Ingeniería en Informática</p>
+            <p>Ingeniero informatico</p>
 
             <div class="contact-info">
                 <div class="contact-item">
@@ -272,7 +309,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-phone"></i>
-                    <span>+56 9 2895 9744</span>
+                    <span>+56 9 2895 9744 | +56 9 4875 3882</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
@@ -294,18 +331,7 @@
         <div class="main-content">
             <div class="section">
                 <h2 class="section-title">Perfil Profesional</h2>
-                <p>Estudiante de Ingeniería en Informática en DuocUC con sólidos conocimientos en desarrollo de
-                    software, bases de datos y gestión de proyectos informáticos. Soy una persona comprometida que
-                    disfruta aprendiendo y adquiriendo nuevos conocimientos, con especial interés en la resolución de
-                    problemas. Al comprometerme con un proyecto, dedico mi 100% para cumplir lo prometido y no dejar
-                    tareas incompletas. Me desenvuelvo en diversas áreas de la informática, desde el desarrollo full
-                    stack con tecnologías como Django en backend, React, Ionic y Bootstrap en frontend, hasta
-                    aplicaciones de escritorio y desarrollo Android. Manejo diferentes sistemas de bases de datos, tanto
-                    SQL (MySQL, PostgreSQL) como NoSQL (MongoDB, Firebase). Busco una oportunidad de práctica o empleo
-                    para aplicar mis conocimientos en un entorno profesional y convalidar mi salida intermedia como
-                    Técnico Analista Programador.</p>
-
-
+                <p>Desarrollador Full Stack orientado a resultados, con experiencia en proyectos web modernos y sólidos conocimientos en backend (Django, Next.js, Spring Boot, FastAPI) y frontend (React, Angular, Bootstrap, Tailwind, Ionic). Manejo avanzado de bases de datos SQL y NoSQL, autenticación segura (JWT, 2FA), y despliegue con Docker. Experiencia en APIs REST, control de versiones con Git, y metodologías ágiles (SCRUM). Busco aportar valor en equipos de desarrollo, aprendiendo y resolviendo problemas con compromiso y ética profesional.</p>
             </div>
 
             <div class="section">
@@ -332,45 +358,34 @@
             <div class="section">
                 <h2 class="section-title">Habilidades y Competencias</h2>
 
-                <!-- Lenguajes de Programación -->
-                <h3 class="sub-title"><i class="fas fa-code"></i> Lenguajes de Programación</h3>
+                <!-- Fortalezas técnicas (agrupadas, sin duplicados) -->
+                <h3 class="sub-title"><i class="fas fa-star"></i> Fortalezas Técnicas</h3>
                 <div class="skill-list">
-                    <span class="skill-item"><i class="fab fa-python"></i> Python</span>
-                    <span class="skill-item"><i class="fab fa-java"></i> Java</span>
-                    <span class="skill-item"><i class="fab fa-js"></i> JavaScript</span>
-                    <span class="skill-item"><i class="fas fa-terminal"></i> Programación de Algoritmos</span>
+                    <span class="skill-item"><i class="fas fa-server"></i> Backend: Django, Next.js, Spring Boot, FastAPI</span>
+                    <span class="skill-item"><i class="fas fa-layer-group"></i> Frontend: React, Angular, Bootstrap, Tailwind, Ionic, HTML, CSS, JavaScript</span>
+                    <span class="skill-item"><i class="fas fa-database"></i> Bases de Datos: PostgreSQL, MySQL, MongoDB, Firebase</span>
+                    <span class="skill-item"><i class="fas fa-code"></i> APIs REST, Autenticación JWT/2FA, Docker, Git, SCRUM</span>
+                    <span class="skill-item"><i class="fas fa-chart-line"></i> Análisis de Datos: pandas, scikit-learn, matplotlib, Power BI</span>
                 </div>
 
-                <!-- Desarrollo Web y Móvil -->
-                <h3 class="sub-title"><i class="fas fa-laptop-code"></i> Desarrollo Web y Móvil</h3>
+
+                <!-- Análisis de Datos e IA -->
+                <h3 class="sub-title"><i class="fas fa-brain"></i> Análisis de Datos & IA</h3>
                 <div class="skill-list">
-                    <span class="skill-item"><i class="fab fa-html5"></i> HTML</span>
-                    <span class="skill-item"><i class="fab fa-css3-alt"></i> CSS</span>
-                    <span class="skill-item"><i class="fab fa-bootstrap"></i> Bootstrap</span>
-                    <span class="skill-item"><i class="fab fa-angular"></i> Ionic Angular</span>
-                    <span class="skill-item"><i class="fas fa-globe"></i> Programación Web</span>
-                    <span class="skill-item"><i class="fas fa-mobile-alt"></i> Programación de Aplicaciones
-                        Móviles</span>
-                    <span class="skill-item"><i class="fas fa-desktop"></i> Desarrollo de Software de Escritorio</span>
-                    <span class="skill-item"><i class="fab fa-react"></i> React</span>
+                    <span class="skill-item"><i class="fas fa-robot"></i> Machine Learning / Deep Learning</span>
+                    <span class="skill-item"><i class="fas fa-chart-bar"></i> Pandas, scikit-learn, matplotlib</span>
+                    <span class="skill-item"><i class="fas fa-database"></i> Big Data / Minería de Datos</span>
+                    <span class="skill-item"><i class="fas fa-table"></i> Dashboards: Power BI / visualización</span>
                 </div>
 
-                <!-- Bases de Datos -->
-                <h3 class="sub-title"><i class="fas fa-database"></i> Bases de Datos</h3>
+                <!-- Herramientas y buenas prácticas -->
+                <h3 class="sub-title"><i class="fas fa-tools"></i> Herramientas y buenas prácticas</h3>
                 <div class="skill-list">
-                    <span class="skill-item"><i class="fas fa-database"></i> MySQL</span>
-                    <span class="skill-item"><i class="fas fa-database"></i> PostgreSQL</span>
-                    <span class="skill-item"><i class="fas fa-table"></i> Modelamiento de Base de Datos</span>
-                    <span class="skill-item"><i class="fas fa-search"></i> Consultas de Bases de Datos</span>
-                    <span class="skill-item"><i class="fas fa-code"></i> Programación de Base de Datos</span>
-                </div>
-
-                <!-- Frameworks y Tecnologías -->
-                <h3 class="sub-title"><i class="fas fa-layer-group"></i> Frameworks y Tecnologías</h3>
-                <div class="skill-list">
-                    <span class="skill-item"><i class="fab fa-python"></i> Django</span>
-                    <span class="skill-item"><i class="fas fa-plug"></i> Integración de Plataformas</span>
-                    <span class="skill-item"><i class="fas fa-shield-alt"></i> Ciberseguridad</span>
+                    <span class="skill-item"><i class="fas fa-code-branch"></i> Git / GitHub</span>
+                    <span class="skill-item"><i class="fab fa-docker"></i> Docker (bases)</span>
+                    
+                    <span class="skill-item"><i class="fas fa-shield-alt"></i> Ciberseguridad (conceptos
+                        aplicados)</span>
                 </div>
 
                 <!-- Metodologías y Gestión -->
@@ -380,22 +395,8 @@
                     <span class="skill-item"><i class="fas fa-sync-alt"></i> SCRUM</span>
                     <span class="skill-item"><i class="fas fa-check-double"></i> Testing</span>
                     <span class="skill-item"><i class="fas fa-sitemap"></i> UML</span>
-                    <span class="skill-item"><i class="fas fa-clipboard-check"></i> Gestión de errores</span>
-                    <span class="skill-item"><i class="fas fa-tasks"></i> Gestión de Proyectos Informáticos</span>
-                    <span class="skill-item"><i class="fas fa-file-signature"></i> Diseño y Gestión de Requisitos</span>
-                    <span class="skill-item"><i class="fas fa-award"></i> Calidad de Software</span>
-                    <span class="skill-item"><i class="fas fa-chart-line"></i> Evaluación de Proyectos</span>
-                </div>
-
-                <!-- Inteligencia Artificial y Análisis de Datos -->
-                <h3 class="sub-title"><i class="fas fa-brain"></i> Inteligencia Artificial y Análisis de Datos</h3>
-                <div class="skill-list">
-                    <span class="skill-item"><i class="fas fa-robot"></i> Machine Learning</span>
-                    <span class="skill-item"><i class="fas fa-book"></i> Fundamentos de Machine Learning</span>
-                    <span class="skill-item"><i class="fas fa-chart-bar"></i> Estadística Descriptiva</span>
-                    <span class="skill-item"><i class="fas fa-network-wired"></i> Deep Learning</span>
-                    <span class="skill-item"><i class="fas fa-database"></i> Big Data</span>
-                    <span class="skill-item"><i class="fas fa-search-dollar"></i> Minería de Datos</span>
+                    <span class="skill-item"><i class="fas fa-clipboard-check"></i> Gestión de Proyectos /
+                        Calidad</span>
                 </div>
 
                 <!-- Ingeniería de Software -->
@@ -421,114 +422,135 @@
                     <li><i class="fas fa-lightbulb"></i> Proactividad y aprendizaje continuo</li>
                     <li><i class="fas fa-comments"></i> Habilidades de comunicación efectiva</li>
                 </ul>
-
-
-            </div>
-            <div class="section">
-                <h2 class="section-title">Experiencia Laboral</h2>
-                <div class="experience-item">
-                    <div class="experience-title">Maestro Segunda</div>
-                    <div class="experience-company">Conelse, Ingeniería y Montajes Eléctricos</div>
-                    <div class="experience-duration">12 de septiembre - 1 de noviembre de 2023</div>
-                    <div class="experience-description">
-                        <p><i class="fas fa-check-circle"></i> Instalación de trapezoides para soportes de canalización
-                            eléctrica.</p>
-                        <p><i class="fas fa-check-circle"></i> Montaje de escalerillas para media tensión (MT) en
-                            sistemas
-                            de detección de incendios.</p>
-                        <p><i class="fas fa-check-circle"></i> Instalación de tuberías subterráneas y bancoductos para
-                            distribución eléctrica.</p>
-                        <p><i class="fas fa-check-circle"></i> Manejo de maquinaria JLG (tipo Genie) y Alza Hombre para
-                            trabajos en altura y desplazamiento de materiales.</p>
-                        <p><i class="fas fa-check-circle"></i> Trabajo en equipo para garantizar la seguridad y el
-                            cumplimiento de normativas eléctricas.</p>
-                    </div>
-                </div>
             </div>
 
 
-            <div class="section">
-                <h2 class="section-title">Proyectos Destacados</h2>
-
-                <div class="project-item">
-                    <div class="project-title"><i class="fas fa-money-bill-wave"></i> Cuentas-Claras</div>
-                    <div class="project-tech">
-                        <span class="tech-badge js">JavaScript</span>
-                        <span class="tech-badge py">Python </span>
-                        <span class="tech-badge css">CSS </span>
-                        <span class="tech-badge html">HTML</span>
-                    </div>
-                    <div class="project-description">
-                        <p>Aplicación de gestión de pagos de gastos comunes de  edificio o condominio con backend en Django y frontend en React. Permite el
-                            seguimiento y control de gastos personales del recidente como multas o pago del gasto comun con roles de residente y administrador.</p>
-                        <div class="tech-icons">
-                            <span><i class="fab fa-react"></i> React</span>
-                            <span><i class="fab fa-python"></i> Django</span>
-                            <span><i class="fab fa-js"></i> JavaScript</span>
-                            <span><i class="fab fa-html5"></i> HTML</span>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-item">
-                    <div class="project-title"><i class="fas fa-gamepad"></i> PokeAPI Pokedex</div>
-                    <div class="project-tech">
-                        <span class="tech-badge js">JavaScript</span>
-                        <span class="tech-badge py">Python</span>
-                        <span class="tech-badge css">CSS</span>
-                        <span class="tech-badge html">HTML</span>
-                    </div>
-                    <div class="project-description">
-                        <p>Pokedex interactiva construida con datos de la PokeAPI. Backend desarrollado con Django y
-                            frontend con React + Vite para optimizar el rendimiento.</p>
-                        <div class="tech-icons">
-                            <span><i class="fab fa-react"></i> React + Vite</span>
-                            <span><i class="fab fa-python"></i> Django</span>
-                            <span><i class="fas fa-database"></i> API Integration</span>
-                            <span><i class="fab fa-html5"></i> HTML</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-item">
-                    <div class="project-title"><i class="fas fa-globe"></i> API-Multiverse</div>
-                    <div class="project-tech">
-                        <span class="tech-badge js">JavaScript</span>
-                        <span class="tech-badge py">Python</span>
-                        <span class="tech-badge css">CSS</span>
-                        <span class="tech-badge html">HTML</span>
-                    </div>
-                    <div class="project-description">
-                        <p>API web que integra personajes de múltiples franquicias (Rick and Morty, Pokemon, etc.).
-                            Inspirada en PokeAPI pero expandida a un multiverso de contenido.</p>
-                        <div class="tech-icons">
-                            <span><i class="fab fa-python"></i> Django REST Framework</span>
-                            <span><i class="fab fa-js"></i> JavaScript</span>
-                            <span><i class="fas fa-server"></i> API Development</span>
-                            <span><i class="fab fa-html5"></i> HTML</span>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="section">
-                <h2 class="section-title">Idiomas</h2>
-                <div class="skill-list">
-                    <span class="skill-item">Español: Nativo</span>
-                    <span class="skill-item">Inglés: Nivel A2 Examen TOEIC</span>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">Disponibilidad</h2>
-                <p>Disponibilidad inmediata para práctica o empleo.</p>
-                <p>Interés en roles de desarrollo de software, administración de bases de datos o análisis de datos.</p>
-            </div>
 
         </div>
+        
+        <div class="section">
+            <h2 class="section-title">Experiencia Laboral</h2>
+            <div class="experience-item">
+                <div class="experience-title">Maestro Segunda</div>
+                <div class="experience-company">Conelse, Ingeniería y Montajes Eléctricos</div>
+                <div class="experience-duration">12 de septiembre - 1 de noviembre de 2024</div>
+                <div class="experience-description">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Instalación de trapezoides para soportes de canalización
+                            eléctrica.</li>
+                        <li><i class="fas fa-check-circle"></i> Montaje de escalerillas para media tensión (MT) en
+                            sistemas
+                            de detección de incendios.</li>
+                        <li><i class="fas fa-check-circle"></i> Instalación de tuberías subterráneas y bancoductos para
+                            distribución eléctrica.</li>
+                        <li><i class="fas fa-check-circle"></i> Manejo de maquinaria JLG (tipo Genie) y Alza Hombre para
+                            trabajos en altura y desplazamiento de materiales.</li>
+                        <li><i class="fas fa-check-circle"></i> Trabajo en equipo para garantizar la seguridad y el
+                            cumplimiento de normativas eléctricas.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <h2 class="section-title">Proyectos Destacados</h2>
+
+            <div class="project-item">
+                <div class="project-title"> Proyecto de titulo ingeneria</div>
+                <div class="project-title"><i class="fas fa-money-bill-wave"></i> Cuentas Claras</div>
+                
+
+                <div class="project-tech">
+                    <span class="tech-badge next">Next.js</span>
+                    <span class="tech-badge ts">TypeScript</span>
+                    <span class="tech-badge node">Node.js</span>
+                    <span class="tech-badge mysql">MySQL</span>
+                    <span class="tech-badge docker">Docker</span>
+                </div>
+                <div class="project-description">
+                    <ul>
+                        <li>
+                            Plataforma web para la gestión de cobros, conciliaciones y administración de comunidades. Frontend en Next.js + TypeScript + Material-UI; backend RESTful con Node.js y Express; base de datos MySQL (Sequelize); Redis para cache y workers; autenticación segura con JWT y 2FA; APIs documentadas con Swagger. Incluye emisión automática de cargos, conciliación bancaria y control por roles multi-tenant.
+                        </li>
+                    </ul>
+                    <div class="tech-icons">
+                        <span><i class="fab fa-react"></i> Next.js</span>
+                        <span><i class="fab fa-js"></i> TypeScript</span>
+                        <span><i class="fab fa-node-js"></i> Node.js</span>
+                        <span><i class="fas fa-database"></i> MySQL</span>
+                        <span><i class="fab fa-docker"></i> Docker</span>
+                        <span><i class="fas fa-file-alt"></i> Swagger</span>
+                        <span><i class="fas fa-shield-alt"></i> JWT + 2FA</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-item">
+                <div class="project-title"><i class="fas fa-gamepad"></i> PokeAPI Pokedex</div>
+                <div class="project-tech">
+                    <span class="tech-badge js">JavaScript</span>
+                    <span class="tech-badge py">Python</span>
+                    <span class="tech-badge css">CSS</span>
+                    <span class="tech-badge html">HTML</span>
+                </div>
+                <div class="project-description">
+                    <ul>
+                        <li>Pokedex interactiva construida con datos de la PokeAPI. Backend desarrollado con Django y
+                            frontend con React + Vite para optimizar el rendimiento.</li>
+                    </ul>
+                    <div class="tech-icons">
+                        <span><i class="fab fa-react"></i> React + Vite</span>
+                        <span><i class="fab fa-python"></i> Django</span>
+                        <span><i class="fas fa-database"></i> API Integration</span>
+                        <span><i class="fab fa-html5"></i> HTML</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-item">
+                <div class="project-title"><i class="fas fa-globe"></i> API-Multiverse</div>
+                <div class="project-tech">
+                    <span class="tech-badge js">JavaScript</span>
+                    <span class="tech-badge py">Python</span>
+                    <span class="tech-badge css">CSS</span>
+                    <span class="tech-badge html">HTML</span>
+                </div>
+                <div class="project-description">
+                    <ul>
+                        <li>API web que integra personajes de múltiples franquicias (Rick and Morty, Pokemon, etc.).
+                            Inspirada en PokeAPI pero expandida a un multiverso de contenido.</li>
+                    </ul>
+                    <div class="tech-icons">
+                        <span><i class="fab fa-python"></i> Django REST Framework</span>
+                        <span><i class="fab fa-js"></i> JavaScript</span>
+                        <span><i class="fas fa-server"></i> API Development</span>
+                        <span><i class="fab fa-html5"></i> HTML</span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <h2 class="section-title">Idiomas</h2>
+            <ul>
+                <li>Español: Nativo</li>
+                <li>Inglés: Nivel A2 Examen TOEIC</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Disponibilidad</h2>
+            <ul>
+                <li>Disponibilidad inmediata para práctica o empleo.</li>
+                <li>Interés en roles de desarrollo de software, administración de bases de datos o análisis de datos.
+                </li>
+            </ul>
+        </div>
+
+    </div>
 
     </div>
 
