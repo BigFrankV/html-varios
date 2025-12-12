@@ -7,7 +7,7 @@ Recursos web diversos
 Cómo acceder
 Todos los archivos HTML de este repositorio están disponibles en línea a través de GitHub Pages:
 
-
+https://BigFrankV.github.io/html-varios/cv_Frank_Vogt.html
 
 https://bigfrankv.github.io/html-varios/proyecto%20(1).html
 
