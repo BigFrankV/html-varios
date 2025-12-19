@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Carta Pokémon (Versión Final Estable)</title>
+
+    <style>
+        body {
+            background: #e3e3e3;
+            text-align: center;
+            font-family: sans-serif;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .carta-section {
+            flex: 0 0 auto;
+        }
+
+        .editor-section {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        /* 📌 Carta con tu diseño original mejorado */
+        #carta {
+            width: 400px;
+            height: 550px;
+            margin: auto;
+            border-radius: 20px;
+            border: 4px solid #000;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            transition: filter 0.3s ease;
+        }
+
+        #carta.foil {
+            filter: brightness(1.3) contrast(1.2) hue-rotate(30deg) saturate(1.5);
+            box-shadow: 0 0 30px gold, 0 0 50px rgba(255,215,0,0.5);
+        }
+
+        /* Imagen central del Pokémon (editable) */
+        #poke-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            object-fit: contain;
+            max-height: 60%;
+            display: block;
+            height: auto;
+            cursor: move;
+        }
+
+        /* Texto general */
+        .text {
+            position: absolute;
+            font-weight: 800;
+            color: black;
+            z-index: 10;
+        }
+
+        /* Título */
+        #nombre { top: 25px; left: 25px; font-size: 24px; font-family: 'Arial Black', sans-serif; }
+        #hp     { top: 25px; right: 25px; font-size: 20px; }
+        #rareza { top: 62px; left: 50%; transform: translateX(-50%); font-size: 16px; }
+
+        /* Tipo e icono */
+        #tipo-icon { top: 25px; left: 50%; transform: translateX(-50%); font-size: 30px; }
+
+        /* Artista y colección */
+        #artista { bottom: 20px; left: 20px; font-size: 12px; }
+        #coleccion { bottom: 20px; right: 20px; font-size: 12px; }
+
+        .habilidad-titulo { font-size: 17px; }
+        .habilidad-texto  { font-size: 13px; font-weight: 600; width: 260px; }
+
+        /* Energía para ataques */
+        .energia {
+            position: absolute;
+            left: 20px;
+            font-size: 18px;
+            z-index: 10;
+        }
+
+        #energia1 { bottom: 170px; }
+        #energia2 { bottom: 110px; }
+
+        /* 🟡 Ataque 1 */
+        #hab1-titulo { bottom: 145px; left: 20px; }
+        #hab1-texto  { bottom: 123px; left: 20px; }
+
+        /* 🔥 Ataque 2 */
+        #hab2-titulo { bottom: 85px; left: 20px; }
+        #hab2-texto  { bottom: 63px; left: 20px; }
+
+        /* Daños */
+        .dano {
+            position: absolute;
+            font-size: 19px;
+            font-weight: bold;
+            right: 22px;
+            z-index: 10;
+        }
+
+        #dano1 { bottom: 137px; }
+        #dano2 { bottom: 77px; }
+
+        /* Controles de editor */
+        .editor-controls {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .editor-controls label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .editor-controls input[type="range"] {
+            width: 100%;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 6px;
+            border: 2px solid #777;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: gold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover { background:#ffe36c; }
+
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+        }
+        .remove-btn:hover { background: #cc3333; }
+    </style>
+</head>
+
+<body>
+
+<h2>🔥 Carta Pokémon Editable (Versión Final + Export)</h2>
+
+<div class="container">
+    <div class="carta-section">
+        <div id="carta" style="background-image:url('fondo.jpg');">
+            <img id="poke-img" src="">
+
+            <div id="nombre" class="text">NOMBRE</div>
+            <div id="hp" class="text">HP 120</div>
+            <div id="rareza" class="text">EX</div>
+            <div id="tipo-icon" class="text">🔥</div>
+
+            <div id="energia1" class="energia">🔥🔥</div>
+            <div id="hab1-titulo" class="habilidad-titulo text">Ataque 1</div>
+            <div id="hab1-texto" class="habilidad-texto text">Descripción ataque 1</div>
+            <div id="dano1" class="dano">80</div>
+
+            <div id="energia2" class="energia">💧💧💧</div>
+            <div id="hab2-titulo" class="habilidad-titulo text">Ataque 2</div>
+            <div id="hab2-texto" class="habilidad-texto text">Descripción ataque 2</div>
+            <div id="dano2" class="dano">120</div>
+
+            <div id="artista" class="text">Artista: Nombre</div>
+            <div id="coleccion" class="text">1/100</div>
+        </div>
+    </div>
+
+    <div class="editor-section">
+        <h4>🎨 Editor de Imagen Pokémon</h4>
+        <div class="editor-controls">
+            <div>
+                <label>Posición X (%):</label>
+                <input type="range" id="pos-x" min="0" max="100" value="50" oninput="actualizarImagen()">
+            </div>
+            <div>
+                <label>Posición Y (%):</label>
+                <input type="range" id="pos-y" min="0" max="100" value="50" oninput="actualizarImagen()">
+            </div>
+            <div>
+                <label>Tamaño (%):</label>
+                <input type="range" id="size" min="10" max="200" value="100" oninput="actualizarImagen()">
+            </div>
+            <div>
+                <label>Rotación (°):</label>
+                <input type="range" id="rotation" min="-180" max="180" value="0" oninput="actualizarImagen()">
+            </div>
+        </div>
+        <h3>📝 Editor de carta</h3>
+
+        <input id="input-nombre" type="text" placeholder="Nombre" oninput="document.getElementById('nombre').innerText = this.value">
+        <input id="input-hp" type="number" placeholder="HP" oninput="document.getElementById('hp').innerText = 'HP ' + this.value">
+        <input id="input-rareza" type="text" placeholder="Rareza" oninput="document.getElementById('rareza').innerText = this.value">
+
+        <select id="input-tipo" onchange="cambiarTipo()">
+            <option value="🔥">🔥 Fuego</option>
+            <option value="💧">💧 Agua</option>
+            <option value="🌿">🌿 Planta</option>
+            <option value="⚡">⚡ Eléctrico</option>
+            <option value="🗿">🗿 Lucha</option>
+            <option value="🦋">🦋 Psíquico</option>
+            <option value="🌑">🌑 Siniestro</option>
+            <option value="💎">💎 Metal</option>
+            <option value="❄️">❄️ Hielo</option>
+            <option value="🪽">🪽 Hada</option>
+            <option value="🟤">🟤 Tierra</option>
+            <option value="🐉">🐉 Dragón</option>
+            <option value="🎴">🎴 Incoloro</option>
+        </select>
+
+        <label><input type="checkbox" id="input-foil" onchange="toggleFoil()"> Foil (Efecto holográfico)</label>
+
+        <input id="input-artista" type="text" placeholder="Artista" oninput="document.getElementById('artista').innerText = 'Artista: ' + this.value">
+        <input id="input-coleccion" type="text" placeholder="Colección (ej: 1/100)" oninput="document.getElementById('coleccion').innerText = this.value">
+
+        <div class="form-section">
+        <h4>Ataque 1 <label style="font-weight:normal; font-size:14px; margin-left:10px;"><input id="input-enable1" type="checkbox" checked onchange="toggleAttack(1)"> activar</label></h4>
+        <input id="input-energia1-cantidad" type="number" placeholder="Cantidad energía" min="0" max="5" oninput="actualizarEnergia(1)">
+        <select id="input-energia1-tipo" onchange="actualizarEnergia(1)">
+            <option value="🔥">🔥 Fuego</option>
+            <option value="💧">💧 Agua</option>
+            <option value="🌿">🌿 Planta</option>
+            <option value="⚡">⚡ Eléctrico</option>
+            <option value="🗿">🗿 Lucha</option>
+            <option value="🦋">🦋 Psíquico</option>
+            <option value="🌑">🌑 Siniestro</option>
+            <option value="💎">💎 Metal</option>
+            <option value="❄️">❄️ Hielo</option>
+            <option value="🪽">🪽 Hada</option>
+            <option value="🟤">🟤 Tierra</option>
+            <option value="🐉">🐉 Dragón</option>
+            <option value="🎴">🎴 Incoloro</option>
+        </select>
+        <input id="input-hab1-titulo" type="text" placeholder="Ataque 1" oninput="updateAttackTitle(1)">
+        <textarea id="input-hab1-texto" placeholder="Descripción 1" oninput="document.getElementById('hab1-texto').innerText = this.value"></textarea>
+        <input id="input-dano1" type="number" placeholder="Daño 1" oninput="document.getElementById('dano1').innerText = this.value">
+        </div>
+
+        <div class="form-section">
+        <h4>Ataque 2 <label style="font-weight:normal; font-size:14px; margin-left:10px;"><input id="input-enable2" type="checkbox" checked onchange="toggleAttack(2)"> activar</label></h4>
+        <input id="input-energia2-cantidad" type="number" placeholder="Cantidad energía" min="0" max="5" oninput="actualizarEnergia(2)">
+        <select id="input-energia2-tipo" onchange="actualizarEnergia(2)">
+            <option value="🔥">🔥 Fuego</option>
+            <option value="💧">💧 Agua</option>
+            <option value="🌿">🌿 Planta</option>
+            <option value="⚡">⚡ Eléctrico</option>
+            <option value="🗿">🗿 Lucha</option>
+            <option value="🦋">🦋 Psíquico</option>
+            <option value="🌑">🌑 Siniestro</option>
+            <option value="💎">💎 Metal</option>
+            <option value="❄️">❄️ Hielo</option>
+            <option value="🪽">🪽 Hada</option>
+            <option value="🟤">🟤 Tierra</option>
+            <option value="🐉">🐉 Dragón</option>
+            <option value="🎴">🎴 Incoloro</option>
+        </select>
+        <input id="input-hab2-titulo" type="text" placeholder="Ataque 2" oninput="updateAttackTitle(2)">
+        <textarea id="input-hab2-texto" placeholder="Descripción 2" oninput="document.getElementById('hab2-texto').innerText = this.value"></textarea>
+        <input id="input-dano2" type="number" placeholder="Daño 2" oninput="document.getElementById('dano2').innerText = this.value">
+        </div>
+
+        <br><br>
+        📌 Pokémon <input id="file-pokemon" type="file" accept="image/*" onchange="cargarImagenPokemon(this)">
+        <button class="remove-btn" onclick="quitarImagenPokemon()">Quitar Imagen Pokémon</button><br>
+        📌 Fondo <input id="file-fondo" type="file" accept="image/*" onchange="cargarImagenFondo(this)">
+        <button class="remove-btn" onclick="quitarImagenFondo()">Quitar Fondo</button><br>
+
+        
+
+        <br><br>
+        <button onclick="exportar()">⚡ Guardar PNG HD</button>
+    </div>
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+function exportar(){
+    var cartaEl = document.getElementById('carta');
+    html2canvas(cartaEl,{scale:2}).then(c=>{
+        var a=document.createElement("a");
+        a.href=c.toDataURL("image/png");
+        a.download="pokemon_card.png";
+        a.click();
+    })
+}
+
+function cambiarTipo(){
+    var tipo = document.getElementById('input-tipo').value;
+    document.getElementById('tipo-icon').innerText = tipo;
+}
+
+function toggleFoil(){
+    var carta = document.getElementById('carta');
+    if(document.getElementById('input-foil').checked){
+        carta.classList.add('foil');
+    } else {
+        carta.classList.remove('foil');
+    }
+}
+
+function actualizarEnergia(num){
+    var cantidad = Number(document.getElementById('input-energia' + num + '-cantidad').value) || 0;
+    var tipo = document.getElementById('input-energia' + num + '-tipo').value || '';
+    var energiaStr = tipo.repeat(cantidad);
+    var energiaEl = document.getElementById('energia' + num);
+    if(energiaEl) energiaEl.innerText = energiaStr;
+    // Actualizar título del ataque según la cantidad detectada
+    updateAttackTitle(num);
+}
+
+function updateAttackTitle(num){
+    var base = document.getElementById('input-hab'+num+'-titulo').value || ('Ataque ' + num);
+    var cantidad = Number(document.getElementById('input-energia' + num + '-cantidad').value) || 0;
+    var suffix = cantidad > 0 ? ' ('+cantidad+' energía' + (cantidad>1 ? 's' : '') +')' : '';
+
+    var titleEl = document.getElementById('hab'+num+'-titulo');
+    if(!titleEl) return;
+    // Mantener el título base y añadir un sufijo separado para evitar que los iconos se peguen al texto
+    titleEl.innerText = base;
+    var sufId = 'hab'+num+'-suffix';
+    var suf = document.getElementById(sufId);
+    if(!suf){
+        suf = document.createElement('span');
+        suf.id = sufId;
+        suf.style.fontSize = '12px';
+        suf.style.fontWeight = '600';
+        suf.style.marginLeft = '8px';
+        titleEl.appendChild(suf);
+    }
+    suf.innerText = suffix;
+}
+
+function toggleAttack(num){
+    var enabled = document.getElementById('input-enable'+num).checked;
+    var ids = ['energia'+num, 'hab'+num+'-titulo', 'hab'+num+'-texto', 'dano'+num];
+    ids.forEach(function(id){
+        var el = document.getElementById(id);
+        if(!el) return;
+        el.style.display = enabled ? '' : 'none';
+    });
+    // disable/enable editor controls for that attack
+    var controls = ['input-energia'+num+'-cantidad','input-energia'+num+'-tipo','input-hab'+num+'-titulo','input-hab'+num+'-texto','input-dano'+num];
+    controls.forEach(function(id){
+        var c = document.getElementById(id);
+        if(c) c.disabled = !enabled;
+    });
+}
+
+function actualizarImagen(){
+    var img = document.getElementById('poke-img');
+    var x = document.getElementById('pos-x').value;
+    var y = document.getElementById('pos-y').value;
+    var size = document.getElementById('size').value;
+    var rot = document.getElementById('rotation').value;
+    img.style.left = x + '%';
+    img.style.top = y + '%';
+    img.style.transform = 'translate(-50%, -50%) scale(' + (size / 100) + ') rotate(' + rot + 'deg)';
+    img.style.width = (260 * size / 100) + 'px'; // Ajustar ancho base
+}
+
+// Mejor manejo de archivos para mostrar imagenes correctamente y revocar objectURLs
+var currentPokemonURL = null;
+var currentFondoURL = null;
+
+function cargarImagenPokemon(input){
+    var f = input.files && input.files[0];
+    if(!f) return;
+    if(currentPokemonURL) URL.revokeObjectURL(currentPokemonURL);
+    currentPokemonURL = URL.createObjectURL(f);
+    document.getElementById('poke-img').src = currentPokemonURL;
+    document.getElementById('poke-img').style.display = 'block';
+}
+
+function quitarImagenPokemon(){
+    if(currentPokemonURL) URL.revokeObjectURL(currentPokemonURL);
+    currentPokemonURL = null;
+    document.getElementById('poke-img').src = '';
+    document.getElementById('poke-img').style.display = 'none';
+    document.getElementById('file-pokemon').value = '';
+}
+
+function cargarImagenFondo(input){
+    var f = input.files && input.files[0];
+    if(!f) return;
+    if(currentFondoURL) URL.revokeObjectURL(currentFondoURL);
+    currentFondoURL = URL.createObjectURL(f);
+    document.getElementById('carta').style.backgroundImage = 'url(' + currentFondoURL + ')';
+}
+
+function quitarImagenFondo(){
+    if(currentFondoURL) URL.revokeObjectURL(currentFondoURL);
+    currentFondoURL = null;
+    document.getElementById('carta').style.backgroundImage = 'none';
+    document.getElementById('file-fondo').value = '';
+}
+
+// Inicializar valores por defecto
+document.addEventListener('DOMContentLoaded', function(){
+    cambiarTipo();
+    actualizarEnergia(1);
+    actualizarEnergia(2);
+    // inicializar estado de activación de ataques
+    toggleAttack(1);
+    toggleAttack(2);
+    actualizarImagen();
+});
+</script>
+
+</body>
+</html>
