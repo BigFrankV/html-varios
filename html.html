@@ -1,443 +1,242 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <title>Carta Pokémon (Versión Final Estable)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <style>
+        :root {
+            --primary-color: #ff0000;
+            --secondary-color: #282828;
+            --accent-color: #00d2ff;
+            --bg-dark: #0f0f0f;
+        }
+
         body {
-            background: #e3e3e3;
-            text-align: center;
-            font-family: sans-serif;
-            color: black;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0f0f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
-        }
-
-        .container {
-            display: flex;
             justify-content: center;
-            align-items: flex-start;
-            gap: 40px;
+            margin: 0;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
             width: 100%;
-            max-width: 1200px;
-            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
-        .carta-section {
-            flex: 0 0 auto;
-        }
-
-        .editor-section {
-            flex: 1;
-            max-width: 500px;
-        }
-
-        /* 📌 Carta con tu diseño original mejorado */
-        #carta {
-            width: 400px;
-            height: 550px;
-            margin: auto;
-            border-radius: 20px;
-            border: 4px solid #000;
-            box-shadow: 0 0 25px rgba(0,0,0,0.5);
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
-            transition: filter 0.3s ease;
-        }
-
-        #carta.foil {
-            filter: brightness(1.3) contrast(1.2) hue-rotate(30deg) saturate(1.5);
-            box-shadow: 0 0 30px gold, 0 0 50px rgba(255,215,0,0.5);
-        }
-
-        /* Imagen central del Pokémon (editable) */
-        #poke-img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-            object-fit: contain;
-            max-height: 60%;
-            display: block;
-            height: auto;
-            cursor: move;
-        }
-
-        /* Texto general */
-        .text {
-            position: absolute;
+        .brand-title {
             font-weight: 800;
-            color: black;
-            z-index: 10;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #ff0000, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* Título */
-        #nombre { top: 25px; left: 25px; font-size: 24px; font-family: 'Arial Black', sans-serif; }
-        #hp     { top: 25px; right: 25px; font-size: 20px; }
-        #rareza { top: 62px; left: 50%; transform: translateX(-50%); font-size: 16px; }
-
-        /* Tipo e icono */
-        #tipo-icon { top: 25px; left: 50%; transform: translateX(-50%); font-size: 30px; }
-
-        /* Artista y colección */
-        #artista { bottom: 20px; left: 20px; font-size: 12px; }
-        #coleccion { bottom: 20px; right: 20px; font-size: 12px; }
-
-        .habilidad-titulo { font-size: 17px; }
-        .habilidad-texto  { font-size: 13px; font-weight: 600; width: 260px; }
-
-        /* Energía para ataques */
-        .energia {
-            position: absolute;
-            left: 20px;
-            font-size: 18px;
-            z-index: 10;
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
         }
 
-        #energia1 { bottom: 170px; }
-        #energia2 { bottom: 110px; }
-
-        /* 🟡 Ataque 1 */
-        #hab1-titulo { bottom: 145px; left: 20px; }
-        #hab1-texto  { bottom: 123px; left: 20px; }
-
-        /* 🔥 Ataque 2 */
-        #hab2-titulo { bottom: 85px; left: 20px; }
-        #hab2-texto  { bottom: 63px; left: 20px; }
-
-        /* Daños */
-        .dano {
-            position: absolute;
-            font-size: 19px;
-            font-weight: bold;
-            right: 22px;
-            z-index: 10;
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25 red radial-gradient(circle, rgba(255,0,0,0.2) 0%, transparent 70%);
+            color: #fff;
         }
 
-        #dano1 { bottom: 137px; }
-        #dano2 { bottom: 77px; }
-
-        /* Controles de editor */
-        .editor-controls {
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .editor-controls label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .editor-controls input[type="range"] {
-            width: 100%;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            margin: 5px 0;
-            padding: 8px;
-            border-radius: 6px;
-            border: 2px solid #777;
-        }
-
-        button {
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            background: gold;
+        .btn-download {
+            background: var(--primary-color);
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
         }
-        button:hover { background:#ffe36c; }
 
-        .remove-btn {
-            background: #ff4444;
-            color: white;
+        .btn-download:hover {
+            background: #cc0000;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3);
         }
-        .remove-btn:hover { background: #cc3333; }
+
+        #statusArea {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: var(--primary-color);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-box {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid #28a745;
+            border-radius: 15px;
+            padding: 20px;
+        }
     </style>
 </head>
-
 <body>
 
-<h2>🔥 Carta Pokémon Editable (Versión Final + Export)</h2>
-
-<div class="container">
-    <div class="carta-section">
-        <div id="carta" style="background-image:url('fondo.jpg');">
-            <img id="poke-img" src="">
-
-            <div id="nombre" class="text">NOMBRE</div>
-            <div id="hp" class="text">HP 120</div>
-            <div id="rareza" class="text">EX</div>
-            <div id="tipo-icon" class="text">🔥</div>
-
-            <div id="energia1" class="energia">🔥🔥</div>
-            <div id="hab1-titulo" class="habilidad-titulo text">Ataque 1</div>
-            <div id="hab1-texto" class="habilidad-texto text">Descripción ataque 1</div>
-            <div id="dano1" class="dano">80</div>
-
-            <div id="energia2" class="energia">💧💧💧</div>
-            <div id="hab2-titulo" class="habilidad-titulo text">Ataque 2</div>
-            <div id="hab2-texto" class="habilidad-texto text">Descripción ataque 2</div>
-            <div id="dano2" class="dano">120</div>
-
-            <div id="artista" class="text">Artista: Nombre</div>
-            <div id="coleccion" class="text">1/100</div>
-        </div>
-    </div>
-
-    <div class="editor-section">
-        <h4>🎨 Editor de Imagen Pokémon</h4>
-        <div class="editor-controls">
-            <div>
-                <label>Posición X (%):</label>
-                <input type="range" id="pos-x" min="0" max="100" value="50" oninput="actualizarImagen()">
-            </div>
-            <div>
-                <label>Posición Y (%):</label>
-                <input type="range" id="pos-y" min="0" max="100" value="50" oninput="actualizarImagen()">
-            </div>
-            <div>
-                <label>Tamaño (%):</label>
-                <input type="range" id="size" min="10" max="200" value="100" oninput="actualizarImagen()">
-            </div>
-            <div>
-                <label>Rotación (°):</label>
-                <input type="range" id="rotation" min="-180" max="180" value="0" oninput="actualizarImagen()">
-            </div>
-        </div>
-        <h3>📝 Editor de carta</h3>
-
-        <input id="input-nombre" type="text" placeholder="Nombre" oninput="document.getElementById('nombre').innerText = this.value">
-        <input id="input-hp" type="number" placeholder="HP" oninput="document.getElementById('hp').innerText = 'HP ' + this.value">
-        <input id="input-rareza" type="text" placeholder="Rareza" oninput="document.getElementById('rareza').innerText = this.value">
-
-        <select id="input-tipo" onchange="cambiarTipo()">
-            <option value="🔥">🔥 Fuego</option>
-            <option value="💧">💧 Agua</option>
-            <option value="🌿">🌿 Planta</option>
-            <option value="⚡">⚡ Eléctrico</option>
-            <option value="🗿">🗿 Lucha</option>
-            <option value="🦋">🦋 Psíquico</option>
-            <option value="🌑">🌑 Siniestro</option>
-            <option value="💎">💎 Metal</option>
-            <option value="❄️">❄️ Hielo</option>
-            <option value="🪽">🪽 Hada</option>
-            <option value="🟤">🟤 Tierra</option>
-            <option value="🐉">🐉 Dragón</option>
-            <option value="🎴">🎴 Incoloro</option>
-        </select>
-
-        <label><input type="checkbox" id="input-foil" onchange="toggleFoil()"> Foil (Efecto holográfico)</label>
-
-        <input id="input-artista" type="text" placeholder="Artista" oninput="document.getElementById('artista').innerText = 'Artista: ' + this.value">
-        <input id="input-coleccion" type="text" placeholder="Colección (ej: 1/100)" oninput="document.getElementById('coleccion').innerText = this.value">
-
-        <div class="form-section">
-        <h4>Ataque 1 <label style="font-weight:normal; font-size:14px; margin-left:10px;"><input id="input-enable1" type="checkbox" checked onchange="toggleAttack(1)"> activar</label></h4>
-        <input id="input-energia1-cantidad" type="number" placeholder="Cantidad energía" min="0" max="5" oninput="actualizarEnergia(1)">
-        <select id="input-energia1-tipo" onchange="actualizarEnergia(1)">
-            <option value="🔥">🔥 Fuego</option>
-            <option value="💧">💧 Agua</option>
-            <option value="🌿">🌿 Planta</option>
-            <option value="⚡">⚡ Eléctrico</option>
-            <option value="🗿">🗿 Lucha</option>
-            <option value="🦋">🦋 Psíquico</option>
-            <option value="🌑">🌑 Siniestro</option>
-            <option value="💎">💎 Metal</option>
-            <option value="❄️">❄️ Hielo</option>
-            <option value="🪽">🪽 Hada</option>
-            <option value="🟤">🟤 Tierra</option>
-            <option value="🐉">🐉 Dragón</option>
-            <option value="🎴">🎴 Incoloro</option>
-        </select>
-        <input id="input-hab1-titulo" type="text" placeholder="Ataque 1" oninput="updateAttackTitle(1)">
-        <textarea id="input-hab1-texto" placeholder="Descripción 1" oninput="document.getElementById('hab1-texto').innerText = this.value"></textarea>
-        <input id="input-dano1" type="number" placeholder="Daño 1" oninput="document.getElementById('dano1').innerText = this.value">
+<div class="container d-flex justify-content-center">
+    <div class="glass-card animate__animated animate__fadeIn">
+        <div class="text-center mb-5">
+            <i class="fab fa-youtube fa-4x mb-3" style="color: var(--primary-color);"></i>
+            <h1 class="brand-title">YT DOWNLOADER</h1>
+            <p class="text-secondary">Descargas rápidas en alta calidad</p>
         </div>
 
-        <div class="form-section">
-        <h4>Ataque 2 <label style="font-weight:normal; font-size:14px; margin-left:10px;"><input id="input-enable2" type="checkbox" checked onchange="toggleAttack(2)"> activar</label></h4>
-        <input id="input-energia2-cantidad" type="number" placeholder="Cantidad energía" min="0" max="5" oninput="actualizarEnergia(2)">
-        <select id="input-energia2-tipo" onchange="actualizarEnergia(2)">
-            <option value="🔥">🔥 Fuego</option>
-            <option value="💧">💧 Agua</option>
-            <option value="🌿">🌿 Planta</option>
-            <option value="⚡">⚡ Eléctrico</option>
-            <option value="🗿">🗿 Lucha</option>
-            <option value="🦋">🦋 Psíquico</option>
-            <option value="🌑">🌑 Siniestro</option>
-            <option value="💎">💎 Metal</option>
-            <option value="❄️">❄️ Hielo</option>
-            <option value="🪽">🪽 Hada</option>
-            <option value="🟤">🟤 Tierra</option>
-            <option value="🐉">🐉 Dragón</option>
-            <option value="🎴">🎴 Incoloro</option>
-        </select>
-        <input id="input-hab2-titulo" type="text" placeholder="Ataque 2" oninput="updateAttackTitle(2)">
-        <textarea id="input-hab2-texto" placeholder="Descripción 2" oninput="document.getElementById('hab2-texto').innerText = this.value"></textarea>
-        <input id="input-dano2" type="number" placeholder="Daño 2" oninput="document.getElementById('dano2').innerText = this.value">
+        <div class="mb-4">
+            <label class="form-label small text-uppercase fw-bold text-secondary">Enlace del video</label>
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 12px 0 0 12px;">
+                    <i class="fas fa-link text-secondary"></i>
+                </span>
+                <input type="text" id="videoUrl" class="form-control border-start-0" placeholder="Pega el link aquí..." style="border-radius: 0 12px 12px 0;">
+            </div>
         </div>
 
-        <br><br>
-        📌 Pokémon <input id="file-pokemon" type="file" accept="image/*" onchange="cargarImagenPokemon(this)">
-        <button class="remove-btn" onclick="quitarImagenPokemon()">Quitar Imagen Pokémon</button><br>
-        📌 Fondo <input id="file-fondo" type="file" accept="image/*" onchange="cargarImagenFondo(this)">
-        <button class="remove-btn" onclick="quitarImagenFondo()">Quitar Fondo</button><br>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small text-uppercase fw-bold text-secondary">Calidad</label>
+                <select id="quality" class="form-select">
+                    <option value="1080">1080p (Full HD)</option>
+                    <option value="720" selected>720p (HD)</option>
+                    <option value="480">480p (SD)</option>
+                    <option value="max">Máxima posible</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small text-uppercase fw-bold text-secondary">Formato</label>
+                <select id="isAudio" class="form-select">
+                    <option value="false">Video + Audio</option>
+                    <option value="true">Solo Audio (MP3)</option>
+                </select>
+            </div>
+        </div>
 
-        
+        <button onclick="downloadVideo()" id="mainBtn" class="btn btn-download w-100 text-white">
+            <i class="fas fa-cloud-download-alt me-2"></i> Generar Enlace
+        </button>
 
-        <br><br>
-        <button onclick="exportar()">⚡ Guardar PNG HD</button>
+        <div id="statusArea" class="animate__animated">
+            <div id="loading" class="text-center">
+                <span class="loader"></span>
+                <p class="mt-3 text-secondary">Procesando con los servidores...</p>
+            </div>
+            
+            <div id="result" class="text-center" style="display: none;">
+                </div>
+        </div>
     </div>
 </div>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-function exportar(){
-    var cartaEl = document.getElementById('carta');
-    html2canvas(cartaEl,{scale:2}).then(c=>{
-        var a=document.createElement("a");
-        a.href=c.toDataURL("image/png");
-        a.download="pokemon_card.png";
-        a.click();
-    })
-}
+    async function downloadVideo() {
+        const url = document.getElementById('videoUrl').value.trim();
+        const quality = document.getElementById('quality').value;
+        const isAudio = document.getElementById('isAudio').value === "true";
+        
+        const statusArea = document.getElementById('statusArea');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const mainBtn = document.getElementById('mainBtn');
 
-function cambiarTipo(){
-    var tipo = document.getElementById('input-tipo').value;
-    document.getElementById('tipo-icon').innerText = tipo;
-}
+        if (!url) {
+            alert("Por favor, introduce un enlace válido de YouTube.");
+            return;
+        }
 
-function toggleFoil(){
-    var carta = document.getElementById('carta');
-    if(document.getElementById('input-foil').checked){
-        carta.classList.add('foil');
-    } else {
-        carta.classList.remove('foil');
+        // Interfaz en modo carga
+        mainBtn.disabled = true;
+        statusArea.style.display = 'block';
+        loading.style.display = 'block';
+        result.style.display = 'none';
+        statusArea.classList.add('animate__fadeIn');
+
+        try {
+            // Petición a la API de Cobalt
+            const response = await fetch('https://api.cobalt.tools/api/json', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: url,
+                    vQuality: quality,
+                    isAudioOnly: isAudio,
+                    filenamePattern: "basic" 
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === "stream" || data.url) {
+                // Éxito
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                result.innerHTML = `
+                    <div class="success-box animate__animated animate__zoomIn">
+                        <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                        <h5 class="mb-3">¡Video procesado!</h5>
+                        <a href="${data.url}" class="btn btn-success w-100 fw-bold" target="_blank">
+                            <i class="fas fa-download me-2"></i> GUARDAR ARCHIVO
+                        </a>
+                        <p class="text-secondary small mt-2">La descarga comenzará en una nueva pestaña.</p>
+                    </div>
+                `;
+            } else {
+                throw new Error(data.text || "Error desconocido");
+            }
+
+        } catch (error) {
+            loading.style.display = 'none';
+            result.style.display = 'block';
+            result.innerHTML = `
+                <div class="text-danger p-3">
+                    <i class="fas fa-exclamation-triangle mb-2"></i>
+                    <p>Error: ${error.message}. Intenta con otro link o calidad.</p>
+                </div>
+            `;
+        } finally {
+            mainBtn.disabled = false;
+        }
     }
-}
-
-function actualizarEnergia(num){
-    var cantidad = Number(document.getElementById('input-energia' + num + '-cantidad').value) || 0;
-    var tipo = document.getElementById('input-energia' + num + '-tipo').value || '';
-    var energiaStr = tipo.repeat(cantidad);
-    var energiaEl = document.getElementById('energia' + num);
-    if(energiaEl) energiaEl.innerText = energiaStr;
-    // Actualizar título del ataque según la cantidad detectada
-    updateAttackTitle(num);
-}
-
-function updateAttackTitle(num){
-    var base = document.getElementById('input-hab'+num+'-titulo').value || ('Ataque ' + num);
-    var cantidad = Number(document.getElementById('input-energia' + num + '-cantidad').value) || 0;
-    var suffix = cantidad > 0 ? ' ('+cantidad+' energía' + (cantidad>1 ? 's' : '') +')' : '';
-
-    var titleEl = document.getElementById('hab'+num+'-titulo');
-    if(!titleEl) return;
-    // Mantener el título base y añadir un sufijo separado para evitar que los iconos se peguen al texto
-    titleEl.innerText = base;
-    var sufId = 'hab'+num+'-suffix';
-    var suf = document.getElementById(sufId);
-    if(!suf){
-        suf = document.createElement('span');
-        suf.id = sufId;
-        suf.style.fontSize = '12px';
-        suf.style.fontWeight = '600';
-        suf.style.marginLeft = '8px';
-        titleEl.appendChild(suf);
-    }
-    suf.innerText = suffix;
-}
-
-function toggleAttack(num){
-    var enabled = document.getElementById('input-enable'+num).checked;
-    var ids = ['energia'+num, 'hab'+num+'-titulo', 'hab'+num+'-texto', 'dano'+num];
-    ids.forEach(function(id){
-        var el = document.getElementById(id);
-        if(!el) return;
-        el.style.display = enabled ? '' : 'none';
-    });
-    // disable/enable editor controls for that attack
-    var controls = ['input-energia'+num+'-cantidad','input-energia'+num+'-tipo','input-hab'+num+'-titulo','input-hab'+num+'-texto','input-dano'+num];
-    controls.forEach(function(id){
-        var c = document.getElementById(id);
-        if(c) c.disabled = !enabled;
-    });
-}
-
-function actualizarImagen(){
-    var img = document.getElementById('poke-img');
-    var x = document.getElementById('pos-x').value;
-    var y = document.getElementById('pos-y').value;
-    var size = document.getElementById('size').value;
-    var rot = document.getElementById('rotation').value;
-    img.style.left = x + '%';
-    img.style.top = y + '%';
-    img.style.transform = 'translate(-50%, -50%) scale(' + (size / 100) + ') rotate(' + rot + 'deg)';
-    img.style.width = (260 * size / 100) + 'px'; // Ajustar ancho base
-}
-
-// Mejor manejo de archivos para mostrar imagenes correctamente y revocar objectURLs
-var currentPokemonURL = null;
-var currentFondoURL = null;
-
-function cargarImagenPokemon(input){
-    var f = input.files && input.files[0];
-    if(!f) return;
-    if(currentPokemonURL) URL.revokeObjectURL(currentPokemonURL);
-    currentPokemonURL = URL.createObjectURL(f);
-    document.getElementById('poke-img').src = currentPokemonURL;
-    document.getElementById('poke-img').style.display = 'block';
-}
-
-function quitarImagenPokemon(){
-    if(currentPokemonURL) URL.revokeObjectURL(currentPokemonURL);
-    currentPokemonURL = null;
-    document.getElementById('poke-img').src = '';
-    document.getElementById('poke-img').style.display = 'none';
-    document.getElementById('file-pokemon').value = '';
-}
-
-function cargarImagenFondo(input){
-    var f = input.files && input.files[0];
-    if(!f) return;
-    if(currentFondoURL) URL.revokeObjectURL(currentFondoURL);
-    currentFondoURL = URL.createObjectURL(f);
-    document.getElementById('carta').style.backgroundImage = 'url(' + currentFondoURL + ')';
-}
-
-function quitarImagenFondo(){
-    if(currentFondoURL) URL.revokeObjectURL(currentFondoURL);
-    currentFondoURL = null;
-    document.getElementById('carta').style.backgroundImage = 'none';
-    document.getElementById('file-fondo').value = '';
-}
-
-// Inicializar valores por defecto
-document.addEventListener('DOMContentLoaded', function(){
-    cambiarTipo();
-    actualizarEnergia(1);
-    actualizarEnergia(2);
-    // inicializar estado de activación de ataques
-    toggleAttack(1);
-    toggleAttack(2);
-    actualizarImagen();
-});
 </script>
 
 </body>
