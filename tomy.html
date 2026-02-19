@@ -36,58 +36,63 @@
 </div>
 
 <script>
-    // Tu URL mágica de Google Sheets
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbRb1HQs2-Z1gw9NRmKn_pn2Bc-4N8uCHErJDnl62gKtNFc6gOKYgYQp6IvF3VUG0nw_-4Nwd5t5WN/pub?output=csv';
 
     function fetchStock() {
         Papa.parse(csvUrl, {
             download: true,
-            header: true,
+            header: true, // Esto hace que use la primera fila como nombres
+            skipEmptyLines: true,
             complete: function(results) {
                 const data = results.data;
-                const headers = results.meta.fields;
-                
-                // 1. Generar Cabecera
-                const cabecera = document.getElementById('cabecera');
-                cabecera.innerHTML = '';
-                headers.forEach(h => {
-                    cabecera.innerHTML += `<th>${h}</th>`;
-                });
-
-                // 2. Generar Filas
                 const cuerpo = document.getElementById('cuerpo-tabla');
+                const cabecera = document.getElementById('cabecera');
+                
+                // 1. Definimos los nombres EXACTOS de tus columnas en el Excel
+                // Asegúrate que en tu Excel la primera fila diga exactamente esto:
+                const colProducto = "Producto (Moto)";
+                const colSpecs = "Especificaciones Clave";
+                const colMotor = "Motorización";
+                const colStock = "Stock / Cantidad";
+
+                // 2. Dibujamos la cabecera limpia
+                cabecera.innerHTML = `
+                    <th>${colProducto}</th>
+                    <th>${colSpecs}</th>
+                    <th>${colMotor}</th>
+                    <th>${colStock}</th>
+                `;
+
+                // 3. Limpiamos y llenamos la tabla
                 cuerpo.innerHTML = '';
 
                 data.forEach(fila => {
-                    if (Object.values(fila).some(val => val !== "")) { // Evita filas vacías
-                        let rowHtml = '<tr>';
-                        headers.forEach(h => {
-                            let valor = fila[h] || '-';
-                            
-                            // Si la columna es de stock/cantidad, le ponemos color
-                            if (h.toLowerCase().includes('stock') || h.toLowerCase().includes('cantidad')) {
-                                let clase = parseInt(valor) < 5 ? 'low' : 'ok';
-                                valor = `<span class="stock-badge ${clase}">${valor}</span>`;
-                            }
-                            
-                            rowHtml += `<td>${valor}</td>`;
-                        });
-                        rowHtml += '</tr>';
-                        cuerpo.innerHTML += rowHtml;
+                    // Solo procesamos si la fila tiene nombre de producto
+                    if (fila[colProducto]) { 
+                        let stockValor = fila[colStock] || "0";
+                        let claseStock = parseInt(stockValor) < 5 ? 'low' : 'ok';
+
+                        let htmlFila = `
+                            <tr>
+                                <td><strong>${fila[colProducto]}</strong></td>
+                                <td>${fila[colSpecs] || '-'}</td>
+                                <td>${fila[colMotor] || '-'}</td>
+                                <td><span class="stock-badge ${claseStock}">${stockValor}</span></td>
+                            </tr>
+                        `;
+                        cuerpo.innerHTML += htmlFila;
                     }
                 });
 
-                document.getElementById('update-time').innerText = 'Última sincronización: ' + new Date().toLocaleTimeString();
+                document.getElementById('update-time').innerText = 'Sincronizado con Excel: ' + new Date().toLocaleTimeString();
             }
         });
     }
 
-    // Cargar al inicio
     fetchStock();
-
-    // Recargar automáticamente cada minuto
-    setInterval(fetchStock, 60000);
+    setInterval(fetchStock, 60000); // Se actualiza cada minuto
 </script>
 
 </body>
+
 </html>
