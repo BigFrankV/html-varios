@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Motos - Stock Real</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f9; color: #333; margin: 20px; }
+        h2 { color: #002d72; text-align: center; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background-color: #002d72; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f9f9f9; }
+        .stock-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 0.9em; }
+        .ok { background-color: #d4edda; color: #155724; }
+        .low { background-color: #f8d7da; color: #721c24; }
+        .last-update { font-size: 0.8em; color: #777; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🏍️ Inventario de Motos (Actualización Live)</h2>
+    <table id="tabla-motos">
+        <thead>
+            <tr id="cabecera">
+                </tr>
+        </thead>
+        <tbody id="cuerpo-tabla">
+            <tr><td colspan="4" style="text-align:center;">Cargando datos desde el Excel...</td></tr>
+        </tbody>
+    </table>
+    <p class="last-update" id="update-time"></p>
+</div>
+
+<script>
+    // Tu URL mágica de Google Sheets
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbRb1HQs2-Z1gw9NRmKn_pn2Bc-4N8uCHErJDnl62gKtNFc6gOKYgYQp6IvF3VUG0nw_-4Nwd5t5WN/pub?output=csv';
+
+    function fetchStock() {
+        Papa.parse(csvUrl, {
+            download: true,
+            header: true,
+            complete: function(results) {
+                const data = results.data;
+                const headers = results.meta.fields;
+                
+                // 1. Generar Cabecera
+                const cabecera = document.getElementById('cabecera');
+                cabecera.innerHTML = '';
+                headers.forEach(h => {
+                    cabecera.innerHTML += `<th>${h}</th>`;
+                });
+
+                // 2. Generar Filas
+                const cuerpo = document.getElementById('cuerpo-tabla');
+                cuerpo.innerHTML = '';
+
+                data.forEach(fila => {
+                    if (Object.values(fila).some(val => val !== "")) { // Evita filas vacías
+                        let rowHtml = '<tr>';
+                        headers.forEach(h => {
+                            let valor = fila[h] || '-';
+                            
+                            // Si la columna es de stock/cantidad, le ponemos color
+                            if (h.toLowerCase().includes('stock') || h.toLowerCase().includes('cantidad')) {
+                                let clase = parseInt(valor) < 5 ? 'low' : 'ok';
+                                valor = `<span class="stock-badge ${clase}">${valor}</span>`;
+                            }
+                            
+                            rowHtml += `<td>${valor}</td>`;
+                        });
+                        rowHtml += '</tr>';
+                        cuerpo.innerHTML += rowHtml;
+                    }
+                });
+
+                document.getElementById('update-time').innerText = 'Última sincronización: ' + new Date().toLocaleTimeString();
+            }
+        });
+    }
+
+    // Cargar al inicio
+    fetchStock();
+
+    // Recargar automáticamente cada minuto
+    setInterval(fetchStock, 60000);
+</script>
+
+</body>
+</html>
