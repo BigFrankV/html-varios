@@ -55,41 +55,41 @@
                 console.log('Datos raw:', data);
                 
                 // Si no hay datos, mostramos error
-                if (data.length < 2) {
+                if (data.length < 3) {
                     cuerpo.innerHTML = '<tr><td colspan="4">No se encontraron datos en el Excel</td></tr>';
                     return;
                 }
 
-                // La primera fila son los encabezados
-                const encabezados = data[0];
+                // Los encabezados están en la fila 1, índices 1-4 (hay una columna vacía)
+                const encabezados = data[1];
                 console.log('Encabezados detectados:', encabezados);
 
-                // Dibujamos la cabecera con los nombres del Excel
+                // Dibujamos la cabecera con los nombres del Excel (índices 1-4)
                 cabecera.innerHTML = `
-                    <th>${encabezados[0] || 'Producto'}</th>
-                    <th>${encabezados[1] || 'Especificaciones'}</th>
-                    <th>${encabezados[2] || 'Motor'}</th>
-                    <th>${encabezados[3] || 'Stock'}</th>
+                    <th>${encabezados[1] || 'Producto'}</th>
+                    <th>${encabezados[2] || 'Especificaciones'}</th>
+                    <th>${encabezados[3] || 'Motor'}</th>
+                    <th>${encabezados[4] || 'Stock'}</th>
                 `;
 
-                // Limpiamos y llenamos la tabla (saltamos la fila 0 que es el encabezado)
+                // Limpiamos y llenamos la tabla (empezamos desde fila 2)
                 cuerpo.innerHTML = '';
 
-                for (let i = 1; i < data.length; i++) {
+                for (let i = 2; i < data.length; i++) {
                     const fila = data[i];
                     
-                    // Solo si hay datos en la fila
-                    if (fila[0] && fila[0].trim() !== "") { 
-                        let stockTexto = fila[3] || "0";
+                    // Solo si hay datos en la fila (columna 1 en vez de 0)
+                    if (fila[1] && fila[1].trim() !== "") { 
+                        let stockTexto = fila[4] || "0";
                         // Limpiamos el texto para sacar solo el número si dice "12 unidades"
                         let stockNumero = parseInt(stockTexto.replace(/\D/g, '')) || 0; 
                         let claseStock = stockNumero < 5 ? 'low' : 'ok';
 
                         let htmlFila = `
                             <tr>
-                                <td><strong>${fila[0]}</strong></td>
-                                <td>${fila[1] || '-'}</td>
+                                <td><strong>${fila[1]}</strong></td>
                                 <td>${fila[2] || '-'}</td>
+                                <td>${fila[3] || '-'}</td>
                                 <td><span class="stock-badge ${claseStock}">${stockTexto}</span></td>
                             </tr>
                         `;
