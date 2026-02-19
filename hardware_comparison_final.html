@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparativa Hardware Preventa 2026</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --hpe-color: #01a982;
+            --dell-color: #0076ce;
+            --lenovo-color: #e11411;
+            --info-color: #17a2b8;
+            --ia-color: #6f42c1;
+            --san-color: #343a40;
+            --sustain-color: #20c997;
+            --card-accent-shadow: 0 6px 18px rgba(16,24,40,0.06);
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f1f3f5;
+            scroll-behavior: smooth;
+        }
+        .navbar {
+            background-color: #1a202c !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .section-header {
+            margin-top: 4rem;
+            margin-bottom: 2rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #dee2e6;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.3s;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            font-weight: 700;
+            background-color: #ffffff;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+        }
+        .card-header i { margin-right: 10px; }
+        .chart-container {
+            position: relative;
+            margin: 20px auto;
+            height: 300px;
+            width: 100%;
+        }
+        .badge-tech {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .section-brand {
+            border-left: 4px solid;
+        }
+        .section-hpe { border-left-color: var(--hpe-color); }
+        .section-dell { border-left-color: var(--dell-color); }
+        .section-lenovo { border-left-color: var(--lenovo-color); }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+        }
+        /* Section-specific colored accents (left border + subtle shadow + header tint) */
+        section#hpe .card { border-left: 6px solid var(--hpe-color); box-shadow: var(--card-accent-shadow); }
+        section#hpe .card-header { background: linear-gradient(90deg, rgba(1,169,130,0.06), rgba(1,169,130,0.02)); }
+
+        section#dell .card { border-left: 6px solid var(--dell-color); box-shadow: var(--card-accent-shadow); }
+        section#dell .card-header { background: linear-gradient(90deg, rgba(0,118,206,0.06), rgba(0,118,206,0.02)); }
+
+        section#lenovo .card { border-left: 6px solid var(--lenovo-color); box-shadow: var(--card-accent-shadow); }
+        section#lenovo .card-header { background: linear-gradient(90deg, rgba(225,20,17,0.06), rgba(225,20,17,0.02)); }
+
+        section#hci .card, section#hci .card-header { border-left-width: 6px; }
+        section#proteccion .card, section#proteccion-software .card { border-left: 6px solid var(--info-color); box-shadow: var(--card-accent-shadow); }
+        section#proteccion .card-header, #proteccion-software .card-header { background: linear-gradient(90deg, rgba(23,162,184,0.06), rgba(23,162,184,0.02)); }
+
+        section#ia .card, #ia-gpus .card { border-left: 6px solid var(--ia-color); box-shadow: var(--card-accent-shadow); }
+        section#ia .card-header, #ia-gpus .card-header { background: linear-gradient(90deg, rgba(111,66,193,0.06), rgba(111,66,193,0.02)); }
+
+        section#san .card, #san-switches .card { border-left: 6px solid var(--san-color); box-shadow: var(--card-accent-shadow); }
+        section#san .card-header, #san-switches .card-header { background: linear-gradient(90deg, rgba(52,58,64,0.06), rgba(52,58,64,0.02)); }
+
+        section#tco .card, #sostenibilidad .card { border-left: 6px solid var(--sustain-color); box-shadow: var(--card-accent-shadow); }
+        #sostenibilidad .card-header { background: linear-gradient(90deg, rgba(32,201,151,0.06), rgba(32,201,151,0.02)); }
+
+        /* Offcanvas menu link accents */
+        .offcanvas a[href="#hpe"] { color: var(--hpe-color); }
+        .offcanvas a[href="#dell"] { color: var(--dell-color); }
+        .offcanvas a[href="#lenovo"] { color: var(--lenovo-color); }
+        .offcanvas a[href="#proteccion-software"] { color: var(--info-color); }
+        .offcanvas a[href="#ia-gpus"] { color: var(--ia-color); }
+        .offcanvas a[href="#san-switches"] { color: var(--san-color); }
+        .offcanvas a[href="#sostenibilidad"] { color: var(--sustain-color); }
+
+        /* Bootstrap background color overrides for table rows - force colors on cells */
+        .table tbody tr.bg-primary td,
+        .table tbody tr.bg-primary th { background-color: #0d6efd !important; color: #fff !important; }
+        .table tbody tr.bg-success td,
+        .table tbody tr.bg-success th { background-color: #198754 !important; color: #fff !important; }
+        .table tbody tr.bg-warning td,
+        .table tbody tr.bg-warning th { background-color: #ffc107 !important; color: #000 !important; }
+        .table tbody tr.bg-danger td,
+        .table tbody tr.bg-danger th { background-color: #dc3545 !important; color: #fff !important; }
+        .table tbody tr.bg-info td,
+        .table tbody tr.bg-info th { background-color: #0dcaf0 !important; color: #000 !important; }
+        .table tbody tr.bg-secondary td,
+        .table tbody tr.bg-secondary th { background-color: #6c757d !important; color: #fff !important; }
+        .table tbody tr.bg-light td,
+        .table tbody tr.bg-light th { background-color: #f8f9fa !important; color: #000 !important; }
+        .table tbody tr.bg-dark td,
+        .table tbody tr.bg-dark th { background-color: #212529 !important; color: #fff !important; }
+
+        /* Mostrar placeholder en celdas vacías (p. ej. Part Number) */
+        td:empty::after { content: "N/A"; color: #6c757d; font-style: italic; }
+        td.hpe-pn:empty::after { content: "N/A"; color: #6c757d; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<!-- Botón del menú lateral -->
+<button class="btn btn-dark position-fixed top-0 start-0 m-3 z-index-1050" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Offcanvas -->
+<div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarMenuLabel">
+            <i class="material-icons me-2">dns</i> PREVENTA INFRA
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#comparaciones">
+                    <i class="fas fa-chart-line me-2"></i>COMPARACIONES
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-warning text-decoration-none fw-bold" href="#hpe-servers">
+                    <i class="fas fa-server me-2"></i>HPE Servers
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-primary text-decoration-none fw-bold" href="#dell-servers">
+                    <i class="fas fa-microchip me-2"></i>DELL Servers
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-danger text-decoration-none fw-bold" href="#lenovo-servers">
+                    <i class="fas fa-memory me-2"></i>LENOVO Servers
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#comparativas-storage-switches">
+                    <i class="fas fa-hdd me-2"></i>ALMACENAMIENTO / SWITCHES
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#resumen">
+                    <i class="fas fa-clipboard-check me-2"></i>RESUMEN
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#rangos">
+                    <i class="fas fa-layer-group me-2"></i>GAMA POR RANGOS
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#diferenciadores">
+                    <i class="fas fa-star me-2"></i>DIFERENCIADORES
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#tco">
+                    <i class="fas fa-calculator me-2"></i>TCO &amp; ROI
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-warning text-decoration-none fw-bold" href="#servicios">
+                    <i class="fas fa-award me-2"></i>SERVICIOS
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#software">
+                    <i class="fas fa-code me-2"></i>SOFTWARE
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#proteccion">
+                    <i class="fas fa-shield-alt me-2"></i>PROTECCIÓN
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#hci">
+                    <i class="fas fa-cubes me-2"></i>HCI
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#ia">
+                    <i class="fas fa-brain me-2"></i>IA
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#san">
+                    <i class="fas fa-network-wired me-2"></i>SAN
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#hpe">
+                    <i class="fas fa-server me-2"></i>HPE
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#dell">
+                    <i class="fas fa-microchip me-2"></i>DELL
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#lenovo">
+                    <i class="fas fa-memory me-2"></i>LENOVO
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-white text-decoration-none" href="#sostenibilidad">
+                    <i class="fas fa-leaf me-2"></i>SOSTENIBILIDAD
+                </a>
+            </li>
+            <li class="list-group-item bg-dark text-white border-0">
+                <a class="text-info text-decoration-none fw-bold" href="#glosario">
+                    <i class="fas fa-book me-2"></i>GLOSARIO
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-dark">Ecosistema de Cómputo 2026</h1>
+        <p class="lead text-muted">Comparativa técnica para Consultores de Preventa y Arquitectos TI</p>
+    </div>
+
+    <section id="comparaciones">
+        <div class="container py-5">
+            <h2 class="section-header text-dark"><i class="fas fa-chart-line"></i> Comparaciones Avanzadas</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><i class="fas fa-hdd"></i> Comparativa Almacenamiento</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="storageComparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><i class="fas fa-network-wired"></i> Comparativa Networking</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="networkingComparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><i class="fas fa-award"></i> Comparativa Servicios</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="servicesComparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><i class="fas fa-code"></i> Comparativa Software</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="softwareComparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="hpe">
+        <h2 class="section-header text-success" style="border-color: var(--hpe-color);">
+            <i class="fas fa-server"></i> HPE ProLiant Gen11, ML & SY Series
+        </h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4" id="hpe-servers">
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>U</th>
+                                    <th>Sockets</th>
+                                    <th>CPU Soporte</th>
+                                    <th>RAM Máx (GB)</th>
+                                    <th>Velocidad RAM</th>
+                                    <th>Gen CPU</th>
+                                    <th>Ideal para</th>
+                                    <th>Limitaciones</th>
+                                    <th>TDP (W)</th>
+                                    <th>Precio (USD)</th>
+                                    <th>OS Soportados</th>
+                                    <th>Virtualización</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>DL20</strong></td><td>1U</td><td>1</td><td>Xeon E</td><td>512</td><td>DDR4-3200</td><td>1-3</td><td>Edge / SMB</td><td>Solo 1 socket, limitado para cargas pesadas</td><td>150</td><td>2000-3000</td><td>Windows, RHEL</td><td>Básica</td></tr>
+                                <tr><td><strong>BL460c</strong></td><td>1U (blade)</td><td>1-2</td><td>Scalable</td><td>2048</td><td>DDR5-4800</td><td>4</td><td>Blade density</td><td>Requiere blade chassis</td><td>250</td><td>4000-8000</td><td>Windows, Linux</td><td>Completa</td></tr>
+                                <tr><td><strong>DL325</strong></td><td>1U</td><td>1</td><td>AMD EPYC</td><td>1024</td><td>DDR4-3200</td><td>1-3</td><td>Entrada AMD</td><td>1 socket, enfocado en densidad</td><td>180</td><td>2500-4000</td><td>RHEL, SUSE</td><td>Avanzada</td></tr>
+                                <tr><td><strong>DL360</strong></td><td>1U</td><td>2</td><td>Scalable Gen 5</td><td>4096</td><td>DDR5-4800</td><td>4-5</td><td>Virtualización Densa</td><td>Alto consumo en cargas full</td><td>350</td><td>5000-8000</td><td>Windows, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>DL380</strong></td><td>2U</td><td>2</td><td>Scalable Gen 5</td><td>6144</td><td>DDR5-4800</td><td>4-5</td><td>Propósito General</td><td>Requiere buena ventilación</td><td>400</td><td>6000-10000</td><td>Windows, Linux</td><td>Completa</td></tr>
+                                <tr><td><strong>DL385</strong></td><td>2U</td><td>2</td><td>AMD EPYC</td><td>4096</td><td>DDR4-3200</td><td>3-4</td><td>Media/Alta AMD</td><td>Menor soporte Intel</td><td>320</td><td>4500-7000</td><td>RHEL, Ubuntu</td><td>Avanzada</td></tr>
+                                <tr><td><strong>DL560</strong></td><td>2U</td><td>4</td><td>High-End</td><td>12288</td><td>DDR5-4800</td><td>4-5</td><td>Misión Crítica</td><td>Alto costo energético</td><td>750</td><td>15000-25000</td><td>Windows, RHEL</td><td>Completa</td></tr>
+                                <tr><td><strong>DL580</strong></td><td>4U</td><td>4</td><td>High-End</td><td>24576</td><td>DDR5-4800</td><td>4-5</td><td>Misión Crítica / DB</td><td>Espacio grande requerido</td><td>1000</td><td>20000-35000</td><td>Windows, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>ML30</strong></td><td>4U</td><td>1</td><td>Xeon E</td><td>512</td><td>DDR4-3200</td><td>1-3</td><td>Entrada Tower</td><td>Formato tower, no rack</td><td>150</td><td>1800-2500</td><td>Windows</td><td>Básica</td></tr>
+                                <tr><td><strong>ML110</strong></td><td>4U</td><td>1</td><td>Xeon E</td><td>512</td><td>DDR4-3200</td><td>1-3</td><td>Entrada Tower</td><td>Limitado para expansión</td><td>150</td><td>2000-3000</td><td>Windows, RHEL</td><td>Básica</td></tr>
+                                <tr><td><strong>ML350</strong></td><td>5U</td><td>2</td><td>Scalable</td><td>4096</td><td>DDR4-3200</td><td>3-4</td><td>Misión Crítica Tower</td><td>Alto espacio vertical</td><td>300</td><td>4000-6000</td><td>Windows, Linux</td><td>Avanzada</td></tr>
+                                <tr><td><strong>SY480</strong></td><td>2U</td><td>2</td><td>Scalable</td><td>4096</td><td>DDR5-4800</td><td>4-5</td><td>Composable</td><td>Requiere frame Synergy</td><td>350</td><td>8000-12000</td><td>VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>SY660</strong></td><td>2U</td><td>2</td><td>Scalable</td><td>6144</td><td>DDR5-4800</td><td>4-5</td><td>Composable</td><td>Complejidad de gestión</td><td>400</td><td>10000-15000</td><td>VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>SY680</strong></td><td>4U</td><td>4</td><td>Scalable</td><td>12288</td><td>DDR5-4800</td><td>4-5</td><td>Composable</td><td>Costo inicial alto</td><td>750</td><td>18000-28000</td><td>VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>ProLiant RL</strong></td><td>1U</td><td>1</td><td>ARM Ampere</td><td>256</td><td>DDR5-4800</td><td>1</td><td>Edge / Cloud Native</td><td>Solo ARM, limitado para cargas pesadas</td><td>100</td><td>3000-5000</td><td>Linux</td><td>Básica</td></tr>
+                                <tr><td><strong>Edgeline EL</strong></td><td>1U</td><td>1</td><td>Xeon E</td><td>512</td><td>DDR5-4800</td><td>4-5</td><td>Edge Industrial</td><td>Limitado para cargas pesadas</td><td>150</td><td>2500-4000</td><td>Windows, Linux</td><td>Básica</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header"><i class="fas fa-chart-bar"></i> Distribución de Recursos</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="hpeServersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-hdd"></i> Almacenamiento</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>IOPS Máx</th>
+                                    <th>Latencia</th>
+                                    <th>Escalabilidad</th>
+                                    <th>Tipos de Disco</th>
+                                    <th>Protocolos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>MSA 1060</strong></td><td>SAN básica</td><td>150K</td><td>5-10ms</td><td>Hasta 7 enclosures</td><td>HDD, SSD</td><td>iSCSI, FC</td></tr>
+                                <tr><td><strong>MSA 2060</strong></td><td>SAN básica</td><td>200K</td><td>3-8ms</td><td>Hasta 7 enclosures</td><td>HDD, SSD</td><td>iSCSI, FC</td></tr>
+                                <tr><td><strong>Alletra 5000</strong></td><td>Almacenamiento moderno</td><td>500K</td><td><1ms</td><td>Hasta 4 nodos</td><td>SSD</td><td>iSCSI, FC, NVMe</td></tr>
+                                <tr><td><strong>Alletra 6000</strong></td><td>Almacenamiento moderno</td><td>1M</td><td><1ms</td><td>Hasta 8 nodos</td><td>SSD</td><td>iSCSI, FC, NVMe</td></tr>
+                                <tr><td><strong>Alletra 9000</strong></td><td>Almacenamiento moderno</td><td>2M</td><td><0.5ms</td><td>Hasta 16 nodos</td><td>SSD</td><td>iSCSI, FC, NVMe</td></tr>
+                                <tr><td><strong>Primera</strong></td><td>Enterprise All-Flash</td><td>—</td><td>&lt;1ms</td><td>Escalable</td><td>FC, NVMe</td><td>Misión crítica / DB</td></tr>
+                                <tr><td><strong>StoreOnce</strong></td><td>Respaldos</td><td>N/A</td><td>N/A</td><td>Hasta 4 nodos</td><td>HDD, SSD</td><td>Catalyst, VTL</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-network-wired"></i> Networking</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>Throughput Máx</th>
+                                    <th>Latencia</th>
+                                    <th>Puertos</th>
+                                    <th>Protocolos Avanzados</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>CX 6000</strong></td><td>Acceso</td><td>6.4Tbps</td><td>3μs</td><td>48x25G</td><td>VXLAN, EVPN</td></tr>
+                                <tr><td><strong>CX 6100</strong></td><td>Acceso</td><td>12.8Tbps</td><td>2μs</td><td>64x25G</td><td>VXLAN, EVPN</td></tr>
+                                <tr><td><strong>CX 8325</strong></td><td>Core/Data Center</td><td>25.6Tbps</td><td>1μs</td><td>32x100G</td><td>RoCE, iWARP</td></tr>
+                                <tr><td><strong>CX 8360</strong></td><td>Core/Data Center</td><td>51.2Tbps</td><td><1μs</td><td>64x100G</td><td>RoCE, iWARP</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dell">
+        <h2 class="section-header text-primary" style="border-color: var(--dell-color);">
+            <i class="fas fa-microchip"></i> Dell PowerEdge R/T/XE Series
+        </h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4" id="dell-servers">
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>U</th>
+                                    <th>Sockets</th>
+                                    <th>CPU Soporte</th>
+                                    <th>RAM Máx (GB)</th>
+                                    <th>Velocidad RAM</th>
+                                    <th>Gen CPU</th>
+                                    <th>Ideal para</th>
+                                    <th>Limitaciones</th>
+                                    <th>TDP (W)</th>
+                                    <th>Precio (USD)</th>
+                                    <th>OS Soportados</th>
+                                    <th>Virtualización</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>R250</strong></td><td>1U</td><td>1</td><td>Intel 14th</td><td>512</td><td>DDR5-4800</td><td>4</td><td>Entrada Sencilla</td><td>Solo 1 socket</td><td>150</td><td>2000-3000</td><td>Windows, RHEL</td><td>Básica</td></tr>
+                                <tr><td><strong>R350</strong></td><td>1U</td><td>1</td><td>Intel 14th</td><td>1024</td><td>DDR5-4800</td><td>4</td><td>Entrada Básica</td><td>Limitado para virtualización</td><td>180</td><td>2500-4000</td><td>Windows, VMware</td><td>Avanzada</td></tr>
+                                <tr><td><strong>R660</strong></td><td>1U</td><td>2</td><td>Intel 15th</td><td>4096</td><td>DDR5-5600</td><td>5</td><td>Nube Híbrida</td><td>Alto TDP</td><td>350</td><td>5000-8000</td><td>Windows, Linux</td><td>Completa</td></tr>
+                                <tr><td><strong>R760</strong></td><td>2U</td><td>2</td><td>Intel 15th</td><td>6144</td><td>DDR5-5600</td><td>5</td><td>Workhorse</td><td>Requiere buena refrigeración</td><td>400</td><td>6000-10000</td><td>Windows, RHEL</td><td>Completa</td></tr>
+                                <tr><td><strong>R750</strong></td><td>2U</td><td>2</td><td>Intel 15th</td><td>6144</td><td>DDR5-5600</td><td>5</td><td>General Purpose / AI</td><td>Necesita refrigeración robusta</td><td>400</td><td>6000-11000</td><td>Windows, Linux</td><td>Completa</td></tr>
+                                <tr><td><strong>R950</strong></td><td>4U</td><td>4</td><td>Intel Scalable</td><td>12288</td><td>DDR5-5600</td><td>5</td><td>Misión Crítica / DB</td><td>Alto consumo y espacio</td><td>800</td><td>15000-30000</td><td>Windows, RHEL</td><td>Completa</td></tr>
+                                <tr><td><strong>R760xs</strong></td><td>2U</td><td>2</td><td>Intel 15th</td><td>4096</td><td>DDR5-4800</td><td>5</td><td>Optimizado Costos</td><td>Menor RAM máx</td><td>320</td><td>4500-7000</td><td>Windows, Linux</td><td>Avanzada</td></tr>
+                                <tr><td><strong>R760xa</strong></td><td>2U</td><td>2</td><td>Intel/AMD</td><td>6144</td><td>DDR5-5600</td><td>5</td><td>Optimizado IA</td><td>Complejidad de configuración</td><td>400</td><td>7000-12000</td><td>Windows, Ubuntu</td><td>Completa</td></tr>
+                                <tr><td><strong>T150</strong></td><td>5U</td><td>1</td><td>Intel 14th</td><td>512</td><td>DDR5-4800</td><td>4</td><td>Entrada Tower</td><td>Formato tower</td><td>150</td><td>1800-2500</td><td>Windows</td><td>Básica</td></tr>
+                                <tr><td><strong>T350</strong></td><td>5U</td><td>1</td><td>Intel 14th</td><td>1024</td><td>DDR5-4800</td><td>4</td><td>Entrada Tower</td><td>No rack mount</td><td>180</td><td>2200-3500</td><td>Windows, RHEL</td><td>Básica</td></tr>
+                                <tr><td><strong>T550</strong></td><td>5U</td><td>1</td><td>Intel 14th</td><td>1024</td><td>DDR5-4800</td><td>4</td><td>Entrada Tower</td><td>Limitado para expansión</td><td>180</td><td>2500-4000</td><td>Windows, Linux</td><td>Avanzada</td></tr>
+                                <tr><td><strong>T560</strong></td><td>5U</td><td>2</td><td>Intel 15th</td><td>4096</td><td>DDR5-4800</td><td>5</td><td>Misión Crítica Tower</td><td>Alto espacio</td><td>300</td><td>4000-6000</td><td>Windows, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>XE8545</strong></td><td>2U</td><td>2</td><td>AMD</td><td>2048</td><td>DDR4-3200</td><td>3-4</td><td>Edge Computing</td><td>Enfocado en edge</td><td>250</td><td>3000-5000</td><td>RHEL, SUSE</td><td>Avanzada</td></tr>
+                                <tr><td><strong>XE8640</strong></td><td>2U</td><td>2</td><td>AMD</td><td>4096</td><td>DDR4-3200</td><td>3-4</td><td>Edge Computing</td><td>Menor soporte Intel</td><td>300</td><td>4000-7000</td><td>RHEL, Ubuntu</td><td>Avanzada</td></tr>
+                                <tr><td><strong>XE9680</strong></td><td>2U</td><td>4</td><td>AMD</td><td>8192</td><td>DDR4-3200</td><td>3-4</td><td>Edge Computing</td><td>Alto consumo</td><td>500</td><td>8000-15000</td><td>RHEL, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>PowerEdge C</strong></td><td>2U</td><td>2</td><td>Intel Scalable</td><td>4096</td><td>DDR5-5600</td><td>5</td><td>HPC Denso</td><td>Alto consumo</td><td>500</td><td>8000-15000</td><td>Linux</td><td>Completa</td></tr>
+                                <tr><td><strong>PowerEdge XR</strong></td><td>1U</td><td>1</td><td>Intel 14th</td><td>1024</td><td>DDR5-4800</td><td>4</td><td>Edge Rugerizado</td><td>Solo 1 socket</td><td>200</td><td>4000-7000</td><td>Windows, Linux</td><td>Avanzada</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header"><i class="fas fa-chart-bar"></i> Escalabilidad Dell</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="dellServersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-hdd"></i> Almacenamiento</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>IOPS Máx</th>
+                                    <th>Latencia</th>
+                                    <th>Escalabilidad</th>
+                                    <th>Tipos de Disco</th>
+                                    <th>Protocolos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>PowerVault ME5</strong></td><td>Bloques económico</td><td>200K</td><td>3-8ms</td><td>Hasta 4 enclosures</td><td>HDD, SSD</td><td>iSCSI, FC</td></tr>
+                                <tr><td><strong>PowerProtect DD</strong></td><td>Backup appliance / Dedup</td><td>N/A</td><td>N/A</td><td>Escalable</td><td>HDD, SSD</td><td>Replication, Catalyst</td></tr>
+                                <tr><td><strong>PowerStore</strong></td><td>Inteligente media/alta</td><td>1.5M</td><td><1ms</td><td>Hasta 4 nodos</td><td>SSD</td><td>iSCSI, FC, NVMe</td></tr>
+                                <tr><td><strong>PowerScale (Isilon)</strong></td><td>NAS no estructurado</td><td>500K</td><td>2-5ms</td><td>Hasta 252 nodos</td><td>HDD, SSD</td><td>NFS, SMB, S3</td></tr>
+                                <tr><td><strong>Pure FlashArray</strong></td><td>All‑Flash NVMe</td><td>—</td><td>&lt;1ms</td><td>Escalable</td><td>NVMe, iSCSI</td><td>All‑Flash / DB</td></tr>
+                                <tr><td><strong>Unity XT</strong></td><td>Híbrido flash</td><td>800K</td><td><2ms</td><td>Hasta 8 enclosures</td><td>HDD, SSD</td><td>iSCSI, FC, NFS, SMB</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-network-wired"></i> Networking</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>Throughput Máx</th>
+                                    <th>Latencia</th>
+                                    <th>Puertos</th>
+                                    <th>Protocolos Avanzados</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>PowerSwitch S5248F-ON</strong></td><td>Access/Leaf</td><td>—</td><td>~1-2μs</td><td>48x25G / 12x100G</td><td>EVPN, VXLAN, RoCE</td></tr>
+                                <tr><td><strong>PowerSwitch S4148-ON</strong></td><td>Access</td><td>—</td><td>~2μs</td><td>48x10G / 16x25G</td><td>EVPN, VXLAN</td></tr>
+                                <tr><td><strong>PowerSwitch Z9264-ON</strong></td><td>Core/Data Center</td><td>—</td><td>&lt;1μs</td><td>64x100G / 32x400G</td><td>EVPN, VXLAN, RoCE</td></tr>
+                                <tr><td><strong>PowerSwitch N3000 Series</strong></td><td>Campus/Access</td><td>—</td><td>2-5μs</td><td>24/48 x 1G/10G (PoE opc)</td><td>PoE, STP, VLAN</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="lenovo">
+        <h2 class="section-header text-danger" style="border-color: var(--lenovo-color);">
+            <i class="fas fa-memory"></i> Lenovo ThinkSystem SR/ST/SD Series
+        </h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4" id="lenovo-servers">
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th title="Modelo del servidor">Modelo</th>
+                                    <th title="Unidades de rack (altura)">U</th>
+                                    <th title="Número de sockets para CPU">Sockets</th>
+                                    <th title="Tipo de CPU soportado">CPU Soporte</th>
+                                    <th title="RAM máxima soportada (GB)">RAM Máx (GB)</th>
+                                    <th title="Velocidad máxima de RAM">Velocidad RAM</th>
+                                    <th title="Generación de CPU">Gen CPU</th>
+                                    <th title="Casos de uso ideales">Ideal para</th>
+                                    <th title="Limitaciones técnicas">Limitaciones</th>
+                                    <th title="Thermal Design Power (vatios)">TDP (W)</th>
+                                    <th title="Precio aproximado (USD)">Precio (USD)</th>
+                                    <th title="Sistemas operativos soportados">OS Soportados</th>
+                                    <th title="Nivel de virtualización">Virtualización</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>SR250 V2</strong></td><td>1U</td><td>1</td><td>Xeon-E</td><td>512</td><td>DDR4-3200</td><td>2-3</td><td>Costo Beneficio</td><td>Solo 1 socket</td><td>150</td><td>1800-2500</td><td>Windows, RHEL</td><td>Básica</td></tr>
+                                <tr><td><strong>SR630 V3</strong></td><td>1U</td><td>2</td><td>Scalable v4</td><td>4096</td><td>DDR4-3200</td><td>4</td><td>Performance / 1U</td><td>Alto consumo</td><td>350</td><td>4500-7000</td><td>Windows, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>SR650 V3</strong></td><td>2U</td><td>2</td><td>Scalable v4</td><td>6144</td><td>DDR4-3200</td><td>4</td><td>El más flexible</td><td>Requiere buena ventilación</td><td>400</td><td>5500-9000</td><td>Windows, Linux</td><td>Completa</td></tr>
+                                <tr><td><strong>SR655</strong></td><td>2U</td><td>2</td><td>AMD</td><td>4096</td><td>DDR4-3200</td><td>3-4</td><td>Media AMD</td><td>Menor soporte Intel</td><td>320</td><td>4000-6500</td><td>RHEL, SUSE</td><td>Avanzada</td></tr>
+                                <tr><td><strong>SR665</strong></td><td>1U</td><td>2</td><td>AMD EPYC</td><td>4096</td><td>DDR5-4800</td><td>4</td><td>AMD Performance</td><td>—</td><td>350</td><td>5000-9000</td><td>Windows, RHEL</td><td>Completa</td></tr>
+                                <tr><td><strong>SR850</strong></td><td>4U</td><td>4</td><td>High Performance</td><td>12288</td><td>DDR4-3200</td><td>4</td><td>SAP HANA / HPC</td><td>Alto costo</td><td>750</td><td>12000-20000</td><td>Windows, RHEL</td><td>Completa</td></tr>
+                                <tr><td><strong>SR860</strong></td><td>4U</td><td>4</td><td>High Performance</td><td>24576</td><td>DDR4-3200</td><td>4</td><td>Misión Crítica</td><td>Espacio grande</td><td>1000</td><td>18000-30000</td><td>Windows, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>ST250</strong></td><td>4U</td><td>1</td><td>Xeon E</td><td>512</td><td>DDR4-3200</td><td>2-3</td><td>Workstation Tower</td><td>Formato tower</td><td>150</td><td>1600-2200</td><td>Windows</td><td>Básica</td></tr>
+                                <tr><td><strong>ST550</strong></td><td>5U</td><td>1</td><td>Xeon E</td><td>1024</td><td>DDR4-3200</td><td>2-3</td><td>Workstation Tower</td><td>No rack</td><td>180</td><td>2000-3000</td><td>Windows, RHEL</td><td>Básica</td></tr>
+                                <tr><td><strong>ST650</strong></td><td>5U</td><td>2</td><td>Scalable</td><td>4096</td><td>DDR4-3200</td><td>3-4</td><td>Workstation Tower</td><td>Alto espacio</td><td>300</td><td>3500-5500</td><td>Windows, Linux</td><td>Avanzada</td></tr>
+                                <tr><td><strong>SD530</strong></td><td>1U</td><td>2</td><td>Scalable</td><td>2048</td><td>DDR4-3200</td><td>3-4</td><td>Dense Computing</td><td>Enfocado en densidad</td><td>250</td><td>3000-5000</td><td>RHEL, SUSE</td><td>Avanzada</td></tr>
+                                <tr><td><strong>SD535</strong></td><td>1U</td><td>2</td><td>AMD</td><td>2048</td><td>DDR4-3200</td><td>3-4</td><td>Dense Computing</td><td>Menor RAM</td><td>250</td><td>3500-6000</td><td>RHEL, Ubuntu</td><td>Avanzada</td></tr>
+                                <tr><td><strong>SD650</strong></td><td>2U</td><td>4</td><td>Scalable</td><td>8192</td><td>DDR4-3200</td><td>3-4</td><td>Dense Computing</td><td>Alto consumo</td><td>500</td><td>7000-12000</td><td>RHEL, VMware</td><td>Completa</td></tr>
+                                <tr><td><strong>ThinkSystem SE</strong></td><td>1U</td><td>1</td><td>Xeon E</td><td>512</td><td>DDR4-3200</td><td>3-4</td><td>Edge Compact</td><td>Limitado</td><td>150</td><td>2000-3500</td><td>Windows, Linux</td><td>Básica</td></tr>
+                                <tr><td><strong>ThinkSystem SR950</strong></td><td>8U</td><td>8</td><td>High-End</td><td>49152</td><td>DDR4-3200</td><td>4</td><td>Misión Crítica</td><td>Alto espacio/consumo</td><td>2000</td><td>50000-100000</td><td>Windows, Linux</td><td>Completa</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header"><i class="fas fa-chart-bar"></i> Capacidad Lenovo</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="lenovoServersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-hdd"></i> Almacenamiento</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>IOPS Máx</th>
+                                    <th>Latencia</th>
+                                    <th>Escalabilidad</th>
+                                    <th>Tipos de Disco</th>
+                                    <th>Protocolos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>DE4000H</strong></td><td>SAN Entry</td><td>400K</td><td>2-5ms</td><td>Hasta 12 controladores</td><td>HDD, SSD</td><td>iSCSI, FC</td></tr>
+                                <tr><td><strong>DE6000H</strong></td><td>SAN Mid-range</td><td>1.2M</td><td><1ms</td><td>Hasta 24 controladores</td><td>SSD, NVMe</td><td>iSCSI, FC, NVMe-oF</td></tr>
+                                <tr><td><strong>DM7000H</strong></td><td>Unificado NAS/SAN</td><td>800K</td><td><2ms</td><td>Hasta 24 nodos</td><td>SSD, HDD, QLC</td><td>NFS, SMB, FC, iSCSI</td></tr>
+                                <tr><td><strong>DM5100H</strong></td><td>Unificado Entry</td><td>300K</td><td>3-8ms</td><td>Hasta 8 nodos</td><td>HDD, SSD</td><td>NFS, SMB, iSCSI</td></tr>
+                                <tr><td><strong>DE2000H</strong></td><td>SAN Básico</td><td>200K</td><td>5-10ms</td><td>Hasta 4 controladores</td><td>HDD, SSD</td><td>iSCSI, FC</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-network-wired"></i> Networking</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>Throughput Máx</th>
+                                    <th>Latencia</th>
+                                    <th>Puertos</th>
+                                    <th>Protocolos Avanzados</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>NE2580</strong></td><td>Rack-top/Data Center</td><td>12.8Tbps</td><td><1μs</td><td>48x25G/100G</td><td>RoCE, iWARP</td></tr>
+                                <tr><td><strong>NE2572</strong></td><td>Rack-top/Data Center</td><td>6.4Tbps</td><td>2μs</td><td>48x10G/25G</td><td>RoCE, EVPN</td></tr>
+                                <tr><td><strong>CE0152PB</strong></td><td>Campus/Acceso</td><td>2.56Tbps</td><td>2-5μs</td><td>48x1G/10G</td><td>PoE, VXLAN</td></tr>
+                                <tr><td><strong>CE0128TB</strong></td><td>Campus/Acceso</td><td>1.28Tbps</td><td>5μs</td><td>24x1G/10G</td><td>PoE, VXLAN</td></tr>
+                                <tr><td><strong>CE0152TB</strong></td><td>Campus/Core</td><td>3.2Tbps</td><td>3μs</td><td>48x1G/10G/25G</td><td>PoE+, VXLAN</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios">
+        <h2 class="section-header text-dark"><i class="fas fa-award"></i> Niveles de Soporte</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-success border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">HPE Pointnext</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>Basic:</strong> NBD (9x5)</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>Essential:</strong> 24x7 4h</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>Critical:</strong> Call-to-Repair</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Dell ProSupport</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>Standard:</strong> Soporte 24x7</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>Plus:</strong> TAM Asignado</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>Mission Critical:</strong> 2h/4h response</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-danger border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Lenovo Premier</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-danger me-2"></i> Acceso a Ingenieros N2</li>
+                            <li><i class="fas fa-check-circle text-danger me-2"></i> Gestión de Partes Prioritaria</li>
+                            <li><i class="fas fa-check-circle text-danger me-2"></i> Soporte unificado HW/SW</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="mt-4">Servicios Profesionales</h3>
+        <div class="card shadow-sm p-3 mb-3">
+            <p><strong>Diseño y Consultoría:</strong> Evaluación de carga de trabajo (Sizing).</p>
+            <p><strong>Instalación y Configuración:</strong> Montaje en rack, cableado, firmware, RAID.</p>
+            <p><strong>Migración de Datos:</strong> Mover info del servidor viejo al nuevo.</p>
+        </div>
+
+        <h3>Infraestructura como Servicio (IaaS)</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-success border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">HPE GreenLake</h5>
+                        <p>Nube privada que va hacia ti.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Dell APEX</h5>
+                        <p>Escalabilidad elástica de cómputo y storage.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-danger border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Lenovo TruScale</h5>
+                        <p>Suscripción mensual sin CAPEX inicial.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="software">
+        <h2 class="section-header text-dark"><i class="fas fa-code"></i> Software de Gestión</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-success border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">HPE Compute Ops Management</h5>
+                        <p>Gestión desde la nube para todos los servidores DL y ML.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Dell OpenManage</h5>
+                        <p>Herramientas para automatizar el ciclo de vida de los PowerEdge.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-danger border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Lenovo XClarity</h5>
+                        <p>Consola visual unificada para gestionar servidores, storage y redes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section id="diferenciadores">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-star"></i> Diferenciadores para Preventa</h2>
+        <div class="row g-4">
+            <div class="col-md-auto">
+                <div class="card border-start border-success border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-success">HPE</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Gestión iLO avanzada</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Ecosistema IA InfoSight (predice fallos)</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Líder en innovación composable (Synergy)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-auto">
+                <div class="card border-start border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Dell</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Muy fuerte en PowerStore</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Integración nativa con VMware</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Escalabilidad elástica en APEX</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-3">
+            <div class="col-12">
+                <div class="card shadow-sm border-start border-danger border-4" id="proteccion-software">
+                    <div class="card-header"><i class="fas fa-database"></i> Lenovo — Software de Protección y Integraciones</div>
+                    <div class="card-body">
+                        <p>En preventa suele requerirse el stack completo HW + SW. A continuación, integraciones y recomendaciones:</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="fw-bold">Veeam</h6>
+                                <p>Integración nativa con snapshots de storage (Alletra, PowerStore, ThinkSystem DM). Ideal para entornos VMware/Hyper-V. Soporta aceleración vía proxies y repositorios deduplicados (StoreOnce).</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fw-bold">Commvault</h6>
+                                <p>Gestión unificada de datos, workflows SOAR y orquestación. Buen fit para grandes entornos heterogéneos y backups a object storage.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fw-bold">Cohesity</h6>
+                                <p>Plataforma de Data Management nativa para cloud, con capacidades de archivado, ransomware recovery y soporte para S3-compatible targets.</p>
+                            </div>
+                        </div>
+                        <p class="mt-3 mb-0"><strong>Nota:</strong> validar la certificación del storage target con el fabricante del backup para deduplicación acelerada, snapshots y VTL.</p>
+
+                        <hr>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check-circle text-danger me-2"></i> Mayor confiabilidad (uptime) del mercado</li>
+                            <li><i class="fas fa-check-circle text-danger me-2"></i> Excelente relación costo-rendimiento con AMD</li>
+                            <li><i class="fas fa-check-circle text-danger me-2"></i> Soporte Premier directo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="rangos">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-layer-group"></i> Comparativas por Gama</h2>
+        
+        <h3 class="text-center mb-4">Gama Baja (Entrada)</h3>
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>U</th>
+                                    <th>Sockets</th>
+                                    <th>CPU Soporte</th>
+                                    <th>Ideal para</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-primary"><td><strong>HPE</strong></td><td>DL20</td><td>1U</td><td>1</td><td>Xeon E</td><td>Edge / SMB</td></tr>
+                                <tr class="bg-primary"><td><strong>Dell</strong></td><td>R250</td><td>1U</td><td>1</td><td>Intel 14th</td><td>Entrada Sencilla</td></tr>
+                                <tr class="bg-primary"><td><strong>Lenovo</strong></td><td>SR250 V2</td><td>1U</td><td>1</td><td>Xeon-E</td><td>Costo Beneficio</td></tr>
+                                <tr class="bg-success"><td><strong>HPE</strong></td><td>DL325</td><td>1U</td><td>1</td><td>AMD EPYC</td><td>Entrada AMD</td></tr>
+                                <tr class="bg-warning"><td><strong>HPE</strong></td><td>ML30</td><td>4U</td><td>1</td><td>Xeon E</td><td>Entrada Tower</td></tr>
+                                <tr class="bg-warning"><td><strong>Lenovo</strong></td><td>ST250</td><td>4U</td><td>1</td><td>Xeon E</td><td>Workstation Tower</td></tr>
+                                <tr class="bg-danger"><td><strong>HPE</strong></td><td>ML110</td><td>4U</td><td>1</td><td>Xeon E</td><td>Entrada Tower</td></tr>
+                                <tr class="bg-danger"><td><strong>Dell</strong></td><td>T150</td><td>5U</td><td>1</td><td>Intel 14th</td><td>Entrada Tower</td></tr>
+                                <tr class="bg-danger"><td><strong>Lenovo</strong></td><td>ST550</td><td>5U</td><td>1</td><td>Xeon E</td><td>Workstation Tower</td></tr>
+                                <tr class="bg-info"><td><strong>Dell</strong></td><td>R350</td><td>1U</td><td>1</td><td>Intel 14th</td><td>Entrada Básica</td></tr>
+                                <tr class="bg-info"><td><strong>Dell</strong></td><td>T350</td><td>5U</td><td>1</td><td>Intel 14th</td><td>Entrada Tower</td></tr>
+                                <tr class="bg-info"><td><strong>Dell</strong></td><td>T550</td><td>5U</td><td>1</td><td>Intel 14th</td><td>Entrada Tower</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="text-center mb-4">Gama Media</h3>
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>U</th>
+                                    <th>Sockets</th>
+                                    <th>CPU Soporte</th>
+                                    <th>Ideal para</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-primary"><td><strong>HPE</strong></td><td>DL360</td><td>1U</td><td>2</td><td>Scalable Gen 5</td><td>Virtualización Densa</td></tr>
+                                <tr class="bg-primary"><td><strong>HPE</strong></td><td>BL460c</td><td>1U (blade)</td><td>1-2</td><td>Scalable</td><td>Blade density (chassis)</td></tr>
+                                <tr class="bg-primary"><td><strong>Dell</strong></td><td>R660</td><td>1U</td><td>2</td><td>Intel 15th</td><td>Nube Híbrida</td></tr>
+                                <tr class="bg-secondary"><td><strong>Dell</strong></td><td>R750</td><td>2U</td><td>2</td><td>Intel 15th</td><td>General Purpose / AI</td></tr>
+                                <tr class="bg-primary"><td><strong>Lenovo</strong></td><td>SR630 V3</td><td>1U</td><td>2</td><td>Scalable v4</td><td>Performance / 1U</td></tr>
+                                <tr class="bg-success"><td><strong>HPE</strong></td><td>DL380</td><td>2U</td><td>2</td><td>Scalable Gen 5</td><td>Propósito General</td></tr>
+                                <tr class="bg-success"><td><strong>Dell</strong></td><td>R760</td><td>2U</td><td>2</td><td>Intel 15th</td><td>Workhorse</td></tr>
+                                <tr class="bg-primary"><td><strong>Lenovo</strong></td><td>SR650 V3</td><td>2U</td><td>2</td><td>Scalable v4</td><td>El más flexible</td></tr>
+                                <tr class="bg-warning"><td><strong>HPE</strong></td><td>DL385</td><td>2U</td><td>2</td><td>AMD EPYC</td><td>Media/Alta AMD</td></tr>
+                                <tr class="bg-warning"><td><strong>Lenovo</strong></td><td>SR655</td><td>2U</td><td>2</td><td>AMD</td><td>Media AMD</td></tr>
+                                <tr class="bg-dark"><td><strong>Lenovo</strong></td><td>SR665</td><td>1U</td><td>2</td><td>AMD EPYC</td><td>AMD Performance</td></tr>
+                                <tr class="bg-danger"><td><strong>HPE</strong></td><td>ML350</td><td>5U</td><td>2</td><td>Scalable</td><td>Misión Crítica Tower</td></tr>
+                                <tr class="bg-danger"><td><strong>Lenovo</strong></td><td>ST650</td><td>5U</td><td>2</td><td>Scalable</td><td>Workstation Tower</td></tr>
+                                <tr class="bg-info"><td><strong>HPE</strong></td><td>SY480</td><td>2U</td><td>2</td><td>Scalable</td><td>Composable</td></tr>
+                                <tr class="bg-info"><td><strong>HPE</strong></td><td>SY660</td><td>2U</td><td>2</td><td>Scalable</td><td>Composable</td></tr>
+                                <tr class="bg-secondary"><td><strong>Dell</strong></td><td>R760xs</td><td>2U</td><td>2</td><td>Intel 15th</td><td>Optimizado Costos</td></tr>
+                                <tr class="bg-secondary"><td><strong>Dell</strong></td><td>R760xa</td><td>2U</td><td>2</td><td>Intel/AMD</td><td>Optimizado IA</td></tr>
+                                <tr class="bg-secondary"><td><strong>Dell</strong></td><td>T560</td><td>5U</td><td>2</td><td>Intel 15th</td><td>Misión Crítica Tower</td></tr>
+                                <tr class="bg-light"><td><strong>Dell</strong></td><td>XE8545</td><td>2U</td><td>2</td><td>AMD</td><td>Edge Computing</td></tr>
+                                <tr class="bg-light"><td><strong>Dell</strong></td><td>XE8640</td><td>2U</td><td>2</td><td>AMD</td><td>Edge Computing</td></tr>
+                                <tr class="bg-dark"><td><strong>Lenovo</strong></td><td>SD530</td><td>1U</td><td>2</td><td>Scalable</td><td>Dense Computing</td></tr>
+                                <tr class="bg-dark"><td><strong>Lenovo</strong></td><td>SD535</td><td>1U</td><td>2</td><td>AMD</td><td>Dense Computing</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="text-center mb-4">Gama Alta (Crítica)</h3>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>U</th>
+                                    <th>Sockets</th>
+                                    <th>CPU Soporte</th>
+                                    <th>Ideal para</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-primary"><td><strong>HPE</strong></td><td>DL560</td><td>2U</td><td>4</td><td>High-End</td><td>Misión Crítica</td></tr>
+                                <tr class="bg-primary"><td><strong>Lenovo</strong></td><td>SR850</td><td>4U</td><td>4</td><td>High Performance</td><td>SAP HANA / HPC</td></tr>
+                                <tr class="bg-primary"><td><strong>Lenovo</strong></td><td>SR860</td><td>4U</td><td>4</td><td>High Performance</td><td>Misión Crítica</td></tr>
+                                <tr class="bg-info"><td><strong>HPE</strong></td><td>SY680</td><td>4U</td><td>4</td><td>Scalable</td><td>Composable</td></tr>
+                                <tr class="bg-warning"><td><strong>Dell</strong></td><td>XE9680</td><td>2U</td><td>4</td><td>AMD</td><td>Edge Computing</td></tr>
+                                <tr class="bg-warning"><td><strong>Dell</strong></td><td>R950</td><td>4U</td><td>4</td><td>Intel Scalable</td><td>Misión Crítica / DB</td></tr>
+                                <tr class="bg-danger"><td><strong>Dell</strong></td><td>PowerEdge C</td><td>2U</td><td>2</td><td>Intel Scalable</td><td>HPC Denso</td></tr>
+                                <tr class="bg-light"><td><strong>HPE</strong></td><td>ProLiant RL</td><td>1U</td><td>1</td><td>ARM Ampere</td><td>Edge / Cloud Native</td></tr>
+                                <tr class="bg-light"><td><strong>Dell</strong></td><td>PowerEdge XR</td><td>1U</td><td>1</td><td>Intel 14th</td><td>Edge Rugerizado</td></tr>
+                                <tr class="bg-light"><td><strong>Lenovo</strong></td><td>ThinkSystem SE</td><td>1U</td><td>1</td><td>Xeon E</td><td>Edge Compact</td></tr>
+                                <tr class="bg-secondary"><td><strong>Lenovo</strong></td><td>ThinkSystem SR950</td><td>8U</td><td>8</td><td>High-End</td><td>Misión Crítica</td></tr>
+                                <tr class="bg-dark"><td><strong>HPE</strong></td><td>Edgeline EL</td><td>1U</td><td>1</td><td>Xeon E</td><td>Edge Industrial</td></tr>
+                                <tr class="bg-success"><td><strong>Dell</strong></td><td>R760xa</td><td>2U</td><td>2</td><td>Intel/AMD</td><td>Optimizado para IA</td></tr>
+                                <tr class="bg-primary"><td><strong>HPE</strong></td><td>DL580</td><td>4U</td><td>4</td><td>High-End</td><td>Misión Crítica / DB</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comparativas de Almacenamiento y Switches FC -->
+<section id="comparativas-storage-switches">
+  <div class="container py-5">
+    <h2 class="section-header text-dark"><i class="fas fa-hdd"></i> Comparativas: Almacenamiento y Switches FC</h2>
+    <div class="row g-4">
+      <div class="col-12">
+        <div class="card shadow-sm mb-4">
+          <div class="card-header"><i class="fas fa-hdd"></i> Comparativa Almacenamiento (detallada)</div>
+          <div class="card-body">
+            <table class="table table-hover align-middle">
+              <thead class="table-light"><tr><th>Modelo</th><th>Tipo</th><th>IOPS Máx</th><th>Latencia</th><th>Escalabilidad</th><th>Protocolos</th><th>NVMe-oF</th><th>Deduplicación</th><th>Snapshots/Replic</th><th>Cifrado</th><th>Ideal para</th></tr></thead>
+              <tbody>
+                <tr class="bg-primary"><td><strong>MSA 1060</strong></td><td>SAN básica</td><td>150K</td><td>5-10ms</td><td>Hasta 7 enclosures</td><td>iSCSI, FC</td><td>No</td><td>No</td><td>Limitado</td><td>Opcional</td><td>Entrada / SMB</td></tr>
+                <tr class="bg-primary"><td><strong>PowerVault ME5</strong></td><td>Bloques económico</td><td>200K</td><td>3-8ms</td><td>Hasta 4 enclosures</td><td>iSCSI, FC</td><td>No</td><td>No</td><td>Sí</td><td>Opcional</td><td>Entrada económico</td></tr>
+                <tr class="bg-primary"><td><strong>ThinkSystem DE Series (Entry)</strong></td><td>SAN entrada</td><td>200-400K</td><td>3-8ms</td><td>Hasta 8 enclosures</td><td>iSCSI, FC</td><td>No</td><td>No</td><td>Sí</td><td>Opcional</td><td>Entry / Backup</td></tr>
+                <tr class="bg-success"><td><strong>Alletra 5000</strong></td><td>All-Flash / Mid</td><td>500K</td><td>&lt;1ms</td><td>Hasta 4 nodos</td><td>iSCSI, FC, NVMe</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Aplicaciones empresariales</td></tr>
+                <tr class="bg-success"><td><strong>PowerStore</strong></td><td>All-Flash / Mid</td><td>1.5M</td><td>&lt;1ms</td><td>Hasta 4 nodos</td><td>iSCSI, FC, NVMe</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Consolidación / DB</td></tr>
+                <tr class="bg-success"><td><strong>HPE Primera</strong></td><td>Enterprise All-Flash</td><td>—</td><td>&lt;1ms</td><td>Escalable</td><td>FC, NVMe</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Misión crítica / DB</td></tr>
+                <tr class="bg-success"><td><strong>3PAR / StoreServ</strong></td><td>All-Flash / Mid-High</td><td>—</td><td>&lt;1ms</td><td>Escalable</td><td>iSCSI, FC</td><td>Parcial</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Enterprise consolidación</td></tr>
+                <tr class="bg-success"><td><strong>DM5100H</strong></td><td>Unificado Entry/Mid</td><td>300K</td><td>3-8ms</td><td>Hasta 8 nodos</td><td>NFS, SMB, iSCSI</td><td>No</td><td>Limitada</td><td>Sí</td><td>Opcional</td><td>NAS/SAN unificado</td></tr>
+                <tr class="bg-success"><td><strong>Unity XT</strong></td><td>Híbrido flash</td><td>800K</td><td>&lt;2ms</td><td>Hasta 8 enclosures</td><td>iSCSI, FC, NFS, SMB</td><td>No</td><td>Parcial</td><td>Sí</td><td>Opcional</td><td>Híbrido general</td></tr>
+                <tr class="bg-success"><td><strong>HPE Nimble</strong></td><td>All-Flash / Mid</td><td>400-700K</td><td>&lt;1ms</td><td>Escalable</td><td>iSCSI, FC</td><td>No</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Midmarket / Enterprise</td></tr>
+                <tr class="bg-warning"><td><strong>Alletra 9000</strong></td><td>Scale-out / NVMe</td><td>2M</td><td>&lt;0.5ms</td><td>Hasta 16 nodos</td><td>iSCSI, FC, NVMe</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Alta IOPS / NVMe</td></tr>
+                <tr class="bg-warning"><td><strong>DE6000H</strong></td><td>SAN Mid/High</td><td>1.2M</td><td>&lt;1ms</td><td>Hasta 24 controladores</td><td>iSCSI, FC, NVMe-oF</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Opcional</td><td>Big Data / Backup</td></tr>
+                <tr class="bg-warning"><td><strong>DM7000H</strong></td><td>Unificado High</td><td>800K</td><td>&lt;2ms</td><td>Hasta 24 nodos</td><td>NFS, SMB, FC, iSCSI</td><td>Parcial</td><td>Sí</td><td>Sí</td><td>Opcional</td><td>Enterprise unificado</td></tr>
+                <tr class="bg-warning"><td><strong>PowerMax</strong></td><td>Enterprise / Mainframe</td><td>2M</td><td>&lt;0.5ms</td><td>Scale-out</td><td>FC, NVMe-oF</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Enterprise / DB crítica</td></tr>
+                <tr class="bg-warning"><td><strong>PowerFlex</strong></td><td>Scale-out / SDS</td><td>1M</td><td>&lt;1ms</td><td>Scale-out</td><td>iSCSI, SDS</td><td>Parcial</td><td>Sí</td><td>Limitado</td><td>Opcional</td><td>HPC / Converged</td></tr>
+                <tr class="bg-warning"><td><strong>PowerScale</strong></td><td>Scale-out NAS</td><td>500K</td><td>&lt;1ms</td><td>Hasta N nodos</td><td>NFS, SMB, S3</td><td>No</td><td>No</td><td>Sí</td><td>Opcional</td><td>Unstructured / Files</td></tr>
+                <tr class="bg-warning"><td><strong>Pure FlashArray</strong></td><td>All-Flash NVMe</td><td>—</td><td>&lt;1ms</td><td>Escalable</td><td>NVMe, iSCSI</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>All‑Flash / DB</td></tr>
+                <tr class="bg-info"><td><strong>StoreOnce</strong></td><td>Respaldos / Dedup</td><td>N/A</td><td>N/A</td><td>Hasta 4 nodos</td><td>Catalyst, VTL</td><td>—</td><td>Sí</td><td>Sí</td><td>Opcional</td><td>Backup / Dedupe</td></tr>
+                <tr class="bg-info"><td><strong>PowerProtect DD</strong></td><td>Backup appliance / Dedup</td><td>N/A</td><td>N/A</td><td>Escalable</td><td>Replication, Catalyst</td><td>—</td><td>Sí</td><td>Sí</td><td>Opcional</td><td>Backup / Dedupe</td></tr>
+                <tr class="bg-info"><td><strong>ECS</strong></td><td>Object Storage</td><td>N/A</td><td>N/A</td><td>Escalabilidad Masiva</td><td>S3</td><td>—</td><td>No</td><td>Sí</td><td>Opcional</td><td>Object / Archivado</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header"><i class="fas fa-exchange-alt"></i> Comparativa Switches Fibre Channel</div>
+          <div class="card-body">
+            <table class="table table-hover align-middle">
+              <thead class="table-light"><tr><th>Modelo</th><th>Tipo</th><th>Puertos</th><th>Throughput</th><th>Gen</th><th>Optics</th><th>Licencias</th><th>Ideal para</th></tr></thead>
+              <tbody>
+                <tr class="bg-primary"><td><strong>Brocade G610</strong></td><td>Acceso</td><td>32+ ports</td><td>—</td><td>Gen6</td><td>32G SFP</td><td>Opcional</td><td>Acceso 32G</td></tr>
+                <tr class="bg-primary"><td><strong>Brocade G630</strong></td><td>Acceso</td><td>32/64 ports</td><td>—</td><td>Gen6</td><td>32/64G SFP</td><td>Opcional</td><td>Acceso / Agregación</td></tr>
+                <tr class="bg-primary"><td><strong>Brocade G720</strong></td><td>Acceso/Agregación</td><td>32/64Gb</td><td>—</td><td>Gen6</td><td>32/64G SFP</td><td>Opcional</td><td>Acceso / Performance</td></tr>
+                <tr class="bg-primary"><td><strong>Cisco MDS 9132T</strong></td><td>Acceso</td><td>32 ports</td><td>—</td><td>Gen6</td><td>32G SFP</td><td>Opcional</td><td>Acceso</td></tr>
+                <tr class="bg-primary"><td><strong>Cisco MDS 9148T</strong></td><td>Acceso</td><td>16/32/64Gb</td><td>—</td><td>Gen6</td><td>16/32/64G SFP</td><td>Opcional</td><td>Acceso</td></tr>
+                <tr class="bg-danger"><td><strong>Brocade X6</strong></td><td>Core / Director</td><td>64+ ports</td><td>—</td><td>Gen7</td><td>64G SFP</td><td>Enterprise</td><td>Core / Director</td></tr>
+                <tr class="bg-danger"><td><strong>Brocade X7</strong></td><td>Core / Director</td><td>64+ ports</td><td>—</td><td>Gen7</td><td>64G SFP</td><td>Enterprise</td><td>Director / High‑Density</td></tr>
+                <tr class="bg-danger"><td><strong>Cisco MDS 9700</strong></td><td>Core / Director</td><td>Modular</td><td>—</td><td>Gen6/7</td><td>Modular</td><td>Enterprise</td><td>Core / Director</td></tr>
+                <tr class="bg-secondary"><td><strong>ThinkSystem DB</strong></td><td>Fabric OEM</td><td>Variado</td><td>—</td><td>Gen6/7</td><td>32/64G</td><td>Opcional</td><td>Bundles con Alletra/DM</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card shadow-sm mb-4">
+          <div class="card-header"><i class="fas fa-network-wired"></i> Comparativa Networking Ethernet</div>
+          <div class="card-body">
+            <table class="table table-hover align-middle">
+              <thead class="table-light"><tr><th>Modelo</th><th>Tipo</th><th>Throughput Máx</th><th>Latencia</th><th>Puertos</th><th>Protocolos</th><th>Ideal para</th></tr></thead>
+              <tbody>
+                <tr class="bg-primary"><td><strong>CX 6000</strong></td><td>Acceso</td><td>6.4Tbps</td><td>3μs</td><td>48x25G</td><td>VXLAN, EVPN</td><td>Acceso 25G</td></tr>
+                <tr class="bg-primary"><td><strong>CX 6100</strong></td><td>Acceso</td><td>12.8Tbps</td><td>2μs</td><td>64x25G</td><td>VXLAN, EVPN</td><td>Acceso / Agregación</td></tr>
+                <tr class="bg-primary"><td><strong>PowerSwitch S5248F-ON</strong></td><td>Access/Leaf</td><td>—</td><td>~1-2μs</td><td>48x25G / 12x100G</td><td>EVPN, VXLAN, RoCE</td><td>Leaf / ToR</td></tr>
+                <tr class="bg-primary"><td><strong>PowerSwitch Z9264-ON</strong></td><td>Core / Modular</td><td>—</td><td>&lt;1μs</td><td>64x100G / 32x400G</td><td>EVPN, VXLAN, RoCE</td><td>Core / Aggregation</td></tr>
+                <tr class="bg-primary"><td><strong>Aruba CX 6300</strong></td><td>Acceso/Leaf</td><td>—</td><td>—</td><td>48x25G / 12x100G</td><td>EVPN, VXLAN</td><td>Campus / Leaf</td></tr>
+                <tr class="bg-primary"><td><strong>Cisco Nexus 9300</strong></td><td>Access / Leaf</td><td>6.4-12.8Tbps</td><td>~1-2μs</td><td>48x25G / 32x100G</td><td>EVPN, VXLAN</td><td>Leaf / ToR</td></tr>
+                <tr class="bg-info"><td><strong>NVIDIA Spectrum</strong></td><td>Leaf/Spine ASIC</td><td>—</td><td>~0.5-1μs</td><td>32/64/100G</td><td>RoCE, EVPN</td><td>DC / HPC</td></tr>
+                <tr class="bg-warning"><td><strong>CX 8325</strong></td><td>Core / Data Center</td><td>25.6Tbps</td><td>1μs</td><td>32x100G</td><td>RoCE, iWARP</td><td>Core / Spine</td></tr>
+                <tr class="bg-warning"><td><strong>CX 8360</strong></td><td>Core / Data Center</td><td>51.2Tbps</td><td>&lt;1μs</td><td>64x100G</td><td>RoCE, iWARP</td><td>Core / Spine</td></tr>
+                <tr class="bg-warning"><td><strong>Cisco Nexus 9500</strong></td><td>Core / Modular</td><td>100G+</td><td>&lt;1μs</td><td>Modular</td><td>EVPN, VXLAN</td><td>Core / Aggregation</td></tr>
+                <tr class="bg-warning"><td><strong>Juniper QFX5120</strong></td><td>Leaf/Spine</td><td>25/100G</td><td>~1μs</td><td>Variante 32x100G</td><td>EVPN, VXLAN</td><td>Data Center</td></tr>
+                <tr class="bg-secondary"><td><strong>Aruba CX 8320</strong></td><td>Core/Edge</td><td>—</td><td>—</td><td>48x25G / 8x100G</td><td>EVPN</td><td>Campus/Core</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="hci">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-cubes"></i> Hiperconvergencia (HCI)</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Dell VxRail</h5>
+                        <p><strong>Ecosistema:</strong> VMware</p>
+                        <p><strong>Ventaja:</strong> Integración más profunda con vSphere del mercado.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-success border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-success">HPE SimpliVity</h5>
+                        <p><strong>Ecosistema:</strong> Omnistack</p>
+                        <p><strong>Ventaja:</strong> Deduplicación y compresión de datos "siempre activa".</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-danger border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-danger">Lenovo ThinkAgile HX/VX</h5>
+                        <p><strong>Ecosistema:</strong> Nutanix / VMware</p>
+                        <p><strong>Ventaja:</strong> Flexibilidad total de elegir el hipervisor.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm" id="hci-details">
+                    <div class="card-header"><i class="fas fa-layer-group"></i> Certificaciones y Nodos HCI (Detalles)</div>
+                    <div class="card-body">
+                        <p>Nodos certificados para HCI llave en mano; ejemplos de configuraciones típicas y software validado:</p>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Proveedor</th>
+                                    <th>Software HCI</th>
+                                    <th>Nodos Certificados (ejemplo)</th>
+                                    <th>Perfil típico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>HPE</td>
+                                    <td>SimpliVity</td>
+                                    <td>ProLiant DL360 Gen11, DL380 Gen11</td>
+                                    <td>3–8 nodos; CPU dual, NVMe cache, alta deduplicación</td>
+                                </tr>
+                                <tr>
+                                    <td>Dell</td>
+                                    <td>VxRail (VMware)</td>
+                                    <td>PowerEdge R760, XE8545 (GPU-optimized)</td>
+                                    <td>3–64 nodos; integración nativa vSAN, lifecycle mgmt</td>
+                                </tr>
+                                <tr>
+                                    <td>Lenovo</td>
+                                    <td>ThinkAgile (Nutanix / VMware)</td>
+                                    <td>ThinkSystem SR650 V3, SD650</td>
+                                    <td>3–32 nodos; densidad alta y opciones NVMe</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Ejemplos de nodos certificados (ejemplos comerciales):</strong></p>
+                        <ul>
+                            <li><strong>VxRail:</strong> P570F, E560 (nodos validados para VxRail POC)</li>
+                            <li><strong>HPE SimpliVity:</strong> SimpliVity 380 (basado en ProLiant DL series)</li>
+                            <li><strong>Lenovo ThinkAgile:</strong> VX3720 / HX3320 (nodos Nutanix/VMware certificados)</li>
+                        </ul>
+                        <p class="mb-0"><strong>Recomendación preventa:</strong> entregar POC con 3 nodos reales, validar RPO/RTO y deduplicación/compresión en workload representativo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="proteccion">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-shield-alt"></i> Protección de Datos (Cyber-Resilience)</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-server"></i> Appliances de Backup</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Solución</th>
+                                    <th>Características</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Dell</strong></td><td>PowerProtect DD</td><td>Estándar de oro en deduplicación para respaldos</td></tr>
+                                <tr><td><strong>HPE</strong></td><td>StoreOnce</td><td>Deduplicación avanzada y respaldo continuo</td></tr>
+                                <tr><td><strong>Lenovo</strong></td><td>DE Series con ONTAP</td><td>Integración con Veeam/Commvault</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-sync-alt"></i> Compatibilidad con Software</div>
+                    <div class="card-body">
+                        <p>Todos los equipos de HPE, Dell y Lenovo son 100% compatibles con:</p>
+                        <ul>
+                            <li><strong>Veeam:</strong> Backup y recuperación para entornos virtuales</li>
+                            <li><strong>Commvault:</strong> Gestión unificada de datos y respaldo</li>
+                            <li><strong>Zerto:</strong> Protección continua y recuperación ante desastres</li>
+                            <li><strong>Cohesity:</strong> Plataforma unificada para backup, instant recovery y Ransomware recovery</li>
+                            <li><strong>Rubrik:</strong> Orquestación, compliance y recuperación ante incidentes</li>
+                            <li><strong>Veritas:</strong> Integración con appliances corporativos y deduplicación a nivel enterprise</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="ia">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-brain"></i> Inteligencia Artificial (IA) - GPUs</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-success border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-success">HPE Apollo / Cray</h5>
+                        <p>Para supercomputación y modelos de lenguaje masivos.</p>
+                        <p><strong>Capacidad:</strong> Hasta 16 GPUs NVIDIA H100</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Dell PowerEdge XE9680</h5>
+                        <p>Diseñado específicamente para alojar GPUs.</p>
+                        <p><strong>Capacidad:</strong> 8 GPUs NVIDIA H100/B200</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-start border-danger border-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-danger">Lenovo ThinkSystem SR675 V3</h5>
+                        <p>Mayor densidad de cómputo acelerado.</p>
+                        <p><strong>Capacidad:</strong> Hasta 10 GPUs NVIDIA L40S</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm" id="ia-gpus">
+                    <div class="card-header"><i class="fas fa-microchip"></i> GPUs soportadas y ejemplos por servidor</div>
+                    <div class="card-body">
+                        <p>Detalle de GPUs frecuentes en preventa IA (2026) y mapeo a servidores típicos:</p>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>GPU</th>
+                                    <th>Uso recomendado</th>
+                                    <th>Ejemplo de servidor y capacidad</th>
+                                    <th>NVLink</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>NVIDIA H100</td>
+                                    <td>Entrenamiento LLM y HPC intensivo</td>
+                                    <td>Dell XE9680 / HPE Apollo: hasta 8–16 GPUs (según chasis), refrigeración avanzada</td>
+                                    <td>Sí (NVLink-Switch para multi-GPU a escala)</td>
+                                </tr>
+                                <tr>
+                                    <td>NVIDIA H200</td>
+                                    <td>Entrenamiento e inferencia de próxima generación (Hopper evol.)</td>
+                                    <td>Plataformas HPC/IA cert: soporte SXM para NVLink</td>
+                                    <td>Sí (SXM / NVLink)</td>
+                                </tr>
+                                <tr>
+                                    <td>NVIDIA A100</td>
+                                    <td>Entrenamiento e inferencia</td>
+                                    <td>HPE Apollo, Lenovo SD650: configuraciones 4–8 GPUs por nodo</td>
+                                    <td>Sí (NVLink en variantes SXM)</td>
+                                </tr>
+                                <tr>
+                                    <td>NVIDIA A10</td>
+                                    <td>Inferencia y gráficos acelerados (versátil)</td>
+                                    <td>Servidores dGPU y blades: buena mezcla precio/eficiencia</td>
+                                    <td>Parcial (según variante)</td>
+                                </tr>
+                                <tr>
+                                    <td>NVIDIA L40S</td>
+                                    <td>Inferencia generativa y cargas mixtas</td>
+                                    <td>Lenovo SR675 V3: hasta 10 L40S en chasis dense</td>
+                                    <td>No (Principalmente PCIe)</td>
+                                </tr>
+                                <tr>
+                                    <td>NVIDIA L4</td>
+                                    <td>Inferencia edge y cargas de baja latencia</td>
+                                    <td>Edge servers y densos racks para inferencia</td>
+                                    <td>No (PCIe)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="mb-0"><strong>Checklist preventa GPU:</strong> confirmar slots PCIe/SXM, perfil de alimentación (3kW+ por nodo), refrigeración (aire vs líquido), soporte NVLink y disponibilidad de NVLink-Switch si se planifica multi-node tightly-coupled.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="san">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-network-wired"></i> Conectividad SAN (Fibre Channel)</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm" id="san-switches">
+                    <div class="card-header"><i class="fas fa-exchange-alt"></i> Switches Fibre Channel</div>
+                    <div class="card-body">
+                        <p><strong>Brocade / Cisco MDS / ThinkSystem DB:</strong> HPE y Dell revenden switches Brocade/Cisco para Fibre Channel; Lenovo ofrece ThinkSystem DB (fabric OEM Brocade) en bundles para integraciones FC.</p>
+                        <p><strong>Modelos típicos:</strong> Brocade G610, Brocade G720 (32/64Gb), Brocade X6, Cisco MDS 9148T (16/32/64Gb), Cisco MDS 9700 para core.</p>
+                        <p><strong>Estándares:</strong> 16Gb (legacy), 32Gb y 64Gb para evitar cuello de botella en storage; considerar zoning, NPIV, QoS y ZTD para cargas críticas.</p>
+                        <p><strong>Notas Lenovo:</strong> ThinkSystem DB furnishes FC fabrics integradas para Alletra/ThinkSystem DM y soporta bundles certificados con ONTAP.</p>
+                        <p class="mb-0"><strong>Recomendación preventa:</strong> especificar puertos FC necesarios, paths redundantes, SFPs compatibles (32G/64G), zoning y planificación de core + agregación de acceso para HA.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-list"></i> Protocolos Soportados</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Protocolo</th>
+                                    <th>Descripción</th>
+                                    <th>Uso Típico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>iSCSI</strong></td><td>SCSI over IP</td><td>Almacenamiento en red económico</td></tr>
+                                <tr><td><strong>NFS</strong></td><td>Network File System</td><td>Compartición de archivos Unix/Linux</td></tr>
+                                <tr><td><strong>SMB/CIFS</strong></td><td>Server Message Block</td><td>Compartición de archivos Windows</td></tr>
+                                <tr><td><strong>Fibre Channel</strong></td><td>FC Protocol</td><td>Conexión de alta velocidad a storage</td></tr>
+                                <tr><td><strong>NVMe-over-Fabrics</strong></td><td>NVMe-oF</td><td>Almacenamiento flash de baja latencia</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="tco">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-calculator"></i> Consideraciones Técnicas y TCO</h2>
+        
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-dollar-sign"></i> Costos Promedio por Categoría</div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>HPE</th>
+                                    <th>Dell</th>
+                                    <th>Lenovo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Servidores 1U</strong></td><td>$3,000-8,000</td><td>$2,500-7,500</td><td>$2,000-6,000</td></tr>
+                                <tr><td><strong>Servidores 2U</strong></td><td>$5,000-15,000</td><td>$4,500-14,000</td><td>$4,000-12,000</td></tr>
+                                <tr><td><strong>Storage All-Flash</strong></td><td>$50,000-200,000</td><td>$45,000-180,000</td><td>$40,000-160,000</td></tr>
+                                <tr><td><strong>Networking 25G</strong></td><td>$5,000-15,000</td><td>$4,500-14,000</td><td>$4,000-12,000</td></tr>
+                            </tbody>
+                        </table>
+                        <small class="text-muted">*Precios aproximados en USD, varían por configuración y región</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-chart-bar"></i> Benchmarks de Performance</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="tcoChart"></canvas>
+                        </div>
+                        <ul class="list-unstyled mt-3">
+                            <li><i class="fas fa-trophy text-warning me-2"></i><strong>HPE:</strong> Mejor para entornos críticos con alta disponibilidad</li>
+                            <li><i class="fas fa-trophy text-primary me-2"></i><strong>Dell:</strong> Excelente relación precio-rendimiento</li>
+                            <li><i class="fas fa-trophy text-danger me-2"></i><strong>Lenovo:</strong> Mayor densidad y eficiencia energética</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4 mt-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-chart-line"></i> Análisis ROI (Retorno de Inversión)</div>
+                    <div class="card-body">
+                        <h6 class="text-success"><i class="fas fa-leaf me-2"></i>Beneficios a 3 años:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>HPE:</strong> 15-25% ahorro en TCO para entornos críticos</li>
+                            <li><strong>Dell:</strong> 20-30% mejor ROI en virtualización masiva</li>
+                            <li><strong>Lenovo:</strong> 25-35% reducción en costos energéticos</li>
+                        </ul>
+                        
+                        <h6 class="text-primary mt-3"><i class="fas fa-clock me-2"></i>Payback típico:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>HPE:</strong> 18-24 meses</li>
+                            <li><strong>Dell:</strong> 12-18 meses</li>
+                            <li><strong>Lenovo:</strong> 15-21 meses</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-balance-scale"></i> Factores de Decisión</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4 text-center">
+                                <div class="p-3 border rounded">
+                                    <i class="fas fa-shield-alt fa-2x text-warning mb-2"></i>
+                                    <h6 class="fw-bold">Disponibilidad</h6>
+                                    <small class="text-muted">99.999% uptime</small>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="p-3 border rounded">
+                                    <i class="fas fa-tachometer-alt fa-2x text-primary mb-2"></i>
+                                    <h6 class="fw-bold">Performance</h6>
+                                    <small class="text-muted">IOPS, latencia</small>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="p-3 border rounded">
+                                    <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
+                                    <h6 class="fw-bold">Costo Total</h6>
+                                    <small class="text-muted">TCO 3-5 años</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3" role="alert">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Recomendación:</strong> Evaluar workload específico antes de decidir. No existe "mejor marca", sino mejor solución para cada caso.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-question-circle"></i> Preguntas Frecuentes (FAQ)</div>
+                    <div class="card-body">
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        ¿Cuál es la mejor opción para virtualización?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Dell R660 o Lenovo SR630 V3 ofrecen la mejor densidad de VMs por socket. HPE DL360 es ideal para cargas mixtas.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        ¿Qué marca tiene mejor soporte?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Todas ofrecen soporte Premier. Lenovo destaca por soporte directo sin intermediarios. HPE por estabilidad en entornos críticos.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        ¿Cuál es más eficiente energéticamente?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Lenovo lidera en eficiencia energética con procesadores AMD optimizados. Dell sigue con Intel eficiente.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header"><i class="fas fa-lightbulb"></i> Recomendaciones Técnicas</div>
+                    <div class="card-body">
+                        <h6><i class="fas fa-server text-primary me-2"></i>Para Servidores:</h6>
+                        <ul>
+                            <li>Evaluar TDP vs capacidad de refrigeración del data center</li>
+                            <li>Considerar compatibilidad con software existente</li>
+                            <li>Planificar escalabilidad futura (sockets, RAM)</li>
+                        </ul>
+                        
+                        <h6 class="mt-3"><i class="fas fa-hdd text-success me-2"></i>Para Storage:</h6>
+                        <ul>
+                            <li>IOPS requeridos vs latencia aceptable</li>
+                            <li>Capacidad de crecimiento (escalabilidad)</li>
+                            <li>Protocolos necesarios (FC, iSCSI, NFS)</li>
+                        </ul>
+                        
+                        <h6 class="mt-3"><i class="fas fa-network-wired text-warning me-2"></i>Para Networking:</h6>
+                        <ul>
+                            <li>Throughput actual vs crecimiento proyectado</li>
+                            <li>Compatibilidad con protocolos avanzados</li>
+                            <li>Redundancia y alta disponibilidad</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4 mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm" id="sostenibilidad">
+                    <div class="card-header"><i class="fas fa-leaf"></i> Sostenibilidad y Eficiencia Energética</div>
+                    <div class="card-body">
+                        <p>Requisitos frecuentes en RFP (2026): certificaciones de eficiencia, métricas de consumo y opciones de enfriamiento avanzado.</p>
+                        <ul>
+                            <li><strong>ENERGY STAR / EU Tiering:</strong> indicar cumplimiento o certificaciones equivalentes.</li>
+                            <li><strong>Objetivos PUE:</strong> target de diseño <strong>&lt; 1.4</strong> para salas modernas; POC medir PUE real en condiciones de carga.</li>
+                            <li><strong>Enfriamiento líquido:</strong> soporte para liquid cooling/direct-to-chip en modelos de alta densidad (p.ej. Lenovo SD650, HPE Apollo) para reducir PUE y mejorar densidad.</li>
+                            <li><strong>Métricas operacionales:</strong> kW por rack, watts por TB (para almacenamiento), emisiones CO2 estimadas por año (según intensidad de la red eléctrica local) y WUE si aplica.</li>
+                            <li><strong>Reciclabilidad y materiales:</strong> opciones de reciclaje, certificaciones de ciclo de vida (LCA) y disponibilidad de piezas con menor huella de carbono.</li>
+                        </ul>
+                        <p class="mb-0"><strong>Checklist para licitaciones:</strong> incluir consumo en watts por configuración (idle / avg / peak), PUE esperado, opciones de enfriamiento, impacto en CO2 y cláusulas de servicios para optimización energética post-venta.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="resumen">
+    <div class="container py-5">
+        <h2 class="section-header text-dark"><i class="fas fa-clipboard-check"></i> Resumen Ejecutivo</h2>
+        
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-target me-2"></i>Guía Rápida de Decisión</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="text-success"><i class="fas fa-server me-2"></i>HPE Pointnext</h6>
+                                <p class="small">Ideal para: Entornos críticos, SAP HANA, máxima disponibilidad. Mejor TCO a largo plazo.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-primary"><i class="fas fa-microchip me-2"></i>Dell PowerEdge</h6>
+                                <p class="small">Ideal para: Virtualización masiva, nube híbrida. Mejor relación precio-rendimiento.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-danger"><i class="fas fa-memory me-2"></i>Lenovo ThinkSystem</h6>
+                                <p class="small">Ideal para: Eficiencia energética, HPC, edge computing. Mejor densidad de cómputo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Checklist Preventa</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Workload específico identificado</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Requisitos de performance claros</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Presupuesto TCO definido</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Compatibilidad con infraestructura</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Servicios post-venta evaluados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-warning mt-4" role="alert">
+            <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Importante para Preventa</h5>
+            <p class="mb-0">Esta guía es una herramienta de referencia técnica. Cada proyecto requiere evaluación específica del workload, 
+            infraestructura existente y objetivos de negocio. Recomendamos pruebas de concepto (POC) para validación final.</p>
+        </div>
+    </div>
+</section>
+
+<section id="glosario">
+    <div class="container py-5">
+        <h2 class="section-header text-info"><i class="fas fa-book"></i> Glosario de Términos Técnicos</h2>
+        <p class="lead text-muted mb-4">Referencia completa para configurar servidores HPE, Dell y Lenovo. Términos esenciales para preventa y arquitectura TI.</p>
+        
+        <div class="accordion" id="glossaryAccordion">
+            <!-- Nomenclatura de Servidores -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fas fa-server me-2"></i>Nomenclatura de Servidores
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#glossaryAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">HPE ProLiant</dt>
+                            <dd class="col-sm-9">Línea principal de servidores rack/tower. Ej: DL360 Gen11 SFF (DL=Density-optimized, 360=modelo, Gen11=generación, SFF=Small Form Factor).</dd>
+                            
+                            <dt class="col-sm-3">Dell PowerEdge</dt>
+                            <dd class="col-sm-9">Serie R/T/XE. R=rack, T=tower, XE=edge. Ej: R760 (2U, 2 sockets, Intel Scalable).</dd>
+                            
+                            <dt class="col-sm-3">Lenovo ThinkSystem</dt>
+                            <dd class="col-sm-9">SR/ST/SD series. SR=rack, ST=tower, SD=dense. Ej: SR650 V3 (2U, 2 sockets, flexible).</dd>
+                            
+                            <dt class="col-sm-3">Gen/Generation</dt>
+                            <dd class="col-sm-9">Versión del modelo. Gen11 (HPE) = más reciente, mejor eficiencia energética y CPU.</dd>
+                            
+                            <dt class="col-sm-3">SFF vs LFF</dt>
+                            <dd class="col-sm-9">Small Form Factor (2.5" drives) vs Large Form Factor (3.5" drives). SFF = más bahías, mejor densidad; LFF = más capacidad por disco.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Especificaciones Hardware -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="fas fa-microchip me-2"></i>Especificaciones Hardware
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#glossaryAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">U (Rack Units)</dt>
+                            <dd class="col-sm-9">Altura en rack. 1U=4.45cm, 2U=8.9cm. Menos U = mejor densidad, pero menos expansión.</dd>
+                            
+                            <dt class="col-sm-3">Sockets</dt>
+                            <dd class="col-sm-9">Número de slots para CPU. 1 socket = entrada básica; 2 sockets = performance; 4+ sockets = HPC/misión crítica.</dd>
+                            
+                            <dt class="col-sm-3">CPU Soporte</dt>
+                            <dd class="col-sm-9">Procesadores compatibles. Intel Xeon Scalable (HPE/Dell), AMD EPYC (Lenovo/HPE), Intel Xeon-E (entrada).</dd>
+                            
+                            <dt class="col-sm-3">RAM Máx</dt>
+                            <dd class="col-sm-9">Memoria máxima. DDR5-4800/5600 = más rápido. 512GB-4TB típico. Más RAM = mejor virtualización.</dd>
+                            
+                            <dt class="col-sm-3">TDP (Watts)</dt>
+                            <dd class="col-sm-9">Potencia térmica máxima. 150W = eficiente; 750W+ = alto consumo, requiere buena refrigeración.</dd>
+                            
+                            <dt class="col-sm-3">Bahías (Drive Bays)</dt>
+                            <dd class="col-sm-9">Slots para discos. 8-bay SFF = compacto/performance; 24-bay LFF = capacidad masiva. Hot-swap = cambio sin apagar.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Almacenamiento -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <i class="fas fa-hdd me-2"></i>Almacenamiento (Storage)
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#glossaryAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">IOPS</dt>
+                            <dd class="col-sm-9">Operaciones I/O por segundo. 200K = básico; 1M+ = alto performance para DB/IA.</dd>
+                            
+                            <dt class="col-sm-3">Latencia</dt>
+                            <dd class="col-sm-9">Tiempo de respuesta. <1ms = excelente; 5-10ms = aceptable para NAS.</dd>
+                            
+                            <dt class="col-sm-3">HDD vs SSD</dt>
+                            <dd class="col-sm-9">HDD = magnético, barato, alta capacidad. SSD = flash, rápido, caro. NVMe = SSD ultra-rápido.</dd>
+                            
+                            <dt class="col-sm-3">SAN vs NAS</dt>
+                            <dd class="col-sm-9">SAN = bloques (FC/iSCSI) para VMs/DB. NAS = archivos (NFS/SMB) para shares.</dd>
+                            
+                            <dt class="col-sm-3">RAID</dt>
+                            <dd class="col-sm-9">Redundancia de discos. RAID 1/5/6 = protección básica; RAID 10 = performance + protección.</dd>
+                            
+                            <dt class="col-sm-3">Escalabilidad</dt>
+                            <dd class="col-sm-9">Capacidad de crecimiento. Hasta X nodos/enclosures. Más nodos = mejor HA.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Networking -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        <i class="fas fa-network-wired me-2"></i>Networking (Redes)
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#glossaryAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Throughput</dt>
+                            <dd class="col-sm-9">Velocidad máxima. 100Gbps = alta performance; 1Gbps = básico.</dd>
+                            
+                            <dt class="col-sm-3">Latencia</dt>
+                            <dd class="col-sm-9"><1μs = ultra-baja (RoCE); 5μs = buena para data center.</dd>
+                            
+                            <dt class="col-sm-3">Puertos</dt>
+                            <dd class="col-sm-9">Conexiones físicas. 48x25G = 48 puertos de 25Gbps cada uno.</dd>
+                            
+                            <dt class="col-sm-3">RoCE/iWARP</dt>
+                            <dd class="col-sm-9">RDMA over Ethernet. Baja latencia para storage/networking de alto performance.</dd>
+                            
+                            <dt class="col-sm-3">EVPN/VXLAN</dt>
+                            <dd class="col-sm-9">Virtualización de redes. Para data centers modernos con overlay networking.</dd>
+                            
+                            <dt class="col-sm-3">PoE/PoE+</dt>
+                            <dd class="col-sm-9">Power over Ethernet. Alimenta dispositivos (cámaras, AP) por cable de red.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Términos Empresariales -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        <i class="fas fa-building me-2"></i>Términos Empresariales
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#glossaryAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">TCO (Total Cost of Ownership)</dt>
+                            <dd class="col-sm-9">Costo total: compra + energía + mantenimiento + soporte. Menor TCO = mejor ROI.</dd>
+                            
+                            <dt class="col-sm-3">Workload</dt>
+                            <dd class="col-sm-9">Carga de trabajo. Virtualización, DB, IA, HPC, etc. Determina qué servidor elegir.</dd>
+                            
+                            <dt class="col-sm-3">Sizing</dt>
+                            <dd class="col-sm-9">Dimensionamiento. Calcular CPU/RAM/storage needed para un workload específico.</dd>
+                            
+                            <dt class="col-sm-3">HA (High Availability)</dt>
+                            <dd class="col-sm-9">Alta disponibilidad. Redundancia para evitar downtime (clustering, failover).</dd>
+                            
+                            <dt class="col-sm-3">Edge Computing</dt>
+                            <dd class="col-sm-9">Computo en el borde. Servidores pequeños cerca de usuarios/datos (XE9680, etc.).</dd>
+                            
+                            <dt class="col-sm-3">HPC (High Performance Computing)</dt>
+                            <dd class="col-sm-9">Supercomputación. Para ciencia, IA, simulación (SR860, etc.).</dd>
+                            
+                            <dt class="col-sm-3">Converged/Hyperconverged</dt>
+                            <dd class="col-sm-9">Infraestructura integrada. Compute + storage + network en un appliance.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Términos de Configuración Avanzada -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSeven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                        <i class="fas fa-cogs me-2"></i>Configuración Avanzada (DL360 Gen11)
+                    </button>
+                </h2>
+                <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#glossaryAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Energy Star</dt>
+                            <dd class="col-sm-9">Certificación de eficiencia energética para equipos que cumplen estándares ambientales de bajo consumo.</dd>
+                            
+                            <dt class="col-sm-3">Wake ON LAN</dt>
+                            <dd class="col-sm-9">Función que permite encender el servidor remotamente a través de la red (requiere NIC compatible).</dd>
+                            
+                            <dt class="col-sm-3">Shared NIC</dt>
+                            <dd class="col-sm-9">Interfaz de red compartida entre iLO y el sistema operativo para gestión remota.</dd>
+                            
+                            <dt class="col-sm-3">OCP Slot</dt>
+                            <dd class="col-sm-9">Open Compute Project slot para tarjetas de expansión estandarizadas (Ethernet, InfiniBand, etc.).</dd>
+                            
+                            <dt class="col-sm-3">FIO (Factory Integration Option)</dt>
+                            <dd class="col-sm-9">Integración en fábrica de componentes personalizados durante el ensamblaje del servidor.</dd>
+                            
+                            <dt class="col-sm-3">DDR5 CAS-46-45-45</dt>
+                            <dd class="col-sm-9">Latencia de memoria DDR5 (CAS = Column Address Strobe). Valores más bajos = mejor performance.</dd>
+                            
+                            <dt class="col-sm-3">Registered Smart Memory</dt>
+                            <dd class="col-sm-9">Memoria ECC registrada con capacidades inteligentes de monitoreo y gestión de HPE.</dd>
+                            
+                            <dt class="col-sm-3">SAS Controller</dt>
+                            <dd class="col-sm-9">Controlador Serial Attached SCSI para conectar discos SAS/SATA.</dd>
+                            
+                            <dt class="col-sm-3">Smart Array SR Gen10</dt>
+                            <dd class="col-sm-9">Controlador de almacenamiento básico con 8 lanes externas, sin caché integrada.</dd>
+                            
+                            <dt class="col-sm-3">MR416i-p</dt>
+                            <dd class="col-sm-9">Controlador modular con 16 lanes PCIe y 8GB caché para alto performance.</dd>
+                            
+                            <dt class="col-sm-3">OCP SPDM</dt>
+                            <dd class="col-sm-9">Open Compute Project con Security Protocol and Data Model para gestión segura.</dd>
+                            
+                            <dt class="col-sm-3">Smart Storage Battery</dt>
+                            <dd class="col-sm-9">Batería de litio para mantener caché de controladores durante cortes de energía.</dd>
+                            
+                            <dt class="col-sm-3">OROC (Onboard RAID on CPU)</dt>
+                            <dd class="col-sm-9">RAID integrado directamente en el procesador Intel, sin necesidad de controlador dedicado.</dd>
+                            
+                            <dt class="col-sm-3">slimSAS</dt>
+                            <dd class="col-sm-9">Conector compacto para cables SAS de alta densidad (reemplaza mini-SAS).</dd>
+                            
+                            <dt class="col-sm-3">Drive Cage</dt>
+                            <dd class="col-sm-9">Jaula o compartimento que alberga múltiples bahías de discos en el servidor.</dd>
+                            
+                            <dt class="col-sm-3">U.3 Form Factor</dt>
+                            <dd class="col-sm-9">Estándar empresarial para SSD con conector PCIe/NVMe de alta velocidad.</dd>
+                            
+                            <dt class="col-sm-3">Tri-Mode</dt>
+                            <dd class="col-sm-9">Compatibilidad con SAS, SATA y NVMe en la misma bahía/backplane.</dd>
+                            
+                            <dt class="col-sm-3">Boot Compatible (BC)</dt>
+                            <dd class="col-sm-9">Disco compatible con arranque del sistema operativo (UEFI/BIOS).</dd>
+                            
+                            <dt class="col-sm-3">Value SAS</dt>
+                            <dd class="col-sm-9">SAS económico optimizado para capacidad en lugar de performance extrema.</dd>
+                            
+                            <dt class="col-sm-3">FIPS 140-2</dt>
+                            <dd class="col-sm-9">Estándar de seguridad para encriptación validado por NIST (Federal Information Processing Standards).</dd>
+                            
+                            <dt class="col-sm-3">NVMe-oF (over Fabrics)</dt>
+                            <dd class="col-sm-9">NVMe sobre redes (RoCE, iWARP) para acceso remoto a almacenamiento flash.</dd>
+                            
+                            <dt class="col-sm-3">Crypto Adapter</dt>
+                            <dd class="col-sm-9">Adaptador de red con capacidades de encriptación hardware para seguridad de datos.</dd>
+                            
+                            <dt class="col-sm-3">BASE-T</dt>
+                            <dd class="col-sm-9">Ethernet sobre cable de cobre trenzado (CAT5e/CAT6) vs fibra óptica.</dd>
+                            
+                            <dt class="col-sm-3">SFP+/SFP28</dt>
+                            <dd class="col-sm-9">Transceptores hot-pluggable para fibra óptica (SFP28 = 25Gbps, SFP+ = 10Gbps).</dd>
+                            
+                            <dt class="col-sm-3">QSFP56</dt>
+                            <dd class="col-sm-9">Quad SFP para 200Gbps (4x50G), usado en data centers modernos.</dd>
+                            
+                            <dt class="col-sm-3">OSFP</dt>
+                            <dd class="col-sm-9">Octal SFP para conexiones de ultra-alta velocidad (400Gbps+).</dd>
+                            
+                            <dt class="col-sm-3">MPO Connector</dt>
+                            <dd class="col-sm-9">Conector multi-fibra push-on para cables ópticos de alta densidad.</dd>
+                            
+                            <dt class="col-sm-3">PSM4</dt>
+                            <dd class="col-sm-9">Parallel Single Mode 4-lane para enlaces ópticos de largo alcance.</dd>
+                            
+                            <dt class="col-sm-3">Active Optical Cable</dt>
+                            <dd class="col-sm-9">Cable óptico con electrónica integrada para conversión eléctrica-óptica.</dd>
+                            
+                            <dt class="col-sm-3">Fibre Channel HBA</dt>
+                            <dd class="col-sm-9">Host Bus Adapter para conexiones Fibre Channel (32G/64G) a SAN.</dd>
+                            
+                            <dt class="col-sm-3">InfiniBand NDR</dt>
+                            <dd class="col-sm-9">Next Data Rate (400Gbps) para interconexión de clústeres HPC.</dd>
+                            
+                            <dt class="col-sm-3">HCA (Host Channel Adapter)</dt>
+                            <dd class="col-sm-9">Adaptador de canal host para InfiniBand/RoCE, similar a NIC pero optimizado para HPC.</dd>
+                            
+                            <dt class="col-sm-3">Enablement Kit</dt>
+                            <dd class="col-sm-9">Kit de cables/componentes para habilitar funciones específicas del servidor.</dd>
+                            
+                            <dt class="col-sm-3">Power Advisor</dt>
+                            <dd class="col-sm-9">Herramienta online de HPE para calcular consumo energético de configuraciones.</dd>
+                            
+                            <dt class="col-sm-3">High Line Voltage</dt>
+                            <dd class="col-sm-9">Voltaje alto (200-240VAC) requerido por algunas fuentes de alimentación.</dd>
+                            
+                            <dt class="col-sm-3">Direct Liquid Cooling</dt>
+                            <dd class="col-sm-9">Sistema de enfriamiento por líquido directo para CPUs de alto TDP.</dd>
+                            
+                            <dt class="col-sm-3">Bezel</dt>
+                            <dd class="col-sm-9">Panel frontal del servidor con indicadores LED y acceso a bahías.</dd>
+                            
+                            <dt class="col-sm-3">System Insight Display</dt>
+                            <dd class="col-sm-9">Pantalla LCD frontal que muestra estado del sistema y códigos de error.</dd>
+                            
+                            <dt class="col-sm-3">RAS (Reliability, Availability, Serviceability)</dt>
+                            <dd class="col-sm-9">Características de confiabilidad, disponibilidad y facilidad de servicio.</dd>
+                            
+                            <dt class="col-sm-3">Trusted Supply Chain</dt>
+                            <dd class="col-sm-9">Programa de HPE para asegurar integridad de componentes desde fabricación.</dd>
+                            
+                            <dt class="col-sm-3">vSAN ReadyNode</dt>
+                            <dd class="col-sm-9">Configuración pre-validada para VMware vSAN (Virtual SAN).</dd>
+                            
+                            <dt class="col-sm-3">Cache Mode</dt>
+                            <dd class="col-sm-9">Modo de memoria que usa parte de la RAM como caché para mejor performance.</dd>
+                            
+                            <dt class="col-sm-3">Fault Tolerance</dt>
+                            <dd class="col-sm-9">Capacidad del sistema para continuar operando ante fallos de componentes.</dd>
+                            
+                            <dt class="col-sm-3">Riser Cards</dt>
+                            <dd class="col-sm-9">Tarjetas que elevan slots PCIe para mejor enfriamiento y compatibilidad.</dd>
+                            
+                            <dt class="col-sm-3">Full Height vs LP</dt>
+                            <dd class="col-sm-9">Full Height = altura completa para GPUs; LP = Low Profile para tarjetas estándar.</dd>
+                            
+                            <dt class="col-sm-3">NS204i-u</dt>
+                            <dd class="col-sm-9">Controlador NVMe de arranque ultra-rápido para SSDs boot.</dd>
+                            
+                            <dt class="col-sm-3">SED (Self-Encrypting Drive)</dt>
+                            <dd class="col-sm-9">Disco con encriptación automática usando TCG Opal standard.</dd>
+                            
+                            <dt class="col-sm-3">Intel VROC</dt>
+                            <dd class="col-sm-9">Virtual RAID on CPU - RAID software integrado en procesadores Intel.</dd>
+                            
+                            <dt class="col-sm-3">Pensando DSP</dt>
+                            <dd class="col-sm-9">Distributed Services Platform para networking programable y seguridad.</dd>
+                            
+                            <dt class="col-sm-3">E-RTU</dt>
+                            <dd class="col-sm-9">Electronic Right To Use - licencia electrónica de software.</dd>
+                            
+                            <dt class="col-sm-3">iLO Advanced</dt>
+                            <dd class="col-sm-9">Integrated Lights-Out Advanced para gestión remota completa del servidor.</dd>
+                            
+                            <dt class="col-sm-3">LTU (License To Use)</dt>
+                            <dd class="col-sm-9">Licencia de uso para software, diferente de perpetual licenses.</dd>
+                            
+                            <dt class="col-sm-3">Concurrent User</dt>
+                            <dd class="col-sm-9">Usuario simultáneo en licencias de software virtualizado.</dd>
+                            
+                            <dt class="col-sm-3">SUMS</dt>
+                            <dd class="col-sm-9">Software Update Management Service para actualizaciones de NVIDIA.</dd>
+                            
+                            <dt class="col-sm-3">Perpetual License</dt>
+                            <dd class="col-sm-9">Licencia perpetua sin expiración, vs suscripciones anuales.</dd>
+                            
+                            <dt class="col-sm-3">Ad-Hoc</dt>
+                            <dd class="col-sm-9">Configuración personalizada no estándar en el configurador de HPE.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="bg-dark text-white py-5 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">Guía de Infraestructura Profesional &copy; 2026</p>
+        <small class="text-muted">Diseñado para equipos de Preventa Técnica</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Configuración común para gráficos
+const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { beginAtZero: true, max: 5 } }
+};
+
+// Gráfico HPE
+new Chart(document.getElementById('hpeServersChart'), {
+    type: 'bar',
+    data: {
+        labels: ['DL20','BL460c','DL325','DL360','DL380','DL385','DL560','DL580','ML30','ML110','ML350','SY480','SY660','SY680'],
+        datasets: [
+            { label: 'U', data: [1, 1, 1, 1, 2, 2, 2, 4, 4, 4, 5, 2, 2, 4], backgroundColor: '#01a982' },
+            { label: 'Sockets', data: [1, 1, 1, 2, 2, 2, 4, 4, 1, 1, 2, 2, 2, 4], backgroundColor: '#ffc107' }
+        ]
+    },
+    options: commonOptions
+});
+
+// Gráfico Dell
+new Chart(document.getElementById('dellServersChart'), {
+    type: 'bar',
+    data: {
+        labels: ['R250','R350','R660','R760','R750','R760xs','R760xa','T150','T350','T550','T560','XE8545','XE8640','XE9680','R950'],
+        datasets: [
+            { label: 'U', data: [1,1,1,2,2,2,2,5,5,5,5,2,2,2,4], backgroundColor: '#0076ce' },
+            { label: 'Sockets', data: [1,1,2,2,2,2,2,1,1,1,2,2,2,4,4], backgroundColor: '#6c757d' }
+        ]
+    },
+    options: commonOptions
+});
+
+// Gráfico Lenovo
+new Chart(document.getElementById('lenovoServersChart'), {
+    type: 'bar',
+    data: {
+        labels: ['SR250 V2','SR630 V3','SR650 V3','SR655','SR665','SR850','SR860','ST250','ST550','ST650','SD530','SD535','SD650'],
+        datasets: [
+            { label: 'U', data: [1,1,2,2,1,4,4,4,5,5,1,1,2], backgroundColor: '#e11411' },
+            { label: 'Sockets', data: [1,2,2,2,2,4,4,1,1,2,2,2,4], backgroundColor: '#343a40' }
+        ]
+    },
+    options: commonOptions
+});
+
+// Gráfico Comparación Almacenamiento
+new Chart(document.getElementById('storageComparisonChart'), {
+    type: 'bar',
+    data: {
+        labels: ['HPE', 'Dell', 'Lenovo'],
+        datasets: [
+            { label: 'Básico/Económico', data: [2, 2, 1], backgroundColor: '#28a745' },
+            { label: 'Medio/Avanzado', data: [3, 3, 2], backgroundColor: '#007bff' },
+            { label: 'Premium/Especializado', data: [1, 1, 0], backgroundColor: '#dc3545' }
+        ]
+    },
+    options: commonOptions
+});
+
+// Gráfico Comparación Networking
+new Chart(document.getElementById('networkingComparisonChart'), {
+    type: 'bar',
+    data: {
+        labels: ['HPE', 'Dell', 'Lenovo'],
+        datasets: [
+            { label: 'Acceso', data: [2, 3, 4], backgroundColor: '#17a2b8' },
+            { label: 'Core/Data Center', data: [2, 3, 0], backgroundColor: '#6f42c1' }
+        ]
+    },
+    options: commonOptions
+});
+
+// Gráfico Comparación Servicios
+new Chart(document.getElementById('servicesComparisonChart'), {
+    type: 'radar',
+    data: {
+        labels: ['Soporte 24/7', 'Tiempo Respuesta', 'Cobertura Global', 'Servicios Profesionales', 'IaaS'],
+        datasets: [
+            { label: 'HPE', data: [5, 4, 5, 5, 5], backgroundColor: 'rgba(1, 169, 130, 0.2)', borderColor: '#01a982' },
+            { label: 'Dell', data: [5, 5, 5, 4, 4], backgroundColor: 'rgba(0, 118, 206, 0.2)', borderColor: '#0076ce' },
+            { label: 'Lenovo', data: [4, 4, 4, 4, 4], backgroundColor: 'rgba(225, 20, 17, 0.2)', borderColor: '#e11411' }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { r: { beginAtZero: true, max: 5 } }
+    }
+});
+
+// Gráfico Comparación Software
+new Chart(document.getElementById('softwareComparisonChart'), {
+    type: 'bar',
+    data: {
+        labels: ['HPE', 'Dell', 'Lenovo'],
+        datasets: [
+            { label: 'Gestión Unificada', data: [5, 4, 5], backgroundColor: '#28a745' },
+            { label: 'Automatización', data: [4, 5, 4], backgroundColor: '#007bff' },
+            { label: 'Integración Cloud', data: [5, 4, 4], backgroundColor: '#dc3545' }
+        ]
+    },
+    options: commonOptions
+});
+
+// Gráfico TCO Performance
+new Chart(document.getElementById('tcoChart'), {
+    type: 'radar',
+    data: {
+        labels: ['Performance', 'Eficiencia Energética', 'Escalabilidad', 'Soporte', 'Precio'],
+        datasets: [
+            { label: 'HPE', data: [5, 3, 4, 5, 3], backgroundColor: 'rgba(1, 169, 130, 0.2)', borderColor: '#01a982' },
+            { label: 'Dell', data: [4, 4, 4, 4, 4], backgroundColor: 'rgba(0, 118, 206, 0.2)', borderColor: '#0076ce' },
+            { label: 'Lenovo', data: [4, 5, 5, 4, 5], backgroundColor: 'rgba(225, 20, 17, 0.2)', borderColor: '#e11411' }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { r: { beginAtZero: true, max: 5 } }
+    }
+});
+</script>
+</body>
+</html>

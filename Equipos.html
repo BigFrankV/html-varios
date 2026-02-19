@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Hardware Empresarial 2026 - EOL/EOS y Modernos</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --dell-blue: #007DB8;
+            --hpe-green: #01A982;
+            --lenovo-red: #E2231A;
+            --eol-critical: #dc3545;
+            --eol-warning: #ffc107;
+            --modern: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-section .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-section {
+            padding: 30px;
+        }
+
+        /* Tabs personalizadas */
+        .nav-tabs {
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 15px 30px;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-color: transparent;
+            color: var(--primary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: white;
+            border: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .nav-tabs .nav-link.active.dell-tab {
+            background: var(--dell-blue);
+        }
+
+        .nav-tabs .nav-link.active.hpe-tab {
+            background: var(--hpe-green);
+        }
+
+        .nav-tabs .nav-link.active.lenovo-tab {
+            background: var(--lenovo-red);
+        }
+
+        /* Cards */
+        .info-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .info-card .card-header {
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: none;
+            padding: 15px 20px;
+            color: white;
+        }
+
+        .card-header.dell-header {
+            background: var(--dell-blue);
+        }
+
+        .card-header.hpe-header {
+            background: var(--hpe-green);
+        }
+
+        .card-header.lenovo-header {
+            background: var(--lenovo-red);
+        }
+
+        /* Badges */
+        .badge-gen {
+            font-size: 0.85rem;
+            padding: 5px 12px;
+            font-weight: 600;
+        }
+
+        .badge-modern {
+            background: var(--modern);
+        }
+
+        .badge-eol-warning {
+            background: var(--eol-warning);
+            color: #000;
+        }
+
+        .badge-eol-critical {
+            background: var(--eol-critical);
+        }
+
+        /* Tablas */
+        .table {
+            font-size: 0.9rem;
+        }
+
+        .table thead {
+            background: #f8f9fa;
+            font-weight: 700;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        /* Color coding para filas */
+        .row-modern {
+            border-left: 4px solid var(--modern);
+            background-color: #f1f9f4;
+        }
+
+        .row-eol-warning {
+            border-left: 4px solid var(--eol-warning);
+            background-color: #fff9e6;
+        }
+
+        .row-eol-critical {
+            border-left: 4px solid var(--eol-critical);
+            background-color: #ffe6e6;
+        }
+
+        /* Stats boxes */
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .stat-box i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-box h3 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .stat-box p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .section-header i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .section-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        /* Alert boxes */
+        .alert-custom {
+            border-left: 5px solid;
+            border-radius: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* DataTables custom */
+        .dataTables_wrapper .dataTables_length select {
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        /* Tooltips */
+        .tooltip-inner {
+            max-width: 300px;
+            text-align: left;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="main-container" data-aos="fade-up">
+            
+            <!-- Header -->
+            <div class="header-section">
+                <h1><i class="fas fa-server"></i> Catálogo de Hardware Empresarial 2026</h1>
+                <p class="subtitle">Equipos EOL/EOS y Generaciones Modernas - Dell, HPE & Lenovo</p>
+                <small><i class="far fa-calendar-alt"></i> Actualizado: Febrero 2026</small>
+            </div>
+
+            <!-- Content -->
+            <div class="content-section">
+
+                <!-- Stats Overview -->
+                <div class="row mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="col-md-4">
+                        <div class="stat-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-rocket"></i>
+                            <h3>Gen 12/17G/V4</h3>
+                            <p>Generaciones Actuales 2026</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>2026-2027</h3>
+                            <p>Ventana Crítica EOL/EOSL</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="fas fa-microchip"></i>
+                            <h3>Intel Xeon 6</h3>
+                            <p>Última Generación Procesadores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generaciones Actuales Overview -->
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <div class="section-header">
+                        <i class="fas fa-star"></i>
+                        <h3>🚀 Generaciones Actuales - Lo Más Nuevo 2026</h3>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="currentGenTable">
+                            <thead>
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Generación Actual</th>
+                                    <th>Modelos Insignia</th>
+                                    <th>Procesadores</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--dell-blue);"></i> <strong>Dell</strong></td>
+                                    <td><span class="badge badge-gen badge-modern">17G (17ª Gen)</span></td>
+                                    <td>R770, R670, R7725 (AMD)</td>
+                                    <td>Intel Xeon 6 / AMD EPYC 9005</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--hpe-green);"></i> <strong>HPE</strong></td>
+                                    <td><span class="badge badge-gen badge-modern">Gen12</span></td>
+                                    <td>DL380 Gen12, ML350 Gen12</td>
+                                    <td>Intel Xeon 6</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--lenovo-red);"></i> <strong>Lenovo</strong></td>
+                                    <td><span class="badge badge-gen badge-modern">V4 (ThinkSystem)</span></td>
+                                    <td>SR650 V4, SR630 V4</td>
+                                    <td>Intel Xeon 6</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabs por Marca -->
+                <div data-aos="fade-up" data-aos-delay="300">
+                    <ul class="nav nav-tabs mt-5" id="vendorTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active dell-tab" id="dell-tab" data-bs-toggle="tab" data-bs-target="#dell" type="button">
+                                <i class="fas fa-building"></i> Dell Technologies
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link hpe-tab" id="hpe-tab" data-bs-toggle="tab" data-bs-target="#hpe" type="button">
+                                <i class="fas fa-building"></i> HPE
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link lenovo-tab" id="lenovo-tab" data-bs-toggle="tab" data-bs-target="#lenovo" type="button">
+                                <i class="fas fa-building"></i> Lenovo
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content p-4 border border-top-0" id="vendorTabContent">
+                        
+                        <!-- DELL TAB -->
+                        <div class="tab-pane fade show active" id="dell" role="tabpanel">
+                            
+                            <!-- Desglose Generaciones Dell -->
+                            <div class="card info-card">
+                                <div class="card-header dell-header">
+                                    <i class="fas fa-info-circle"></i> Desglose de Generaciones Dell
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <span class="badge badge-modern mb-2">17G - ACTUAL</span>
+                                            <p><strong>R770, R670</strong> - Introducen iDRAC 10</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="badge bg-info mb-2">16G - VIGENTE</span>
+                                            <p><strong>R760, R660</strong> - Potente y disponible</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="badge badge-eol-warning mb-2">14G/15G - RENOVAR</span>
+                                            <p>Marcar para renovación 2026-2027</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Servidores Dell -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-server"></i>
+                                <h3>Servidores (Cómputo)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>Tamaño</th>
+                                            <th>CPUs</th>
+                                            <th>CPU Max (Núcleos)</th>
+                                            <th>RAM Max</th>
+                                            <th>Storage Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>R670</strong></td>
+                                            <td><span class="badge badge-modern">17G</span></td>
+                                            <td>1U</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>153.6 TB (NVMe)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>R770</strong></td>
+                                            <td><span class="badge badge-modern">17G</span></td>
+                                            <td>2U</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>307.2 TB (NVMe)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>R960</strong></td>
+                                            <td><span class="badge bg-info">16G</span></td>
+                                            <td>4U</td>
+                                            <td>2-4</td>
+                                            <td>Xeon 5th (64c)</td>
+                                            <td>16 TB</td>
+                                            <td>384 TB (NVMe)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>T560</strong></td>
+                                            <td><span class="badge bg-info">16G</span></td>
+                                            <td>Torre</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 5th (32c)</td>
+                                            <td>1 TB</td>
+                                            <td>240 TB (HDD/SSD)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Storage Dell -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-database"></i>
+                                <h3>Almacenamiento (Storage)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>IOPS Est.</th>
+                                            <th>Puertos</th>
+                                            <th>Capacidad Máx.</th>
+                                            <th>Protocolos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>PowerStore 3200T</strong></td>
+                                            <td><span class="badge badge-modern">Gen 2</span></td>
+                                            <td>1M+</td>
+                                            <td>4-24</td>
+                                            <td>4 PB</td>
+                                            <td>FC, iSCSI, NVMe-TCP</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>PowerVault ME5024</strong></td>
+                                            <td><span class="badge badge-modern">ME5</span></td>
+                                            <td>640k</td>
+                                            <td>4-8</td>
+                                            <td>6 PB</td>
+                                            <td>FC, iSCSI, SAS</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Networking Dell -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-network-wired"></i>
+                                <h3>Redes (Networking)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>Tipo</th>
+                                            <th>Puertos Base</th>
+                                            <th>Uplinks</th>
+                                            <th>Stacking</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>PowerSwitch S5248F-ON</strong></td>
+                                            <td><span class="badge badge-modern">S-Series</span></td>
+                                            <td>L3, 1U</td>
+                                            <td>48x 25GbE SFP28</td>
+                                            <td>6x 100GbE QSFP28</td>
+                                            <td>VLT (2 unidades)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>PowerSwitch S5232F-ON</strong></td>
+                                            <td><span class="badge badge-modern">S-Series</span></td>
+                                            <td>L3, 1U</td>
+                                            <td>32x 100GbE QSFP28</td>
+                                            <td>2x 400GbE QSFP-DD</td>
+                                            <td>VLT (2 unidades)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>N3248PX-ON</strong></td>
+                                            <td><span class="badge badge-modern">N-Series</span></td>
+                                            <td>L3, 1U</td>
+                                            <td>48x 1GbE + PoE+</td>
+                                            <td>4x 10GbE SFP+</td>
+                                            <td>Stackable (hasta 12)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- HCI Dell -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-cubes"></i>
+                                <h3>Hiperconvergencia (HCI)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Plataforma Base</th>
+                                            <th>Nodos Min/Max</th>
+                                            <th>Almacenamiento por Nodo</th>
+                                            <th>Software Incluido</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>VxRail E670</strong></td>
+                                            <td>PowerEdge R670 (17G)</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 153.6 TB</td>
+                                            <td>vSphere, vSAN, vCenter</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>VxRail P670</strong></td>
+                                            <td>PowerEdge R770 (17G)</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 307.2 TB</td>
+                                            <td>vSphere, vSAN, vCenter</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>VxRail E660</strong></td>
+                                            <td>PowerEdge R660 (16G)</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 122.8 TB</td>
+                                            <td>vSphere, vSAN, vCenter</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- EOL Critical Dell -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>EOSL 2026-2027 - Retiro Crítico</h3>
+                            </div>
+                            
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-server"></i> Servidores</h5>
+                                <p><strong>Serie 13G y 14G:</strong> R840 (Sept 2026), R740/R640 (varios modelos entran en 2027)</p>
+                            </div>
+
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-database"></i> Storage - ZONA PELIGROSA</h5>
+                                <p><strong>SC Series (Compellent):</strong> SC7020, SC5020, SC5020F (Agosto 2026)</p>
+                                <p><strong>Data Domain:</strong> DD3300 (2027), Isilon X210 (Marzo 2026)</p>
+                            </div>
+
+                            <div class="alert alert-warning alert-custom" style="border-left-color: var(--eol-warning);">
+                                <h5><i class="fas fa-network-wired"></i> Networking</h5>
+                                <p><strong>PowerSwitch S-Series:</strong> S4048-ON (Enero 2027), S4048T (Oct 2026), S3048 (Abril 2027)</p>
+                                <p><strong>C-Series:</strong> C1048P, C9010 (Enero 2026)</p>
+                            </div>
+
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-cubes"></i> Hiperconvergencia</h5>
+                                <p><strong>VxRail 13G:</strong> E460, P470 (Retiro total)</p>
+                                <p><strong>VxRail 14G:</strong> E560, P570 (Inicio retiro 2027)</p>
+                                <p class="mb-0"><strong class="text-success">✓ Modernos:</strong> VxRail 15G-16G (E660, P670)</p>
+                            </div>
+
+                        </div>
+
+                        <!-- HPE TAB -->
+                        <div class="tab-pane fade" id="hpe" role="tabpanel">
+                            
+                            <!-- Desglose Generaciones HPE -->
+                            <div class="card info-card">
+                                <div class="card-header hpe-header">
+                                    <i class="fas fa-info-circle"></i> Desglose de Generaciones HPE
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <span class="badge badge-modern mb-2">Gen12 - ACTUAL</span>
+                                            <p><strong>DL380 Gen12</strong> - Diseñado para IA</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="badge bg-info mb-2">Gen11 - VIGENTE</span>
+                                            <p>Sigue en venta, muy potente</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="badge badge-eol-warning mb-2">Gen10/Plus - EOL</span>
+                                            <p>Iniciando zona de retiro 2026</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Servidores HPE -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-server"></i>
+                                <h3>Servidores (Cómputo)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>Tamaño</th>
+                                            <th>CPUs</th>
+                                            <th>CPU Max (Núcleos)</th>
+                                            <th>RAM Max</th>
+                                            <th>Storage Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>DL360</strong></td>
+                                            <td><span class="badge badge-modern">Gen12</span></td>
+                                            <td>1U</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>184 TB (EDSFF)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>DL380</strong></td>
+                                            <td><span class="badge badge-modern">Gen12</span></td>
+                                            <td>2U</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>450 TB (SFF/EDSFF)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>DL580</strong></td>
+                                            <td><span class="badge bg-info">Gen11</span></td>
+                                            <td>4U</td>
+                                            <td>1-4</td>
+                                            <td>Xeon 5th (60c)</td>
+                                            <td>16 TB</td>
+                                            <td>368 TB (NVMe)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>ML350</strong></td>
+                                            <td><span class="badge badge-modern">Gen12</span></td>
+                                            <td>Torre</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>280 TB (Mixto)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Storage HPE -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-database"></i>
+                                <h3>Almacenamiento (Storage)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>IOPS Est.</th>
+                                            <th>Puertos</th>
+                                            <th>Capacidad Máx.</th>
+                                            <th>Protocolos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>Alletra MP</strong></td>
+                                            <td><span class="badge badge-modern">Gen 1</span></td>
+                                            <td>2M+</td>
+                                            <td>8-32</td>
+                                            <td>8 PB+</td>
+                                            <td>NVMe/FC, iSCSI, File</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>MSA 2062</strong></td>
+                                            <td><span class="badge badge-modern">Gen 6</span></td>
+                                            <td>325k</td>
+                                            <td>4-8</td>
+                                            <td>2.1 PB</td>
+                                            <td>FC, iSCSI, SAS</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Networking HPE -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-network-wired"></i>
+                                <h3>Redes (Networking)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Serie</th>
+                                            <th>Tipo</th>
+                                            <th>Puertos Base</th>
+                                            <th>Uplinks</th>
+                                            <th>Stacking</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>Aruba CX 6400</strong></td>
+                                            <td><span class="badge badge-modern">CX Series</span></td>
+                                            <td>L3, Modular</td>
+                                            <td>Hasta 384 puertos</td>
+                                            <td>100GbE QSFP28</td>
+                                            <td>VSF (hasta 10)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>Aruba CX 6300</strong></td>
+                                            <td><span class="badge badge-modern">CX Series</span></td>
+                                            <td>L3, Stackable</td>
+                                            <td>48x 1GbE PoE+</td>
+                                            <td>4x 10/25GbE SFP28</td>
+                                            <td>VSF (hasta 10)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>Aruba CX 6200</strong></td>
+                                            <td><span class="badge badge-modern">CX Series</span></td>
+                                            <td>L2+, 1U</td>
+                                            <td>48x 1GbE PoE+</td>
+                                            <td>4x 10GbE SFP+</td>
+                                            <td>VSF (hasta 4)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- HCI HPE -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-cubes"></i>
+                                <h3>Hiperconvergencia (HCI)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Plataforma Base</th>
+                                            <th>Nodos Min/Max</th>
+                                            <th>Almacenamiento por Nodo</th>
+                                            <th>Software Incluido</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>SimpliVity 380 Gen11</strong></td>
+                                            <td>ProLiant DL380 Gen11</td>
+                                            <td>2 / 96</td>
+                                            <td>Hasta 96 TB</td>
+                                            <td>OmniStack, vSphere</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>Alletra dHCI</strong></td>
+                                            <td>ProLiant DL380 Gen11</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 368 TB</td>
+                                            <td>GreenLake, vSphere/vSAN</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- EOL Critical HPE -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>EOSL 2026-2027 - Retiro Crítico</h3>
+                            </div>
+                            
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-server"></i> Servidores</h5>
+                                <p><strong>Gen9 y Gen10:</strong> DL360 Gen10 y DL380 Gen10 (muchos terminan soporte estándar en 2026)</p>
+                            </div>
+
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-database"></i> Storage - ZONA PELIGROSA</h5>
+                                <p><strong>3PAR StoreServ:</strong> 8200, 8400, 8440, 8450 (Agosto 2026)</p>
+                                <p><strong>3PAR 9000/20000:</strong> 9450, 20800 R2, 20850 R2 (Mayo 2027)</p>
+                            </div>
+
+                            <div class="alert alert-warning alert-custom" style="border-left-color: var(--eol-warning);">
+                                <h5><i class="fas fa-network-wired"></i> Networking</h5>
+                                <p><strong>Aruba Switches:</strong> 2530, 2540 (Nov 2026), 2930F (Dic 2026)</p>
+                                <p><strong>FlexNetwork:</strong> 5130-EI, 5510-HI (Feb 2027)</p>
+                            </div>
+
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-cubes"></i> Hiperconvergencia</h5>
+                                <p><strong>SimpliVity 380 Gen9:</strong> Fuera de soporte</p>
+                                <p><strong>SimpliVity Gen10:</strong> Fin de soporte proyectado 2026-2027</p>
+                                <p class="mb-0"><strong class="text-success">✓ Modernos:</strong> SimpliVity Gen11, HPE Alletra dHCI</p>
+                            </div>
+
+                        </div>
+
+                        <!-- LENOVO TAB -->
+                        <div class="tab-pane fade" id="lenovo" role="tabpanel">
+                            
+                            <!-- Desglose Generaciones Lenovo -->
+                            <div class="card info-card">
+                                <div class="card-header lenovo-header">
+                                    <i class="fas fa-info-circle"></i> Desglose de Generaciones Lenovo
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <span class="badge badge-modern mb-2">V4 - ACTUAL</span>
+                                            <p><strong>SR650 V4</strong> - Optimizado para IA</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="badge bg-info mb-2">V3 - MUY ROBUSTA</span>
+                                            <p>Basada en Xeon 4ª/5ª Gen</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="badge badge-eol-warning mb-2">V1/V2 - EOL</span>
+                                            <p>Fase final de vida 2026</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Servidores Lenovo -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-server"></i>
+                                <h3>Servidores (Cómputo)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>Tamaño</th>
+                                            <th>CPUs</th>
+                                            <th>CPU Max (Núcleos)</th>
+                                            <th>RAM Max</th>
+                                            <th>Storage Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>SR630 V4</strong></td>
+                                            <td><span class="badge badge-modern">V4</span></td>
+                                            <td>1U</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>160 TB (NVMe)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>SR650 V4</strong></td>
+                                            <td><span class="badge badge-modern">V4</span></td>
+                                            <td>2U</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 6 (144c)</td>
+                                            <td>8 TB</td>
+                                            <td>409 TB (40x E3.S)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>SR860 V3</strong></td>
+                                            <td><span class="badge bg-info">V3</span></td>
+                                            <td>4U</td>
+                                            <td>2-4</td>
+                                            <td>Xeon 5th (64c)</td>
+                                            <td>16 TB</td>
+                                            <td>380 TB (NVMe)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>ST650 V3</strong></td>
+                                            <td><span class="badge bg-info">V3</span></td>
+                                            <td>Torre</td>
+                                            <td>1-2</td>
+                                            <td>Xeon 5th (32c)</td>
+                                            <td>4 TB</td>
+                                            <td>320 TB (SFF)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Storage Lenovo -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-database"></i>
+                                <h3>Almacenamiento (Storage)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Gen</th>
+                                            <th>IOPS Est.</th>
+                                            <th>Puertos</th>
+                                            <th>Capacidad Máx.</th>
+                                            <th>Protocolos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>DE6600F</strong></td>
+                                            <td><span class="badge badge-modern">Gen 2</span></td>
+                                            <td>2M</td>
+                                            <td>4-28</td>
+                                            <td>1.8 PB</td>
+                                            <td>NVMe/FC, iSCSI</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>DG7000</strong></td>
+                                            <td><span class="badge badge-modern">Gen 1</span></td>
+                                            <td>800k</td>
+                                            <td>8-32</td>
+                                            <td>25 PB</td>
+                                            <td>NFS, SMB, S3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Networking Lenovo -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-network-wired"></i>
+                                <h3>Redes (Networking)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Serie</th>
+                                            <th>Tipo</th>
+                                            <th>Puertos Base</th>
+                                            <th>Uplinks</th>
+                                            <th>Stacking</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>NE2572</strong></td>
+                                            <td><span class="badge badge-modern">Cloud-Ready</span></td>
+                                            <td>L3, 1U</td>
+                                            <td>48x 25GbE SFP28</td>
+                                            <td>6x 100GbE QSFP28</td>
+                                            <td>VLAG (2 unidades)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>NE1032</strong></td>
+                                            <td><span class="badge badge-modern">Data Center</span></td>
+                                            <td>L3, 1U</td>
+                                            <td>32x 100GbE QSFP28</td>
+                                            <td>2x 400GbE QSFP-DD</td>
+                                            <td>VLAG (2 unidades)</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>NE0152T</strong></td>
+                                            <td><span class="badge badge-modern">Campus</span></td>
+                                            <td>L3, 1U</td>
+                                            <td>48x 1GbE + PoE+</td>
+                                            <td>4x 10GbE SFP+</td>
+                                            <td>Stackable (hasta 8)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- HCI Lenovo -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-cubes"></i>
+                                <h3>Hiperconvergencia (HCI)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Modelo</th>
+                                            <th>Plataforma Base</th>
+                                            <th>Nodos Min/Max</th>
+                                            <th>Almacenamiento por Nodo</th>
+                                            <th>Software Incluido</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-modern">
+                                            <td><strong>ThinkAgile HX3360</strong></td>
+                                            <td>SR630 V3 (Nutanix)</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 160 TB</td>
+                                            <td>Nutanix AOS, Prism</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>ThinkAgile VX630 V3</strong></td>
+                                            <td>SR630 V3 (VMware)</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 160 TB</td>
+                                            <td>vSphere, vSAN, vCenter</td>
+                                        </tr>
+                                        <tr class="row-modern">
+                                            <td><strong>ThinkAgile HX7530</strong></td>
+                                            <td>SR650 V3 (Nutanix)</td>
+                                            <td>3 / 64</td>
+                                            <td>Hasta 409 TB</td>
+                                            <td>Nutanix AOS, Prism</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- EOL Critical Lenovo -->
+                            <div class="section-header mt-4">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>EOSL 2026-2027 - Retiro Crítico</h3>
+                            </div>
+                            
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-server"></i> Servidores</h5>
+                                <p><strong>ThinkSystem v1:</strong> ST50 (Dic 2026), SR650 (primeras versiones 2027)</p>
+                            </div>
+
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-database"></i> Storage</h5>
+                                <p><strong>Tape Drives:</strong> TS2xxx (Dic 2027)</p>
+                                <p><strong>Series DM/DE:</strong> Modelos 1ra generación (ej. DM3000H)</p>
+                            </div>
+
+                            <div class="alert alert-warning alert-custom" style="border-left-color: var(--eol-warning);">
+                                <h5><i class="fas fa-network-wired"></i> Networking</h5>
+                                <p><strong>Campus Switches:</strong> CE0128, CE0152 (Soporte limitado 2027-28)</p>
+                                <p><strong>RackSwitch:</strong> G8272 (2026)</p>
+                            </div>
+
+                            <div class="alert alert-danger alert-custom" style="border-left-color: var(--eol-critical);">
+                                <h5><i class="fas fa-cubes"></i> Hiperconvergencia</h5>
+                                <p><strong>ThinkAgile:</strong> HX/VX 1ra Gen (Xeon Scalable 1st Gen) - EOSL 2026</p>
+                                <p class="mb-0"><strong class="text-success">✓ Modernos:</strong> ThinkAgile V3 (HX3360, VX630 V3)</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requisitos Operativos -->
+                <div data-aos="fade-up" data-aos-delay="400">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-cogs"></i>
+                        <h3>⚙️ Requisitos Operativos - Hardware Moderno 2026</h3>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb"></i> <strong>Información Crítica:</strong> Esta tabla muestra los requisitos mínimos de software, consumo eléctrico real y licencias necesarias para operar equipos de última generación.
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--dell-blue);"></div>
+                            <span>Dell Technologies</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--hpe-green);"></div>
+                            <span>HPE</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--lenovo-red);"></div>
+                            <span>Lenovo</span>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="requirementsAccordion">
+                        
+                        <!-- Dell Requirements -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#dellReq">
+                                    <i class="fas fa-building" style="color: var(--dell-blue); margin-right: 10px;"></i>
+                                    <strong>Dell Technologies (17G / 16G)</strong>
+                                </button>
+                            </h2>
+                            <div id="dellReq" class="accordion-collapse collapse show" data-bs-parent="#requirementsAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Modelo</th>
+                                                    <th>Hipervisor Mínimo</th>
+                                                    <th>Consumo (Min/Max Watts)</th>
+                                                    <th>Licencia de Gestión</th>
+                                                    <th>Conector</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>R670 / R770</strong></td>
+                                                    <td>vSphere 8.0 U3+ / Nutanix AOS</td>
+                                                    <td><span class="badge bg-secondary">600W</span> / <span class="badge bg-danger">2800W</span></td>
+                                                    <td>iDRAC10 Enterprise</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>R960</strong></td>
+                                                    <td>vSphere 7.0 U3 / 8.x</td>
+                                                    <td><span class="badge bg-secondary">1100W</span> / <span class="badge bg-danger">3200W</span></td>
+                                                    <td>iDRAC9 Enterprise</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>PowerStore 3200T</strong></td>
+                                                    <td>vSphere 7.0+ (VVol)</td>
+                                                    <td><span class="badge bg-secondary">800W</span> / <span class="badge bg-warning">1800W</span></td>
+                                                    <td>Base (Incluida)</td>
+                                                    <td>C13 / C14</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VxRail HCI</strong></td>
+                                                    <td>vSphere 8.x (Nativo)</td>
+                                                    <td><span class="badge bg-secondary">600W</span> / <span class="badge bg-danger">2400W</span></td>
+                                                    <td>VxRail HCI System Software</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HPE Requirements -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hpeReq">
+                                    <i class="fas fa-building" style="color: var(--hpe-green); margin-right: 10px;"></i>
+                                    <strong>HPE (Gen12 / Gen11)</strong>
+                                </button>
+                            </h2>
+                            <div id="hpeReq" class="accordion-collapse collapse" data-bs-parent="#requirementsAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Modelo</th>
+                                                    <th>Hipervisor Mínimo</th>
+                                                    <th>Consumo (Min/Max Watts)</th>
+                                                    <th>Licencia de Gestión</th>
+                                                    <th>Conector</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>DL360 / DL380 Gen12</strong></td>
+                                                    <td>vSphere 8.0 U3+ / Nutanix AHV</td>
+                                                    <td><span class="badge bg-secondary">550W</span> / <span class="badge bg-danger">2600W</span></td>
+                                                    <td>iLO 6 Advanced</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>DL580 Gen11</strong></td>
+                                                    <td>vSphere 7.0 U3 / 8.x</td>
+                                                    <td><span class="badge bg-secondary">1200W</span> / <span class="badge bg-danger">3600W</span></td>
+                                                    <td>iLO 6 Advanced</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Alletra MP</strong></td>
+                                                    <td>vSphere 7.0+ / AHV</td>
+                                                    <td><span class="badge bg-secondary">700W</span> / <span class="badge bg-warning">2000W</span></td>
+                                                    <td>GreenLake Cloud Console</td>
+                                                    <td>C13 / C14</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>SimpliVity 380 Gen11</strong></td>
+                                                    <td>vSphere 8.0+</td>
+                                                    <td><span class="badge bg-secondary">800W</span> / <span class="badge bg-danger">2200W</span></td>
+                                                    <td>OmniStack License</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lenovo Requirements -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#lenovoReq">
+                                    <i class="fas fa-building" style="color: var(--lenovo-red); margin-right: 10px;"></i>
+                                    <strong>Lenovo (ThinkSystem V4 / V3)</strong>
+                                </button>
+                            </h2>
+                            <div id="lenovoReq" class="accordion-collapse collapse" data-bs-parent="#requirementsAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Modelo</th>
+                                                    <th>Hipervisor Mínimo</th>
+                                                    <th>Consumo (Min/Max Watts)</th>
+                                                    <th>Licencia de Gestión</th>
+                                                    <th>Conector</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>SR630 / SR650 V4</strong></td>
+                                                    <td>vSphere 8.0 U3+ / AHV</td>
+                                                    <td><span class="badge bg-secondary">600W</span> / <span class="badge bg-danger">2700W</span></td>
+                                                    <td>XCC2 Platinum</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>SR860 V3</strong></td>
+                                                    <td>vSphere 7.0 U3 / 8.x</td>
+                                                    <td><span class="badge bg-secondary">1100W</span> / <span class="badge bg-danger">3400W</span></td>
+                                                    <td>XCC2 Platinum</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>DE6600F Storage</strong></td>
+                                                    <td>vSphere 7.0+</td>
+                                                    <td><span class="badge bg-secondary">600W</span> / <span class="badge bg-warning">1400W</span></td>
+                                                    <td>SAN Manager (Incluida)</td>
+                                                    <td>C13 / C14</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>ThinkAgile HX/VX V3</strong></td>
+                                                    <td>vSphere 8.x / Nutanix 6.5+</td>
+                                                    <td><span class="badge bg-secondary">650W</span> / <span class="badge bg-danger">2500W</span></td>
+                                                    <td>XClarity Pro</td>
+                                                    <td>C19 / C20</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Alerts -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle"></i> VMware Broadcom</h6>
+                                <p class="small mb-0">Si el cliente tiene VMware 6.5/6.7, estos equipos NO funcionarán. Requiere vSphere 8.0+ y puede implicar costos de licenciamiento nuevos.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-danger">
+                                <h6><i class="fas fa-fire"></i> Conectores C19/C20</h6>
+                                <p class="small mb-0">Los servidores modernos con procesadores de alto TDP requieren conectores C19/C20. NO usar cables comunes de PC para evitar riesgos.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-battery-half"></i> UPS Sizing</h6>
+                                <p class="small mb-0">Asegúrate que el UPS soporte el valor MAX Watts (procesadores al 100%), no solo el consumo IDLE.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-warning">
+                                <h6><i class="fab fa-windows"></i> Windows Licensing</h6>
+                                <p class="small mb-0">Windows Server requiere mínimo 16 núcleos de licencia. Con procesadores de 144 núcleos, el costo será significativo en el presupuesto.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SECCIÓN DE SERVICIOS Y LICENCIAS -->
+                <hr class="my-5" style="border-top: 3px solid #dee2e6;">
+                
+                <!-- Servicios as-a-Service -->
+                <div data-aos="fade-up" data-aos-delay="100">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-cloud"></i>
+                        <h3>☁️ Servicios as-a-Service / Consumo (CapEx → OpEx)</h3>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb"></i> <strong>Tendencia 2026:</strong> Los fabricantes ofrecen modelos "pago por uso" donde el cliente NO compra hardware, sino que paga mensualmente por capacidad consumida (CPU, RAM, Storage).
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card info-card">
+                                <div class="card-header dell-header">
+                                    <i class="fas fa-cloud"></i> Dell APEX
+                                </div>
+                                <div class="card-body">
+                                    <h6><strong>Flex on Demand</strong></h6>
+                                    <ul class="small">
+                                        <li>Pago por uso mensual</li>
+                                        <li>Infraestructura On-Prem o Cloud</li>
+                                        <li>Incluye: Cómputo, Storage, Networking</li>
+                                        <li>CloudIQ para monitoreo</li>
+                                        <li>Escalabilidad automática</li>
+                                    </ul>
+                                    <span class="badge bg-success">💰 OpEx Modelo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card info-card">
+                                <div class="card-header hpe-header">
+                                    <i class="fas fa-cloud"></i> HPE GreenLake
+                                </div>
+                                <div class="card-body">
+                                    <h6><strong>Edge-to-Cloud Platform</strong></h6>
+                                    <ul class="small">
+                                        <li>Modelo de suscripción</li>
+                                        <li>Facturación mensual por consumo</li>
+                                        <li>Buffer de capacidad (15-20%)</li>
+                                        <li>GreenLake Cloud Console</li>
+                                        <li>InfoSight Predictive Analytics</li>
+                                    </ul>
+                                    <span class="badge bg-success">💰 OpEx Modelo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card info-card">
+                                <div class="card-header lenovo-header">
+                                    <i class="fas fa-cloud"></i> Lenovo TruScale
+                                </div>
+                                <div class="card-body">
+                                    <h6><strong>Infrastructure as-a-Service</strong></h6>
+                                    <ul class="small">
+                                        <li>Pago por uso real</li>
+                                        <li>Infraestructura On-Prem</li>
+                                        <li>Incluye soporte y gestión</li>
+                                        <li>XClarity monitoring</li>
+                                        <li>Contratos 3-5 años</li>
+                                    </ul>
+                                    <span class="badge bg-success">💰 OpEx Modelo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Niveles de Soporte -->
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-headset"></i>
+                        <h3>🛟 Niveles de Soporte Técnico</h3>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nivel</th>
+                                    <th>Dell</th>
+                                    <th>HPE</th>
+                                    <th>Lenovo</th>
+                                    <th>Tiempo de Respuesta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="row-modern">
+                                    <td><strong>Básico</strong></td>
+                                    <td>ProSupport (NBD)</td>
+                                    <td>Foundation Care</td>
+                                    <td>Essential Service</td>
+                                    <td>Next Business Day (NBD)</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><strong>Avanzado</strong></td>
+                                    <td>ProSupport Plus</td>
+                                    <td>Foundation Care 24x7</td>
+                                    <td>Premier Support</td>
+                                    <td>4 horas on-site</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><strong>Mission Critical</strong></td>
+                                    <td>ProSupport Enterprise</td>
+                                    <td>Datacenter Care</td>
+                                    <td>Warranty Service Upgrade</td>
+                                    <td>15 minutos (respuesta)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-circle"></i> <strong>Importante:</strong> El nivel "Mission Critical" incluye TAM (Technical Account Manager) dedicado y acceso directo a ingeniería de nivel 3.
+                    </div>
+                </div>
+
+                <!-- Gestión Remota Comparativa -->
+                <div data-aos="fade-up" data-aos-delay="300">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-desktop"></i>
+                        <h3>🖥️ Comparativa de Gestión Remota</h3>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Característica</th>
+                                    <th>Dell iDRAC 10</th>
+                                    <th>HPE iLO 6</th>
+                                    <th>Lenovo XCC2</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Consola Remota</strong></td>
+                                    <td>✅ HTML5 + Virtual Console</td>
+                                    <td>✅ HTML5 + IRC</td>
+                                    <td>✅ HTML5 + Remote Console</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ediciones</strong></td>
+                                    <td>Basic / Express / Enterprise</td>
+                                    <td>Essentials / Standard / Advanced</td>
+                                    <td>Standard / Enterprise / Platinum</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Precio Licencia ⭐</strong></td>
+                                    <td>$349 - $849 USD</td>
+                                    <td>$329 - $699 USD</td>
+                                    <td>$299 - $799 USD</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Montaje de Medios</strong></td>
+                                    <td>✅ Virtual Media (USB/ISO)</td>
+                                    <td>✅ Virtual Media</td>
+                                    <td>✅ Virtual Media</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Monitoreo de Hardware</strong></td>
+                                    <td>✅ Temps, Fans, PSU, RAID</td>
+                                    <td>✅ Temps, Fans, PSU, Array</td>
+                                    <td>✅ Temps, Fans, PSU, Storage</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AI/ML Features</strong></td>
+                                    <td>✅ GPU Management</td>
+                                    <td>✅ HPE InfoSight</td>
+                                    <td>✅ XClarity Insights</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Actualizaciones FW</strong></td>
+                                    <td>✅ Repository Manager</td>
+                                    <td>✅ iLO Amplifier Pack</td>
+                                    <td>✅ XClarity Administrator</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="alert alert-info">
+                                <strong>💡 Dell iDRAC 10</strong><br>
+                                <small>Novedad: PowerEdge 17G introduce iDRAC 10 con mejor integración de IA y seguridad Zero Trust.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="alert alert-success">
+                                <strong>💡 HPE iLO 6</strong><br>
+                                <small>iLO 6 Advanced incluye Silicon Root of Trust y está integrado con GreenLake.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="alert alert-danger">
+                                <strong>💡 Lenovo XCC2</strong><br>
+                                <small>XCC2 Platinum es el más económico y ofrece gestión de refrigeración líquida en SR650 V4.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Software de Gestión de Flota -->
+                <div data-aos="fade-up" data-aos-delay="400">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>🔧 Software de Gestión de Flota (Multi-Servidor)</h3>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fabricante</th>
+                                    <th>Software</th>
+                                    <th>Función Principal</th>
+                                    <th>Licenciamiento</th>
+                                    <th>Capacidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--dell-blue);"></i> <strong>Dell</strong></td>
+                                    <td>OpenManage Enterprise (OME)</td>
+                                    <td>Gestión centralizada de servidores, storage, switches</td>
+                                    <td>Gratis (hasta 1000 nodos)</td>
+                                    <td>Hasta 8,000 dispositivos</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--dell-blue);"></i> <strong>Dell</strong></td>
+                                    <td>CloudIQ</td>
+                                    <td>Monitoreo predictivo basado en AI (SaaS)</td>
+                                    <td>Incluido con APEX</td>
+                                    <td>Ilimitado (Cloud)</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--hpe-green);"></i> <strong>HPE</strong></td>
+                                    <td>HPE OneView</td>
+                                    <td>Gestión de infraestructura definida por software</td>
+                                    <td>Por licencia de servidor</td>
+                                    <td>Hasta 10,000 dispositivos</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--hpe-green);"></i> <strong>HPE</strong></td>
+                                    <td>InfoSight</td>
+                                    <td>Análisis predictivo y recomendaciones AI</td>
+                                    <td>Incluido con GreenLake</td>
+                                    <td>Ilimitado (Cloud)</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--hpe-green);"></i> <strong>HPE</strong></td>
+                                    <td>Compute Ops Management</td>
+                                    <td>Gestión de servidores ProLiant Gen10+/Gen11/Gen12</td>
+                                    <td>SaaS (GreenLake)</td>
+                                    <td>Ilimitado</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--lenovo-red);"></i> <strong>Lenovo</strong></td>
+                                    <td>XClarity Administrator</td>
+                                    <td>Gestión centralizada ThinkSystem/ThinkAgile</td>
+                                    <td>Gratis</td>
+                                    <td>Hasta 1,000 servidores</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><i class="fas fa-building" style="color: var(--lenovo-red);"></i> <strong>Lenovo</strong></td>
+                                    <td>XClarity Pro</td>
+                                    <td>Versión avanzada con AI insights</td>
+                                    <td>Por licencia de servidor</td>
+                                    <td>Hasta 5,000 dispositivos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Backup & Data Protection -->
+                <div data-aos="fade-up" data-aos-delay="500">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>💾 Backup & Data Protection</h3>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card info-card">
+                                <div class="card-header dell-header">
+                                    <i class="fas fa-shield-alt"></i> Dell Data Protection
+                                </div>
+                                <div class="card-body">
+                                    <ul class="small">
+                                        <li><strong>PowerProtect DD:</strong> Deduplicación (Data Domain)</li>
+                                        <li><strong>PowerProtect DP:</strong> Backup de VMs y Apps</li>
+                                        <li><strong>Avamar:</strong> Backup virtual y físico</li>
+                                        <li><strong>RecoverPoint:</strong> Replicación continua</li>
+                                        <li><strong>Cyber Recovery:</strong> Air-gap vault contra ransomware</li>
+                                    </ul>
+                                    <span class="badge bg-warning text-dark">Licenciamiento por TB/Socket</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card info-card">
+                                <div class="card-header hpe-header">
+                                    <i class="fas fa-shield-alt"></i> HPE Data Protection
+                                </div>
+                                <div class="card-body">
+                                    <ul class="small">
+                                        <li><strong>StoreOnce:</strong> Deduplicación y backup</li>
+                                        <li><strong>Zerto:</strong> Disaster Recovery (DR)</li>
+                                        <li><strong>Veeam Partnership:</strong> Backup de VMs</li>
+                                        <li><strong>Commvault Partnership:</strong> Enterprise backup</li>
+                                        <li><strong>Cloud Volumes Backup:</strong> Backup a nube</li>
+                                    </ul>
+                                    <span class="badge bg-warning text-dark">Licenciamiento por TB/Frontend</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card info-card">
+                                <div class="card-header lenovo-header">
+                                    <i class="fas fa-shield-alt"></i> Lenovo Data Protection
+                                </div>
+                                <div class="card-body">
+                                    <ul class="small">
+                                        <li><strong>DM Series:</strong> Storage con snapshots</li>
+                                        <li><strong>Veeam Partnership:</strong> Backup de VMs</li>
+                                        <li><strong>Commvault Partnership:</strong> Enterprise backup</li>
+                                        <li><strong>Rubrik Partnership:</strong> Cloud Data Management</li>
+                                        <li><strong>Tape DTP100:</strong> Backup a cinta LTO-9</li>
+                                    </ul>
+                                    <span class="badge bg-warning text-dark">Licenciamiento por Socket/VM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-danger mt-3">
+                        <i class="fas fa-lock"></i> <strong>Ransomware 2026:</strong> TODOS los fabricantes ahora incluyen "Air-Gap" o "Immutable Storage" en sus soluciones de backup para cumplir con regulaciones de ciberseguridad.
+                    </div>
+                </div>
+
+                <!-- Garantías Extendidas -->
+                <div data-aos="fade-up" data-aos-delay="600">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>📅 Garantías Extendidas y SLAs</h3>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Garantía</th>
+                                    <th>Duración</th>
+                                    <th>Dell</th>
+                                    <th>HPE</th>
+                                    <th>Lenovo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Estándar (Base)</strong></td>
+                                    <td>3 años</td>
+                                    <td>✅ ProSupport NBD</td>
+                                    <td>✅ Foundation Care</td>
+                                    <td>✅ 3-Year Base</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><strong>Extendida</strong></td>
+                                    <td>5 años</td>
+                                    <td>💰 +30-40% del costo HW</td>
+                                    <td>💰 +25-35% del costo HW</td>
+                                    <td>💰 +20-30% del costo HW</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><strong>4-Hour On-Site</strong></td>
+                                    <td>3-5 años</td>
+                                    <td>✅ ProSupport Plus</td>
+                                    <td>✅ Foundation Care 24x7</td>
+                                    <td>✅ Premier 4HR</td>
+                                </tr>
+                                <tr class="row-modern">
+                                    <td><strong>Mission Critical</strong></td>
+                                    <td>3-7 años</td>
+                                    <td>✅ ProSupport Enterprise (15min)</td>
+                                    <td>✅ Datacenter Care</td>
+                                    <td>✅ Service Upgrade Gold</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> <strong>Tip de Venta:</strong> Para clientes con operaciones 24x7 (hospitales, fábricas, datacenters), la garantía "4-Hour On-Site" es CRÍTICA y debe incluirse en presupuesto inicial.
+                    </div>
+                </div>
+
+                <!-- Licenciamiento de Virtualización -->
+                <div data-aos="fade-up" data-aos-delay="700">
+                    <div class="section-header mt-5">
+                        <i class="fas fa-layer-group"></i>
+                        <h3>📦 Licenciamiento de Virtualización</h3>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>⚠️ CAMBIO CRÍTICO 2024-2026:</strong> Broadcom adquirió VMware y cambió drásticamente el modelo de licenciamiento. Ya NO se vende por socket, ahora es por CORE con paquetes Enterprise.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card info-card">
+                                <div class="card-header" style="background: #607D8B; color: white;">
+                                    <i class="fab fa-vmware"></i> VMware vSphere (Broadcom)
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Edición</th>
+                                                <th>Características</th>
+                                                <th>Costo Aprox.*</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Standard</strong></td>
+                                                <td>vSphere, vMotion básico</td>
+                                                <td>$100/core/año</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Enterprise Plus</strong></td>
+                                                <td>DRS, HA, vSAN</td>
+                                                <td>$180/core/año</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>VCF (Cloud Foundation)</strong></td>
+                                                <td>NSX, vSAN, Aria (bundle)</td>
+                                                <td>$350/core/año</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="alert alert-danger mt-2 small">
+                                        <strong>Ejemplo:</strong> Un servidor con 2x Xeon 6 (144 cores cada uno = 288 cores total) puede costar hasta <strong>$100,800/año</strong> en licencias VCF.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card info-card">
+                                <div class="card-header" style="background: #24282E; color: white;">
+                                    <i class="fas fa-cube"></i> Nutanix AOS
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Edición</th>
+                                                <th>Características</th>
+                                                <th>Costo Aprox.*</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Starter</strong></td>
+                                                <td>AHV, Prism Element</td>
+                                                <td>$1,000/nodo/año</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Pro</strong></td>
+                                                <td>+ Prism Central, Flow</td>
+                                                <td>$2,500/nodo/año</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Ultimate</strong></td>
+                                                <td>+ Files, Objects, DR</td>
+                                                <td>$4,000/nodo/año</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="alert alert-success mt-2 small">
+                                        <strong>Ventaja:</strong> Nutanix NO cobra por core, sino por NODO, lo que lo hace más predecible para servidores de alta densidad de cores.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-calculator"></i> Regla de Oro para Presupuestos 2026:</h6>
+                                <ul class="mb-0">
+                                    <li>Para servidores con <strong>más de 64 cores</strong>, evalúa <strong>Nutanix</strong> en lugar de VMware para evitar costos de licenciamiento prohibitivos.</li>
+                                    <li>Si el cliente DEBE usar VMware, considera <strong>VCF Subscription</strong> (3 años prepago con descuento).</li>
+                                    <li>Para HCI, los appliances como <strong>VxRail</strong> incluyen licencias de vSphere/vSAN en el precio (OEM discount).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center p-4 bg-light">
+                <p class="mb-0 text-muted"><small><i class="fas fa-shield-alt"></i> Documento Técnico - Confidencial | <i class="far fa-copyright"></i> 2026 | <i class="fas fa-code"></i> Desarrollado con Bootstrap 5</small></p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('.dataTable').DataTable({
+                "pageLength": 10,
+                "language": {
+                    "search": "Buscar:",
+                    "lengthMenu": "Mostrar _MENU_ registros",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                "order": [[1, "desc"]] // Ordenar por generación
+            });
+
+            // Inicializar tabla de generaciones actuales sin paginación
+            $('#currentGenTable').DataTable({
+                "paging": false,
+                "searching": false,
+                "info": false,
+                "order": [[0, "asc"]]
+            });
+        });
+
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Smooth scroll para anclas
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Animación al cambiar de tab
+        const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+        tabButtons.forEach(button => {
+            button.addEventListener('shown.bs.tab', function (e) {
+                AOS.refreshHard();
+            });
+        });
+    </script>
+
+</body>
+</html>
