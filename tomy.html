@@ -45,65 +45,57 @@
     function fetchStock() {
         Papa.parse(csvUrl, {
             download: true,
-            header: true,
+            header: false,  // Cambiamos a false para leer como array
             skipEmptyLines: true,
             complete: function(results) {
                 const data = results.data;
                 const cuerpo = document.getElementById('cuerpo-tabla');
                 const cabecera = document.getElementById('cabecera');
                 
-                // Debug: ver qué columnas detectó
-                console.log('Columnas detectadas:', results.meta.fields);
-                console.log('Primer registro:', data[0]);
+                console.log('Datos raw:', data);
                 
                 // Si no hay datos, mostramos error
-                if (data.length === 0) {
+                if (data.length < 2) {
                     cuerpo.innerHTML = '<tr><td colspan="4">No se encontraron datos en el Excel</td></tr>';
                     return;
                 }
 
-                // Detectamos las columnas reales del Excel
-                const headers = results.meta.fields;
-                
-                // Buscamos las columnas por nombre (con flexibilidad)
-                let colProducto = headers.find(h => h && (h.includes('Producto') || h.includes('Moto'))) || headers[0];
-                let colSpecs = headers.find(h => h && h.includes('Especificaciones')) || headers[1];
-                let colMotor = headers.find(h => h && (h.includes('Motor') || h.includes('motorización'))) || headers[2];
-                let colStock = headers.find(h => h && (h.includes('Stock') || h.includes('Cantidad'))) || headers[3];
+                // La primera fila son los encabezados
+                const encabezados = data[0];
+                console.log('Encabezados detectados:', encabezados);
 
-                // Debug
-                console.log('Usando columnas:', {colProducto, colSpecs, colMotor, colStock});
-
-                // 2. Dibujamos la cabecera con los nombres reales que vienen del Excel
+                // Dibujamos la cabecera con los nombres del Excel
                 cabecera.innerHTML = `
-                    <th>${colProducto || 'Producto'}</th>
-                    <th>${colSpecs || 'Especificaciones'}</th>
-                    <th>${colMotor || 'Motor'}</th>
-                    <th>${colStock || 'Stock'}</th>
+                    <th>${encabezados[0] || 'Producto'}</th>
+                    <th>${encabezados[1] || 'Especificaciones'}</th>
+                    <th>${encabezados[2] || 'Motor'}</th>
+                    <th>${encabezados[3] || 'Stock'}</th>
                 `;
 
-                // 3. Limpiamos y llenamos la tabla
+                // Limpiamos y llenamos la tabla (saltamos la fila 0 que es el encabezado)
                 cuerpo.innerHTML = '';
 
-                data.forEach(fila => {
-                    // Solo si hay nombre de producto
-                    if (fila[colProducto] && fila[colProducto].trim() !== "") { 
-                        let stockTexto = fila[colStock] || "0";
+                for (let i = 1; i < data.length; i++) {
+                    const fila = data[i];
+                    
+                    // Solo si hay datos en la fila
+                    if (fila[0] && fila[0].trim() !== "") { 
+                        let stockTexto = fila[3] || "0";
                         // Limpiamos el texto para sacar solo el número si dice "12 unidades"
                         let stockNumero = parseInt(stockTexto.replace(/\D/g, '')) || 0; 
                         let claseStock = stockNumero < 5 ? 'low' : 'ok';
 
                         let htmlFila = `
                             <tr>
-                                <td><strong>${fila[colProducto]}</strong></td>
-                                <td>${fila[colSpecs] || '-'}</td>
-                                <td>${fila[colMotor] || '-'}</td>
+                                <td><strong>${fila[0]}</strong></td>
+                                <td>${fila[1] || '-'}</td>
+                                <td>${fila[2] || '-'}</td>
                                 <td><span class="stock-badge ${claseStock}">${stockTexto}</span></td>
                             </tr>
                         `;
                         cuerpo.innerHTML += htmlFila;
                     }
-                });
+                }
 
                 document.getElementById('update-time').innerText = 'Sincronizado con Excel: ' + new Date().toLocaleTimeString();
             }
