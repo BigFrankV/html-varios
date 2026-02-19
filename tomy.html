@@ -41,21 +41,27 @@
     function fetchStock() {
         Papa.parse(csvUrl, {
             download: true,
-            header: true, // Esto hace que use la primera fila como nombres
+            header: true,
             skipEmptyLines: true,
             complete: function(results) {
                 const data = results.data;
                 const cuerpo = document.getElementById('cuerpo-tabla');
                 const cabecera = document.getElementById('cabecera');
                 
-                // 1. Definimos los nombres EXACTOS de tus columnas en el Excel
-                // Asegúrate que en tu Excel la primera fila diga exactamente esto:
-                const colProducto = "Producto (Moto)";
-                const colSpecs = "Especificaciones Clave";
-                const colMotor = "Motorización";
-                const colStock = "Stock / Cantidad";
+                // Si no hay datos, mostramos error
+                if (data.length === 0) {
+                    cuerpo.innerHTML = '<tr><td colspan="4">No se encontraron datos en el Excel</td></tr>';
+                    return;
+                }
 
-                // 2. Dibujamos la cabecera limpia
+                // Detectamos las columnas reales del Excel (por si fallan las tildes)
+                const headers = results.meta.fields;
+                const colProducto = headers[0]; // Primera columna
+                const colSpecs = headers[1];    // Segunda
+                const colMotor = headers[2];    // Tercera
+                const colStock = headers[3];    // Cuarta
+
+                // 2. Dibujamos la cabecera con los nombres reales que vienen del Excel
                 cabecera.innerHTML = `
                     <th>${colProducto}</th>
                     <th>${colSpecs}</th>
@@ -67,17 +73,19 @@
                 cuerpo.innerHTML = '';
 
                 data.forEach(fila => {
-                    // Solo procesamos si la fila tiene nombre de producto
-                    if (fila[colProducto]) { 
-                        let stockValor = fila[colStock] || "0";
-                        let claseStock = parseInt(stockValor) < 5 ? 'low' : 'ok';
+                    // Solo si hay nombre de producto
+                    if (fila[colProducto] && fila[colProducto].trim() !== "") { 
+                        let stockTexto = fila[colStock] || "0";
+                        // Limpiamos el texto para sacar solo el número si dice "12 unidades"
+                        let stockNumero = parseInt(stockTexto.replace(/\D/g, '')) || 0; 
+                        let claseStock = stockNumero < 5 ? 'low' : 'ok';
 
                         let htmlFila = `
                             <tr>
                                 <td><strong>${fila[colProducto]}</strong></td>
                                 <td>${fila[colSpecs] || '-'}</td>
                                 <td>${fila[colMotor] || '-'}</td>
-                                <td><span class="stock-badge ${claseStock}">${stockValor}</span></td>
+                                <td><span class="stock-badge ${claseStock}">${stockTexto}</span></td>
                             </tr>
                         `;
                         cuerpo.innerHTML += htmlFila;
@@ -90,9 +98,10 @@
     }
 
     fetchStock();
-    setInterval(fetchStock, 60000); // Se actualiza cada minuto
+    setInterval(fetchStock, 60000);
 </script>
 
 </body>
 
 </html>
+
