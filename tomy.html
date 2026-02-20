@@ -3,72 +3,669 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Motos - Stock Real (Seguro)</title>
+    <title>Dashboard de Motos - Dark Theme</title>
+    
+    <!-- Google OAuth -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://apis.google.com/js/api.js"></script>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f9; color: #333; margin: 20px; }
-        h2 { color: #002d72; text-align: center; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background-color: #002d72; color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        tr:hover { background-color: #f9f9f9; }
-        .stock-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 0.9em; }
-        .ok { background-color: #d4edda; color: #155724; }
-        .low { background-color: #f8d7da; color: #721c24; }
-        .last-update { font-size: 0.8em; color: #777; text-align: center; margin-top: 10px; }
-        .refresh-btn { background-color: #002d72; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 15px auto; display: block; transition: background-color 0.3s; }
-        .refresh-btn:hover { background-color: #004499; }
-        .refresh-btn:active { background-color: #001a4d; transform: scale(0.98); }
-        .login-container { text-align: center; padding: 40px; }
-        .login-btn { background-color: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; gap: 10px; }
-        .login-btn:hover { background-color: #357ae8; }
-        .user-info { text-align: center; margin: 10px 0; color: #555; font-size: 14px; }
-        .logout-btn { background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-left: 10px; }
-        .logout-btn:hover { background-color: #c82333; }
-        .error-msg { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center; border: 1px solid #f5c6cb; }
-        .hidden { display: none; }
+        :root {
+            --dark-bg: #0a0e27;
+            --dark-secondary: #151932;
+            --dark-card: #1a1f3a;
+            --neon-green: #00ff88;
+            --neon-blue: #00d4ff;
+            --neon-pink: #ff006e;
+            --neon-yellow: #ffbe0b;
+            --text-light: #e0e0e0;
+            --text-muted: #9ca3af;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        /* Navbar Dark */
+        .navbar {
+            background: rgba(26, 31, 58, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--neon-green) !important;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            animation: glow 3s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(0, 255, 136, 0.8); }
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-green) !important;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Login Screen */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.98);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-modal {
+            background: var(--dark-card);
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 450px;
+            width: 90%;
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+            text-align: center;
+        }
+
+        .login-modal h2 {
+            color: var(--neon-green);
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .login-modal p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .login-modal .lock-icon {
+            font-size: 4rem;
+            color: var(--neon-green);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            color: var(--dark-bg);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+        }
+
+        .error-msg {
+            background: rgba(255, 0, 110, 0.2);
+            color: var(--neon-pink);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid var(--neon-pink);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
+            padding: 60px 0;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .hero-section .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .user-badge {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--neon-green);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px 5px;
+            color: var(--neon-green);
+            font-size: 0.9rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            color: var(--dark-bg);
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px 5px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, var(--neon-pink), #ff4500);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.6);
+        }
+
+        .update-badge {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--neon-green);
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--neon-green);
+            font-size: 0.9rem;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--dark-card);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, transparent);
+            border-radius: 20px;
+            z-index: -1;
+            transition: all 0.4s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+        }
+
+        .stat-card:hover::before {
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+        }
+
+        .stat-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .stat-card.total i { color: var(--neon-green); }
+        .stat-card.low-stock i { color: var(--neon-pink); }
+        .stat-card.available i { color: var(--neon-blue); }
+        .stat-card.models i { color: var(--neon-yellow); }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card p {
+            color: var(--text-muted);
+            margin: 10px 0 0 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        /* Chart Cards */
+        .chart-card {
+            background: var(--dark-card);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-card h4 {
+            color: var(--neon-green);
+            font-weight: 800;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.2);
+            font-size: 1.2rem;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: var(--dark-card);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-container h3 {
+            color: var(--neon-green);
+            font-weight: 800;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.2);
+        }
+
+        /* Table Dark */
+        .table {
+            color: var(--text-light);
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            color: var(--dark-bg);
+        }
+
+        .table thead th {
+            border: none;
+            padding: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .table tbody tr {
+            background: rgba(26, 31, 58, 0.3);
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+            transform: scale(1.01);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border: none;
+        }
+
+        /* Stock Badges */
+        .stock-badge {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-ok {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+        }
+
+        .badge-low {
+            background: rgba(255, 0, 110, 0.2);
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin: 40px 0 30px 0;
+        }
+
+        .section-header i {
+            font-size: 2.2rem;
+            margin-right: 15px;
+            color: var(--neon-green);
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-weight: 900;
+            color: var(--text-light);
+            font-size: 1.8rem;
+        }
+
+        /* DataTables Dark */
+        .dataTables_wrapper {
+            color: var(--text-light);
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background: var(--dark-secondary);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: var(--text-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text-muted);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--text-light) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue)) !important;
+            border: none !important;
+            color: var(--dark-bg) !important;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-color: var(--neon-green);
+            border-right-color: transparent;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section h1 { font-size: 2rem; }
+            .stat-card h3 { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🏍️ Inventario de Motos (Acceso Seguro)</h2>
-    
-    <!-- Pantalla de Login -->
-    <div id="login-screen" class="login-container">
-        <p>🔒 Este dashboard requiere autenticación</p>
-        <p>Solo los colaboradores del Google Sheet pueden acceder</p>
-        <button class="login-btn" onclick="handleSignIn()">
-            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#FFF" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#FFF" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FFF" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#FFF" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
-            Iniciar sesión con Google
-        </button>
-        <p style="font-size: 12px; color: #777; margin-top: 20px;">Se verificará automáticamente tu acceso al Google Sheet</p>
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="login-screen">
+        <div class="login-modal">
+            <i class="fas fa-lock lock-icon"></i>
+            <h2><i class="fab fa-google"></i> SECURE ACCESS</h2>
+            <p>Este dashboard requiere autenticación con Google</p>
+            <p style="font-size: 0.9rem;">Solo los colaboradores del Google Sheet pueden acceder</p>
+            <button class="login-btn" onclick="handleSignIn()">
+                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#0a0e27" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#0a0e27" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#0a0e27" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#0a0e27" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+                Iniciar sesión con Google
+            </button>
+            <div id="login-error" class="error-msg hidden"></div>
+        </div>
     </div>
 
-    <!-- Pantalla Principal (oculta hasta login) -->
+    <!-- Main Content -->
     <div id="main-screen" class="hidden">
-        <div class="user-info">
-            👤 Conectado como: <strong id="user-email"></strong>
-            <button class="logout-btn" onclick="handleSignOut()">Cerrar Sesión</button>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-motorcycle"></i> MOTO DASHBOARD
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#stats"><i class="fas fa-chart-bar"></i> Estadísticas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#charts"><i class="fas fa-chart-pie"></i> Gráficos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#inventory"><i class="fas fa-table"></i> Inventario</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container text-center">
+                <h1 data-aos="zoom-in"><i class="fas fa-tachometer-alt"></i> CONTROL DE STOCK</h1>
+                <p class="subtitle" data-aos="fade-up" data-aos-delay="100">Sistema de Inventario en Tiempo Real</p>
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <span class="user-badge">
+                        <i class="fas fa-user"></i> <span id="user-email"></span>
+                    </span>
+                    <button class="refresh-btn" onclick="fetchStock()">
+                        <i class="fas fa-sync-alt"></i> Actualizar Datos
+                    </button>
+                    <button class="logout-btn" onclick="handleSignOut()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                    <div class="update-badge" id="update-time">
+                        <i class="far fa-clock"></i> Cargando...
+                    </div>
+                </div>
+                <div id="error-container" style="margin-top: 20px;"></div>
+            </div>
         </div>
-        <button class="refresh-btn" onclick="fetchStock()">🔄 Actualizar Ahora</button>
-        <div id="error-container"></div>
-        <table id="tabla-motos">
-            <thead>
-                <tr id="cabecera"></tr>
-            </thead>
-            <tbody id="cuerpo-tabla">
-                <tr><td colspan="4" style="text-align:center;">Cargando datos desde el Google Sheet...</td></tr>
-            </tbody>
-        </table>
-        <p class="last-update" id="update-time"></p>
+
+        <div class="container-fluid px-4">
+            <!-- Stats Section -->
+            <div id="stats">
+                <div class="section-header" data-aos="fade-right">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>CENTRO DE COMANDO</h2>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" data-aos="flip-left" data-aos-delay="100">
+                        <div class="stat-card total">
+                            <i class="fas fa-warehouse"></i>
+                            <h3 id="total-motos">0</h3>
+                            <p>Total Stock</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="flip-left" data-aos-delay="150">
+                        <div class="stat-card low-stock">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3 id="stock-critico">0</h3>
+                            <p>Stock Crítico</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="flip-left" data-aos-delay="200">
+                        <div class="stat-card available">
+                            <i class="fas fa-check-circle"></i>
+                            <h3 id="stock-disponible">0</h3>
+                            <p>Stock OK</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="flip-left" data-aos-delay="250">
+                        <div class="stat-card models">
+                            <i class="fas fa-motorcycle"></i>
+                            <h3 id="total-modelos">0</h3>
+                            <p>Modelos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div id="charts">
+                <div class="section-header" data-aos="fade-right">
+                    <i class="fas fa-chart-pie"></i>
+                    <h2>ANÁLISIS DE DATOS</h2>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                        <div class="chart-card">
+                            <h4><i class="fas fa-chart-bar"></i> Stock por Modelo</h4>
+                            <canvas id="barChart" height="100"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="150">
+                        <div class="chart-card">
+                            <h4><i class="fas fa-chart-pie"></i> Distribución</h4>
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div id="inventory">
+                <div class="section-header" data-aos="fade-right">
+                    <i class="fas fa-table"></i>
+                    <h2>INVENTARIO COMPLETO</h2>
+                </div>
+
+                <div class="table-container" data-aos="fade-up" data-aos-delay="100">
+                    <h3><i class="fas fa-list"></i> Listado Detallado</h3>
+                    
+                    <div id="loading-spinner" class="loading">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-3">Conectando con Google Sheet...</p>
+                    </div>
+
+                    <div id="table-wrapper" style="display: none;">
+                        <table class="table table-hover" id="motosTable">
+                            <thead>
+                                <tr id="cabecera"></tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 
 <script>
-    // Configuración
+    // Inicializar AOS
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+
+    // Configuración Google OAuth
     const CLIENT_ID = '816756478587-c7h3j4rp8b04o6gci7j88vg1dr4qbkiv.apps.googleusercontent.com';
     const SHEET_ID = '1qtVeZ_CV3r48FUJBaPUWioXjV_cErH8jJisFjjFWKjE';
     const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/userinfo.email';
@@ -79,8 +676,10 @@
     let gisInited = false;
     let accessToken = null;
     let autoRefreshInterval = null;
+    let pieChart, barChart, dataTable;
+    let motosData = [];
 
-    // Funciones para gestión de sesión persistente
+    // Gestión de sesión persistente
     function saveSession(token, email) {
         localStorage.setItem('sheets_access_token', token);
         localStorage.setItem('sheets_user_email', email);
@@ -91,9 +690,7 @@
         const token = localStorage.getItem('sheets_access_token');
         const email = localStorage.getItem('sheets_user_email');
         const tokenTime = localStorage.getItem('sheets_token_time');
-        
-        // Los tokens de Google expiran en 1 hora (3600000 ms)
-        const TOKEN_EXPIRY = 3600000;
+        const TOKEN_EXPIRY = 3600000; // 1 hora
         if (token && email && tokenTime && (Date.now() - tokenTime < TOKEN_EXPIRY)) {
             return { token, email };
         }
@@ -116,8 +713,6 @@
             discoveryDocs: [DISCOVERY_DOC],
         });
         gapiInited = true;
-        
-        // Intentar restaurar sesión guardada
         tryRestoreSession();
     }
 
@@ -126,22 +721,21 @@
         tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: CLIENT_ID,
             scope: SCOPES,
-            callback: '', // se define después
+            callback: '',
         });
         gisInited = true;
     }
 
-    // Restaurar sesión si existe
+    // Restaurar sesión
     async function tryRestoreSession() {
         const session = loadSession();
         if (session && gapiInited) {
             accessToken = session.token;
             gapi.client.setToken({access_token: accessToken});
             
-            // Verificar que el token sigue siendo válido
             try {
                 document.getElementById('user-email').textContent = session.email;
-                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-screen').classList.remove('hidden');
                 
                 await fetchStock();
@@ -165,7 +759,6 @@
             accessToken = resp.access_token;
             gapi.client.setToken({access_token: accessToken});
             
-            // Obtener información del usuario
             try {
                 const userInfo = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
                     headers: { Authorization: `Bearer ${accessToken}` }
@@ -176,19 +769,13 @@
                 }
                 
                 const userData = await userInfo.json();
-                document.getElementById('user-email').textContent = userData.email;
-                
-                // Guardar sesión en localStorage
                 saveSession(accessToken, userData.email);
                 
-                // Mostrar pantalla principal
-                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('user-email').textContent = userData.email;
+                document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-screen').classList.remove('hidden');
                 
-                // Cargar datos
-                fetchStock();
-                
-                // Auto-refresh cada 60 segundos
+                await fetchStock();
                 autoRefreshInterval = setInterval(fetchStock, 60000);
             } catch (error) {
                 console.error('Error:', error);
@@ -212,13 +799,11 @@
         }
         accessToken = null;
         clearInterval(autoRefreshInterval);
-        
-        // Limpiar sesión guardada
         clearSession();
         
         document.getElementById('main-screen').classList.add('hidden');
-        document.getElementById('login-screen').classList.remove('hidden');
-        console.log('✅ Sesión cerrada y limpiada');
+        document.getElementById('login-screen').style.display = 'flex';
+        console.log('✅ Sesión cerrada');
     }
 
     // Obtener datos del Sheet
@@ -231,73 +816,212 @@
         try {
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SHEET_ID,
-                range: 'A1:Z100', // Ajusta el rango según tu Sheet
+                range: 'A1:Z100',
             });
 
             const data = response.result.values;
-            const cuerpo = document.getElementById('cuerpo-tabla');
-            const cabecera = document.getElementById('cabecera');
-            const errorContainer = document.getElementById('error-container');
             
-            errorContainer.innerHTML = ''; // Limpiar errores previos
-
             if (!data || data.length < 3) {
-                cuerpo.innerHTML = '<tr><td colspan="4" style="text-align:center;">No se encontraron datos en el Sheet</td></tr>';
+                showError('No se encontraron datos en el Sheet');
                 return;
             }
 
-            // Los encabezados están en la fila 1, índices 1-4
+            // Procesar datos
+            motosData = [];
             const encabezados = data[1];
             
-            cabecera.innerHTML = `
-                <th>${encabezados[1] || 'Producto'}</th>
-                <th>${encabezados[2] || 'Especificaciones'}</th>
-                <th>${encabezados[3] || 'Motor'}</th>
-                <th>${encabezados[4] || 'Stock'}</th>
-            `;
-
-            // Limpiar y llenar la tabla (empezamos desde fila 2)
-            cuerpo.innerHTML = '';
-
             for (let i = 2; i < data.length; i++) {
                 const fila = data[i];
-                
                 if (fila[1] && fila[1].trim() !== "") {
                     let stockTexto = fila[4] || "0";
-                    let stockNumero = parseInt(stockTexto.replace(/\D/g, '')) || 0;
-                    let claseStock = stockNumero < 5 ? 'low' : 'ok';
-
-                    cuerpo.innerHTML += `
-                        <tr>
-                            <td><strong>${fila[1]}</strong></td>
-                            <td>${fila[2] || '-'}</td>
-                            <td>${fila[3] || '-'}</td>
-                            <td><span class="stock-badge ${claseStock}">${stockTexto}</span></td>
-                        </tr>
-                    `;
+                    let stockNumerico = parseInt(stockTexto.replace(/\D/g, '')) || 0;
+                    
+                    motosData.push({
+                        producto: fila[1],
+                        specs: fila[2] || '-',
+                        motor: fila[3] || '-',
+                        stock: stockTexto,
+                        stockNumerico: stockNumerico
+                    });
                 }
             }
 
-            document.getElementById('update-time').innerText = '✅ Sincronizado: ' + new Date().toLocaleTimeString();
+            // Actualizar UI
+            updateStats(motosData);
+            updateTable(motosData, encabezados);
+            updateCharts(motosData);
+            
+            document.getElementById('update-time').innerHTML = 
+                '<i class="far fa-clock"></i> Actualizado: ' + new Date().toLocaleTimeString();
+            
+            console.log('✅ Datos cargados:', motosData.length, 'modelos');
         } catch (error) {
             console.error('Error al cargar datos:', error);
             if (error.status === 403) {
-                showError('❌ No tienes permisos para acceder a este Google Sheet. Contacta al administrador.');
+                showError('❌ No tienes permisos para acceder a este Google Sheet');
             } else if (error.status === 401) {
-                // Token expirado, limpiar sesión y pedir nuevo login
-                console.log('Token expirado, requiere nuevo login');
                 clearSession();
                 handleSignOut();
-                showError('⏱️ Sesión expirada. Por favor, inicia sesión nuevamente.');
+                showError('⏱️ Sesión expirada. Inicia sesión nuevamente');
             } else {
                 showError('Error al cargar datos: ' + (error.result?.error?.message || error.message));
             }
         }
     }
 
-    function showError(message) {
-        document.getElementById('error-container').innerHTML = `<div class="error-msg">${message}</div>`;
+    // Actualizar estadísticas
+    function updateStats(motos) {
+        const totalMotos = motos.reduce((sum, moto) => sum + moto.stockNumerico, 0);
+        const stockCritico = motos.filter(moto => moto.stockNumerico < 5).length;
+        const stockDisponible = motos.filter(moto => moto.stockNumerico >= 5).length;
+        const totalModelos = motos.length;
+
+        document.getElementById('total-motos').textContent = totalMotos;
+        document.getElementById('stock-critico').textContent = stockCritico;
+        document.getElementById('stock-disponible').textContent = stockDisponible;
+        document.getElementById('total-modelos').textContent = totalModelos;
     }
+
+    // Actualizar tabla
+    function updateTable(motos, encabezados) {
+        const thead = document.getElementById('cabecera');
+        const tbody = document.getElementById('cuerpo-tabla');
+        
+        // Encabezados
+        thead.innerHTML = `
+            <th>${encabezados[1] || 'Producto'}</th>
+            <th>${encabezados[2] || 'Especificaciones'}</th>
+            <th>${encabezados[3] || 'Motor'}</th>
+            <th>${encabezados[4] || 'Stock'}</th>
+        `;
+
+        // Datos
+        tbody.innerHTML = '';
+        motos.forEach(moto => {
+            const claseStock = moto.stockNumerico < 5 ? 'badge-low' : 'badge-ok';
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${moto.producto}</strong></td>
+                    <td>${moto.specs}</td>
+                    <td>${moto.motor}</td>
+                    <td><span class="stock-badge ${claseStock}">${moto.stock}</span></td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('loading-spinner').style.display = 'none';
+        document.getElementById('table-wrapper').style.display = 'block';
+
+        // Inicializar DataTables
+        if (dataTable) dataTable.destroy();
+        dataTable = $('#motosTable').DataTable({
+            "pageLength": 10,
+            "language": {
+                "search": "Buscar:",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "paginate": { "first": "Primero", "last": "Último", "next": "Siguiente", "previous": "Anterior" }
+            },
+            "order": [[3, "asc"]]
+        });
+    }
+
+    // Actualizar gráficos
+    function updateCharts(motos) {
+        const neonColors = [
+            'rgba(0, 255, 136, 0.8)',
+            'rgba(0, 212, 255, 0.8)',
+            'rgba(255, 0, 110, 0.8)',
+            'rgba(255, 190, 11, 0.8)',
+            'rgba(138, 43, 226, 0.8)',
+            'rgba(255, 105, 180, 0.8)',
+            'rgba(0, 255, 255, 0.8)',
+            'rgba(255, 69, 0, 0.8)'
+        ];
+
+        // Pie Chart
+        if (pieChart) pieChart.destroy();
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        pieChart = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: motos.map(m => m.producto),
+                datasets: [{
+                    data: motos.map(m => m.stockNumerico),
+                    backgroundColor: neonColors.slice(0, motos.length),
+                    borderColor: '#0a0e27',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#e0e0e0', padding: 15, font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // Bar Chart
+        const motorColors = motos.map(m => 
+            m.stockNumerico < 5 ? 'rgba(255, 0, 110, 0.8)' : 'rgba(0, 255, 136, 0.8)'
+        );
+
+        if (barChart) barChart.destroy();
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: motos.map(m => m.producto.substring(0, 15) + '...'),
+                datasets: [{
+                    label: 'Stock Disponible',
+                    data: motos.map(m => m.stockNumerico),
+                    backgroundColor: motorColors,
+                    borderColor: motorColors,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e0e0e0', font: { size: 12 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#9ca3af', font: { size: 10 } },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function showError(message) {
+        document.getElementById('error-container').innerHTML = 
+            `<div class="error-msg"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
 
     // Inicializar cuando cargue la página
     window.onload = function() {
