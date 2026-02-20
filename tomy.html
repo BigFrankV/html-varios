@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Motos - Stock Real</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <title>Dashboard de Motos - Stock Real (Seguro)</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f9; color: #333; margin: 20px; }
         h2 { color: #002d72; text-align: center; }
@@ -20,92 +21,217 @@
         .refresh-btn { background-color: #002d72; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 15px auto; display: block; transition: background-color 0.3s; }
         .refresh-btn:hover { background-color: #004499; }
         .refresh-btn:active { background-color: #001a4d; transform: scale(0.98); }
+        .login-container { text-align: center; padding: 40px; }
+        .login-btn { background-color: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; gap: 10px; }
+        .login-btn:hover { background-color: #357ae8; }
+        .user-info { text-align: center; margin: 10px 0; color: #555; font-size: 14px; }
+        .logout-btn { background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-left: 10px; }
+        .logout-btn:hover { background-color: #c82333; }
+        .error-msg { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center; border: 1px solid #f5c6cb; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🏍️ Inventario de Motos (Actualización Live)</h2>
-    <button class="refresh-btn" onclick="fetchStock()">🔄 Actualizar Ahora</button>
-    <table id="tabla-motos">
-        <thead>
-            <tr id="cabecera">
-                </tr>
-        </thead>
-        <tbody id="cuerpo-tabla">
-            <tr><td colspan="4" style="text-align:center;">Cargando datos desde el Excel...</td></tr>
-        </tbody>
-    </table>
-    <p class="last-update" id="update-time"></p>
+    <h2>🏍️ Inventario de Motos (Acceso Seguro)</h2>
+    
+    <!-- Pantalla de Login -->
+    <div id="login-screen" class="login-container">
+        <p>🔒 Este dashboard requiere autenticación</p>
+        <p>Solo los colaboradores del Google Sheet pueden acceder</p>
+        <button class="login-btn" onclick="handleSignIn()">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#FFF" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#FFF" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FFF" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#FFF" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+            Iniciar sesión con Google
+        </button>
+        <p style="font-size: 12px; color: #777; margin-top: 20px;">Se verificará automáticamente tu acceso al Google Sheet</p>
+    </div>
+
+    <!-- Pantalla Principal (oculta hasta login) -->
+    <div id="main-screen" class="hidden">
+        <div class="user-info">
+            👤 Conectado como: <strong id="user-email"></strong>
+            <button class="logout-btn" onclick="handleSignOut()">Cerrar Sesión</button>
+        </div>
+        <button class="refresh-btn" onclick="fetchStock()">🔄 Actualizar Ahora</button>
+        <div id="error-container"></div>
+        <table id="tabla-motos">
+            <thead>
+                <tr id="cabecera"></tr>
+            </thead>
+            <tbody id="cuerpo-tabla">
+                <tr><td colspan="4" style="text-align:center;">Cargando datos desde el Google Sheet...</td></tr>
+            </tbody>
+        </table>
+        <p class="last-update" id="update-time"></p>
+    </div>
 </div>
 
 <script>
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbRb1HQs2-Z1gw9NRmKn_pn2Bc-4N8uCHErJDnl62gKtNFc6gOKYgYQp6IvF3VUG0nw_-4Nwd5t5WN/pub?output=csv';
+    // Configuración
+    const CLIENT_ID = '816756478587-c7h3j4rp8b04o6gci7j88vg1dr4qbkiv.apps.googleusercontent.com';
+    const SHEET_ID = '1qtVeZ_CV3r48FUJBaPUWioXjV_cErH8jJisFjjFWKjE';
+    const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+    const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 
-    function fetchStock() {
-        Papa.parse(csvUrl, {
-            download: true,
-            header: false,  // Cambiamos a false para leer como array
-            skipEmptyLines: true,
-            complete: function(results) {
-                const data = results.data;
-                const cuerpo = document.getElementById('cuerpo-tabla');
-                const cabecera = document.getElementById('cabecera');
-                
-                console.log('Datos raw:', data);
-                
-                // Si no hay datos, mostramos error
-                if (data.length < 3) {
-                    cuerpo.innerHTML = '<tr><td colspan="4">No se encontraron datos en el Excel</td></tr>';
-                    return;
-                }
+    let tokenClient;
+    let gapiInited = false;
+    let gisInited = false;
+    let accessToken = null;
+    let autoRefreshInterval = null;
 
-                // Los encabezados están en la fila 1, índices 1-4 (hay una columna vacía)
-                const encabezados = data[1];
-                console.log('Encabezados detectados:', encabezados);
-
-                // Dibujamos la cabecera con los nombres del Excel (índices 1-4)
-                cabecera.innerHTML = `
-                    <th>${encabezados[1] || 'Producto'}</th>
-                    <th>${encabezados[2] || 'Especificaciones'}</th>
-                    <th>${encabezados[3] || 'Motor'}</th>
-                    <th>${encabezados[4] || 'Stock'}</th>
-                `;
-
-                // Limpiamos y llenamos la tabla (empezamos desde fila 2)
-                cuerpo.innerHTML = '';
-
-                for (let i = 2; i < data.length; i++) {
-                    const fila = data[i];
-                    
-                    // Solo si hay datos en la fila (columna 1 en vez de 0)
-                    if (fila[1] && fila[1].trim() !== "") { 
-                        let stockTexto = fila[4] || "0";
-                        // Limpiamos el texto para sacar solo el número si dice "12 unidades"
-                        let stockNumero = parseInt(stockTexto.replace(/\D/g, '')) || 0; 
-                        let claseStock = stockNumero < 5 ? 'low' : 'ok';
-
-                        let htmlFila = `
-                            <tr>
-                                <td><strong>${fila[1]}</strong></td>
-                                <td>${fila[2] || '-'}</td>
-                                <td>${fila[3] || '-'}</td>
-                                <td><span class="stock-badge ${claseStock}">${stockTexto}</span></td>
-                            </tr>
-                        `;
-                        cuerpo.innerHTML += htmlFila;
-                    }
-                }
-
-                document.getElementById('update-time').innerText = 'Sincronizado con Excel: ' + new Date().toLocaleTimeString();
-            }
-        });
+    // Inicializar Google API
+    function gapiLoaded() {
+        gapi.load('client', initializeGapiClient);
     }
 
-    fetchStock();
-    setInterval(fetchStock, 60000);
+    async function initializeGapiClient() {
+        await gapi.client.init({
+            discoveryDocs: [DISCOVERY_DOC],
+        });
+        gapiInited = true;
+    }
+
+    // Inicializar Google Identity Services
+    function gisLoaded() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            callback: '', // se define después
+        });
+        gisInited = true;
+    }
+
+    // Manejar inicio de sesión
+    function handleSignIn() {
+        tokenClient.callback = async (resp) => {
+            if (resp.error !== undefined) {
+                showError('Error al autenticar: ' + resp.error);
+                return;
+            }
+            accessToken = resp.access_token;
+            gapi.client.setToken({access_token: accessToken});
+            
+            // Obtener información del usuario
+            try {
+                const userInfo = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                const userData = await userInfo.json();
+                document.getElementById('user-email').textContent = userData.email;
+                
+                // Mostrar pantalla principal
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-screen').classList.remove('hidden');
+                
+                // Cargar datos
+                fetchStock();
+                
+                // Auto-refresh cada 60 segundos
+                autoRefreshInterval = setInterval(fetchStock, 60000);
+            } catch (error) {
+                showError('Error al obtener información del usuario');
+            }
+        };
+
+        if (gapi.client.getToken() === null) {
+            tokenClient.requestAccessToken({prompt: 'consent'});
+        } else {
+            tokenClient.requestAccessToken({prompt: ''});
+        }
+    }
+
+    // Manejar cierre de sesión
+    function handleSignOut() {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+            google.accounts.oauth2.revoke(token.access_token);
+            gapi.client.setToken('');
+        }
+        accessToken = null;
+        clearInterval(autoRefreshInterval);
+        document.getElementById('main-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    // Obtener datos del Sheet
+    async function fetchStock() {
+        if (!accessToken) {
+            showError('No hay sesión activa');
+            return;
+        }
+
+        try {
+            const response = await gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: SHEET_ID,
+                range: 'A1:Z100', // Ajusta el rango según tu Sheet
+            });
+
+            const data = response.result.values;
+            const cuerpo = document.getElementById('cuerpo-tabla');
+            const cabecera = document.getElementById('cabecera');
+            const errorContainer = document.getElementById('error-container');
+            
+            errorContainer.innerHTML = ''; // Limpiar errores previos
+
+            if (!data || data.length < 3) {
+                cuerpo.innerHTML = '<tr><td colspan="4" style="text-align:center;">No se encontraron datos en el Sheet</td></tr>';
+                return;
+            }
+
+            // Los encabezados están en la fila 1, índices 1-4
+            const encabezados = data[1];
+            
+            cabecera.innerHTML = `
+                <th>${encabezados[1] || 'Producto'}</th>
+                <th>${encabezados[2] || 'Especificaciones'}</th>
+                <th>${encabezados[3] || 'Motor'}</th>
+                <th>${encabezados[4] || 'Stock'}</th>
+            `;
+
+            // Limpiar y llenar la tabla (empezamos desde fila 2)
+            cuerpo.innerHTML = '';
+
+            for (let i = 2; i < data.length; i++) {
+                const fila = data[i];
+                
+                if (fila[1] && fila[1].trim() !== "") {
+                    let stockTexto = fila[4] || "0";
+                    let stockNumero = parseInt(stockTexto.replace(/\D/g, '')) || 0;
+                    let claseStock = stockNumero < 5 ? 'low' : 'ok';
+
+                    cuerpo.innerHTML += `
+                        <tr>
+                            <td><strong>${fila[1]}</strong></td>
+                            <td>${fila[2] || '-'}</td>
+                            <td>${fila[3] || '-'}</td>
+                            <td><span class="stock-badge ${claseStock}">${stockTexto}</span></td>
+                        </tr>
+                    `;
+                }
+            }
+
+            document.getElementById('update-time').innerText = '✅ Sincronizado: ' + new Date().toLocaleTimeString();
+        } catch (error) {
+            console.error('Error al cargar datos:', error);
+            if (error.status === 403) {
+                showError('❌ No tienes permisos para acceder a este Google Sheet. Contacta al administrador.');
+            } else {
+                showError('Error al cargar datos: ' + (error.result?.error?.message || error.message));
+            }
+        }
+    }
+
+    function showError(message) {
+        document.getElementById('error-container').innerHTML = `<div class="error-msg">${message}</div>`;
+    }
+
+    // Inicializar cuando cargue la página
+    window.onload = function() {
+        gapiLoaded();
+        gisLoaded();
+    };
 </script>
 
 </body>
-
 </html>
