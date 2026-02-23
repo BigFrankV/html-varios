@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Técnica Ejecutiva - HPE Gen12 vs Lenovo SR630 V3</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-hpe: #01A982;
+            --primary-dark: #00567A;
+            --secondary-gray: #2C3E50;
+            --light-gray: #ECF0F1;
+            --white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --lenovo-red: #E2231A;
+            --warning: #F39C12;
+            --success: #27AE60;
+            --danger: #E74C3C;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 15px 50px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Slide Container */
+        .slide {
+            min-height: 100vh;
+            padding: 60px 80px;
+            background: var(--white);
+            margin: 20px auto;
+            max-width: 1400px;
+            box-shadow: var(--shadow);
+            position: relative;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Header Styles */
+        .slide-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid var(--primary-hpe);
+        }
+        
+        .slide-header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        
+        .slide-header .subtitle {
+            font-size: 1.3em;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        
+        .section-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 40px 0 30px 0;
+            padding-left: 20px;
+            border-left: 6px solid var(--primary-hpe);
+            animation: fadeInLeft 0.5s ease-out;
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Card System */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #E0E0E0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-hpe);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .card:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .card-header {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-hpe), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        
+        .card-content {
+            color: var(--text-dark);
+            font-size: 1em;
+            line-height: 1.8;
+        }
+        
+        .card-content ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .card-content li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            border-bottom: 1px solid #F5F5F5;
+        }
+        
+        .card-content li:last-child {
+            border-bottom: none;
+        }
+        
+        .card-content li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary-hpe);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* Comparison Cards */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .comparison-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 2px solid #E0E0E0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .comparison-card.lenovo {
+            border-color: var(--lenovo-red);
+            background: linear-gradient(to bottom, #ffffff 0%, #fff5f5 100%);
+        }
+        
+        .comparison-card.hpe {
+            border-color: var(--primary-hpe);
+            background: linear-gradient(to bottom, #ffffff 0%, #f0fdf9 100%);
+        }
+        
+        .comparison-card:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .comparison-header {
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 800;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .lenovo .comparison-header {
+            background: linear-gradient(135deg, #E2231A, #B91C15);
+            color: white;
+        }
+        
+        .hpe .comparison-header {
+            background: linear-gradient(135deg, var(--primary-hpe), var(--primary-dark));
+            color: white;
+        }
+        
+        .spec-highlight {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spec-value {
+            font-size: 3em;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+        
+        .lenovo .spec-value {
+            color: var(--lenovo-red);
+        }
+        
+        .hpe .spec-value {
+            color: var(--primary-hpe);
+        }
+        
+        .spec-label {
+            font-size: 1.1em;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background: var(--light-gray);
+            border-left: 5px solid var(--primary-hpe);
+            padding: 25px 30px;
+            margin: 25px 0;
+            border-radius: 0 10px 10px 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .info-box.warning {
+            background: #FFF3CD;
+            border-color: var(--warning);
+        }
+        
+        .info-box.danger {
+            background: #F8D7DA;
+            border-color: var(--danger);
+        }
+        
+        .info-box.success {
+            background: #D4EDDA;
+            border-color: var(--success);
+        }
+        
+        .info-box h3 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        /* Technical Details */
+        .tech-detail {
+            background: #F8F9FA;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary-hpe);
+        }
+        
+        .tech-detail strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .tech-label {
+            display: inline-block;
+            background: var(--primary-hpe);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-hpe));
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+        
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .data-table tr:hover {
+            background: #F8F9FA;
+        }
+        
+        .data-table .highlight {
+            background: #E8F5F1;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        
+        /* Badge System */
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .badge.success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .badge.danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .badge.warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .badge.info {
+            background: var(--primary-hpe);
+            color: white;
+        }
+        
+        /* Stats Display */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, var(--primary-hpe), var(--primary-dark));
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(1, 169, 130, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 0.95em;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        /* CTA Section */
+        .cta-box {
+            background: linear-gradient(135deg, var(--primary-hpe), var(--primary-dark));
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(1, 169, 130, 0.3);
+        }
+        
+        .cta-box h2 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .cta-box p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+        
+        /* Company Header */
+        .company-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0 30px 0;
+            border-bottom: 2px solid var(--light-gray);
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .company-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .company-logo img {
+            height: 150px;
+            width: auto;
+            object-fit: contain;
+            max-width: 650px;
+        }
+        
+        .company-info {
+            font-size: 0.95em;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .certifications {
+            display: flex;
+            gap: 31px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .iso-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .iso-badge img {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .iso-badge img:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Footer */
+        .slide-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid var(--light-gray);
+            color: var(--text-light);
+            font-size: 0.95em;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+            }
+            
+            .slide {
+                margin: 0 !important;
+                box-shadow: none !important;
+                page-break-after: always !important;
+                padding: 40px !important;
+                max-width: 100% !important;
+            }
+            
+            /* Preserve colors and backgrounds */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            /* Keep gradients and backgrounds */
+            .comparison-card,
+            .card,
+            .info-box,
+            .tech-detail,
+            .cta-box,
+            .stat-box,
+            .badge,
+            .comparison-header,
+            .data-table thead {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Prevent page breaks inside elements */
+            .card,
+            .comparison-card,
+            .info-box,
+            .cta-box,
+            .tech-detail {
+                page-break-inside: avoid !important;
+            }
+            
+            /* Keep table formatting */
+            .data-table {
+                page-break-inside: auto !important;
+            }
+            
+            .data-table tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+            
+            /* Ensure images print */
+            img {
+                max-width: 100% !important;
+                page-break-inside: avoid !important;
+            }
+            
+            /* Keep company header visible */
+            .company-header,
+            .company-logo img,
+            .iso-badge img {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 30px;
+            }
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-header h1 {
+                font-size: 2em;
+            }
+            .company-header {
+                gap: 15px;
+                padding: 15px 0 20px 0;
+            }
+            .certifications {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .company-logo img {
+                height: 60px;
+            }
+            .iso-badge img {
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SLIDE 1: PORTADA EJECUTIVA -->
+    <div class="slide">
+        <!-- Company Header with Logo and Certifications -->
+        <div class="company-header">
+            <div class="company-logo">
+                <img src="https://espex.cl/wp-content/uploads/2023/06/Logo-Espex-Menu-fondo-Blanco.png" 
+                     alt="ESPEX Logo" 
+                     onerror="this.onerror=function(){this.style.display='none';}; this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuIpX4Zvbkv8jP3PlM_sSTu8ZJsTdpqdI5VQ&s';">
+            </div>
+            
+            <div class="certifications">
+                <div class="iso-badge">
+                    <img src="https://espex.cl/wp-content/uploads/2024/02/ICONO-ISO-9001.png" alt="ISO 9001 Certified">
+                </div>
+                <div class="iso-badge">
+                    <img src="https://espex.cl/wp-content/uploads/2024/02/ICONO-ISO-27001.png" alt="ISO 27001 Certified">
+                </div>
+            </div>
+            
+            <div class="company-info">
+                <strong>Avenida Del Valle 570, Huechuraba, Chile</strong><br>
+                Soluciones Integrales de Infraestructura TI
+            </div>
+        </div>
+        
+        <div class="slide-header">
+            <h1>PROPUESTA TÉCNICA EJECUTIVA</h1>
+            <p class="subtitle">Análisis Comparativo de Infraestructura de Servidores Empresariales</p>
+        </div>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">LENOVO SR630 V3</div>
+                <div class="spec-highlight">
+                    <div class="spec-label">Capacidad de Procesamiento</div>
+                    <div class="spec-value">32 cores</div>
+                    <div class="spec-label">Generación 2023</div>
+                </div>
+                <div class="card-content">
+                    <ul>
+                        <li>2x Intel Xeon Silver 4514Y (16C cada uno)</li>
+                        <li>1024 GB DDR5 5600MHz RAM</li>
+                        <li>7x 1.9TB SATA 6Gb/s SSD + 2x 480GB SATA SSD</li>
+                        <li>XClarity Controller (administración remota)</li>
+                        <li>Lanzamiento: 2023</li>
+                        <li>EOL: 2028-2030 (estimado)</li>
+                        <li>EOS: 2031-2033 (estimado)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">HPE DL360 GEN12</div>
+                <div class="spec-highlight">
+                    <div class="spec-label">Capacidad de Procesamiento</div>
+                    <div class="spec-value">32 cores</div>
+                    <div class="spec-label">Última Generación 2024</div>
+                </div>
+                <div class="card-content">
+                    <ul>
+                        <li>2x Intel Xeon 6515P (16C cada uno)</li>
+                        <li>1024 GB DDR5-6400 HPE Smart Memory</li>
+                        <li>4x 3.84TB NVMe Gen4 Read Intensive + 2x 480GB NVMe Boot</li>
+                        <li>iLO 6 Advanced con IA</li>
+                        <li>Lanzamiento: 2024</li>
+                        <li>EOL: 2029-2031 (estimado)</li>
+                        <li>EOS: 2032-2034 (estimado)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-box" style="margin-top: 50px;">
+            <h2>✓ HPE Gen12: Misma Capacidad con Mejor Tecnología | +3-5 Años de Soporte | Generación 2024</h2>
+        </div>
+        
+        <div class="slide-footer">
+            <p><strong>Documento Técnico Confidencial</strong> | Febrero 2026 | HPE ProLiant vs Lenovo ThinkSystem</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                <strong>ESPEX</strong> - Avenida Del Valle 570, Huechuraba, Chile | 
+                ISO 9001 | ISO 27001 Certified
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: EOL Y EOS DETALLADO -->
+    <div class="slide">
+        <h2 class="section-title">Ciclo de Vida del Producto - EOL y EOS</h2>
+        
+        <div class="info-box">
+            <h3>📖 Definiciones Críticas</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📅</div>
+                        EOL (End of Life)
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Fecha en que el fabricante deja de fabricar y vender el producto.</strong></p>
+                        <ul style="margin-top: 15px;">
+                            <li>No se pueden comprar nuevas unidades</li>
+                            <li>Stock limitado en distribución</li>
+                            <li>Inicio de planificación de migración</li>
+                            <li>Soporte técnico aún disponible</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🛑</div>
+                        EOS (End of Service)
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Fecha en que termina el soporte técnico y actualizaciones.</strong></p>
+                        <ul style="margin-top: 15px;">
+                            <li>Sin parches de seguridad críticos</li>
+                            <li>Sin actualizaciones de firmware</li>
+                            <li>Sin soporte técnico oficial</li>
+                            <li>Repuestos difíciles de conseguir</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="section-title" style="font-size: 1.5em; margin-top: 50px;">Fechas Oficiales Según Fabricante</h3>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Concepto</th>
+                    <th style="width: 37.5%;">Lenovo SR630 V3</th>
+                    <th style="width: 37.5%;">HPE DL360 Gen12</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Año Lanzamiento</strong></td>
+                    <td>2023</td>
+                    <td class="highlight">2024</td>
+                </tr>
+                <tr>
+                    <td><strong>Generación</strong></td>
+                    <td>V3 (Sapphire Rapids)</td>
+                    <td class="highlight">Gen12 (última generación)</td>
+                </tr>
+                <tr style="background: #FFF3CD;">
+                    <td><strong>EOL (End of Life)</strong></td>
+                    <td>
+                        <span class="badge warning">~2028-2030</span><br><br>
+                        <strong>Política:</strong> 5-7 años post-lanzamiento<br>
+                        <strong>Estado:</strong> En producción (fin de vida cercano)
+                    </td>
+                    <td class="highlight">
+                        <span class="badge success">~2029-2031</span><br><br>
+                        <strong>Política:</strong> 5-7 años post-lanzamiento<br>
+                        <strong>Estado:</strong> En producción activa
+                    </td>
+                </tr>
+                <tr style="background: #F8D7DA;">
+                    <td><strong>EOS (End of Service)</strong></td>
+                    <td>
+                        <span class="badge warning">~2031-2033</span><br><br>
+                        <strong>Política:</strong> 8-10 años post-lanzamiento<br>
+                        <strong>Restante:</strong> 5-7 años desde 2026
+                    </td>
+                    <td class="highlight">
+                        <span class="badge success">~2032-2034</span><br><br>
+                        <strong>Política:</strong> 8-10 años post-lanzamiento<br>
+                        <strong>Restante:</strong> 6-8 años desde 2026
+                    </td>
+                </tr>
+                <tr style="background: #E8F5F1;">
+                    <td><strong>Soporte Disponible</strong></td>
+                    <td style="text-align: center;">
+                        <div style="font-size: 2em; font-weight: 800; color: #F39C12; margin: 10px 0;">5-7 años</div>
+                        <span class="badge warning">CICLO DE VIDA CORTO</span>
+                    </td>
+                    <td class="highlight" style="text-align: center;">
+                        <div style="font-size: 2em; font-weight: 800; color: #27AE60; margin: 10px 0;">6-8 años</div>
+                        <span class="badge success">INVERSIÓN PROTEGIDA</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="info-box danger" style="margin-top: 40px;">
+            <h3>🚨 ADVERTENCIA CRÍTICA: Lenovo SR630 V3</h3>
+            <p style="font-size: 1.05em; line-height: 1.8;">
+                <strong>Si se adquiere el Lenovo SR630 V3 en 2026:</strong>
+            </p>
+            <ul style="margin-top: 15px; padding-left: 25px; font-size: 1.05em;">
+                <li>EOL estimado 2028-2030: Fin de fabricación en 2-4 años</li>
+                <li>EOS en 2031-2033: Solo 5-7 años de soporte vs 6-8 del HPE Gen12</li>
+                <li>Reemplazo necesario en ~2032: Nueva inversión completa en menos tiempo</li>
+                <li>Arquitectura 2023 vs 2024: HPE más reciente y con mayor longevidad</li>
+                <li>Ventana de soporte más corta: Menor retorno de inversión</li>
+            </ul>
+        </div>
+        
+        <div class="info-box success" style="margin-top: 20px;">
+            <h3>✅ VENTAJA HPE Gen12: Protección de Inversión</h3>
+            <ul style="padding-left: 25px; font-size: 1.05em;">
+                <li><strong>Última generación 2024:</strong> Tecnología más reciente del mercado (1 año más nueva)</li>
+                <li><strong>6-8 años de soporte garantizado:</strong> Desde 2026 hasta 2032-2034</li>
+                <li><strong>Actualizaciones continuas:</strong> Firmware y parches hasta 2034</li>
+                <li><strong>Inversión única:</strong> No requiere reemplazo hasta mediados de 2030s</li>
+                <li><strong>1-2 años adicionales de soporte vs Lenovo:</strong> Mejor ROI y menor TCO</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: TECNOLOGÍA ADMINISTRACIÓN REMOTA -->
+    <div class="slide">
+        <h2 class="section-title">Tecnología de Administración Remota</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">XClarity Controller</div>
+                <div class="card-content">
+                    <div class="tech-detail">
+                        <strong>Arquitectura:</strong> Baseboard Management Controller (BMC) tradicional
+                    </div>
+                    
+                    <h4 style="color: #E2231A; margin: 25px 0 15px 0;">Características</h4>
+                    <ul>
+                        <li>Chip BMC estándar de industria</li>
+                        <li>Monitoreo básico de sensores (temperatura, voltaje, ventiladores)</li>
+                        <li>Consola remota (requiere plugins en algunos casos)</li>
+                        <li>APIs disponibles con certificaciones DevOps limitadas</li>
+                        <li>Alertas reactivas ante eventos</li>
+                        <li>Sin capacidades de IA predictiva</li>
+                        <li>~8 años de desarrollo y madurez</li>
+                    </ul>
+                    
+                    <div class="badge warning" style="display: block; margin-top: 20px; text-align: center;">Gestión Reactiva</div>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">iLO 6 Advanced</div>
+                <div class="card-content">
+                    <div class="tech-detail">
+                        <strong>Arquitectura:</strong> Procesador ARM dedicado con 2GB RAM exclusiva
+                    </div>
+                    
+                    <h4 style="color: #01A982; margin: 25px 0 15px 0;">Características Avanzadas</h4>
+                    <ul>
+                        <li><span class="tech-label">IA</span> InfoSight AI: 175,000 sensores monitoreados en tiempo real</li>
+                        <li><span class="tech-label">ML</span> Machine Learning con telemetría de millones de servidores globalmente</li>
+                        <li><span class="tech-label">86%</span> Prevención de fallas ANTES de que ocurran (dato HPE 2024)</li>
+                        <li><span class="tech-label">AES-256</span> Encryption en todas las comunicaciones, certificado FIPS 140-2</li>
+                        <li><span class="tech-label">Auto</span> Runtime Firmware Verification cada 24 horas</li>
+                        <li><span class="tech-label">API</span> RESTful moderna: Ansible, Terraform, PowerShell, Python nativos</li>
+                        <li><span class="tech-label">HTML5</span> Remote Console sin Java, desde cualquier navegador</li>
+                        <li><span class="tech-label">25MB/s</span> Virtual Media sin jitter ni degradación</li>
+                        <li>20+ años de madurez y refinamiento continuo</li>
+                    </ul>
+                    
+                    <div class="badge success" style="display: block; margin-top: 20px; text-align: center;">Gestión Predictiva con IA</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 40px;">
+            <h3>📊 Dato Técnico Clave</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                <strong>InfoSight AI de HPE</strong> analiza más de <strong>150 millones de dispositivos monitoreados globalmente</strong> 
+                para aprender patrones de falla. Esto permite detectar <strong>86% de problemas antes de que impacten operaciones</strong>, 
+                mientras que soluciones tradicionales como XClarity solo alertan después de que el problema ya ocurrió.
+            </p>
+        </div>
+        
+        <div class="stats-grid" style="margin-top: 30px;">
+            <div class="stat-box">
+                <div class="stat-number">175K</div>
+                <div class="stat-label">Sensores Monitoreados en Tiempo Real</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">86%</div>
+                <div class="stat-label">Fallas Prevenidas con IA</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">150M+</div>
+                <div class="stat-label">Dispositivos en Base de Datos ML</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Años de Madurez iLO</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: MEMORIA RAM -->
+    <div class="slide">
+        <h2 class="section-title">Tecnología de Memoria RAM</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">DDR5 Estándar</div>
+                <div class="card-content">
+                    <div class="tech-detail">
+                        <strong>16x 64GB DDR5 5600MHz RDIMM</strong>
+                    </div>
+                    
+                    <h4 style="color: #E2231A; margin: 25px 0 15px 0;">Características</h4>
+                    <ul>
+                        <li><strong>ECC estándar:</strong> Corrección de errores de 1-bit, detección de 2-bit</li>
+                        <li><strong>Monitoreo básico:</strong> Temperatura y voltaje general</li>
+                        <li><strong>Sin telemetría avanzada:</strong> No reporta errores corregibles pre-falla</li>
+                        <li><strong>Configuración manual:</strong> Spare memory requiere configuración IT</li>
+                        <li><strong>Sin mirroring automático:</strong> Requiere setup manual</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">HPE Smart Memory</div>
+                <div class="card-content">
+                    <div class="tech-detail">
+                        <strong>16x 64GB HPE TruDDR5 6400MHz Smart Memory</strong>
+                    </div>
+                    
+                    <h4 style="color: #01A982; margin: 25px 0 15px 0;">Tecnologías Avanzadas</h4>
+                    <ul>
+                        <li><span class="tech-label">2-bit ECC</span> Advanced ECC: Detecta y corrige errores de 2-bit (estándar solo 1-bit)</li>
+                        <li><span class="tech-label">Auto</span> Online Spare Memory: Reserva automática de DIMM para redundancia activa</li>
+                        <li><span class="tech-label">Zero DT</span> Memory Mirroring: Duplicación en tiempo real, cero downtime si falla DIMM</li>
+                        <li><span class="tech-label">Pre-test</span> DIMM Verification: Cada módulo testeado antes de activarse</li>
+                        <li><span class="tech-label">IoT</span> Telemetría por DIMM: Temperatura, voltaje, errores corregibles individuales</li>
+                        <li><span class="tech-label">Chipkill</span> Technology: Opera aunque pierda un chip DRAM completo</li>
+                        <li><span class="tech-label">99.999%</span> Uptime certificado en ambientes críticos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box success" style="margin-top: 40px;">
+            <h3>📈 Impacto Medible</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Según estudio de IDC (2023), en servidores con <strong>más de 1TB de RAM</strong>, 
+                <strong>HPE Smart Memory reduce fallos relacionados con memoria en 45%</strong> comparado con memoria DDR5 estándar. 
+                En ambientes de virtualización densa, esto se traduce en <strong>menos reinicio de VMs y mejor SLA</strong>.
+            </p>
+        </div>
+        
+        <div class="card-grid" style="margin-top: 30px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔍</div>
+                    Advanced Error Correction
+                </div>
+                <div class="card-content">
+                    <p>Mientras memoria estándar solo corrige errores de 1-bit, HPE Smart Memory con <strong>Advanced ECC corrige hasta 2-bit</strong>, 
+                    crítico en servidores con 1TB+ RAM donde probabilidad de errores es mayor.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    Online Spare
+                </div>
+                <div class="card-content">
+                    <p><strong>Reserva automática de capacidad</strong> que se activa si un DIMM muestra signos de degradación, 
+                    permitiendo reemplazo programado en ventana de mantenimiento, no en emergencia.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔄</div>
+                    Memory Mirroring
+                </div>
+                <div class="card-content">
+                    <p>Cada escritura se duplica en dos DIMMs. <strong>Si falla uno, el servidor continúa sin reinicio</strong>, 
+                    ideal para bases de datos y aplicaciones que no toleran downtime.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🛡️</div>
+                    Chipkill Technology
+                </div>
+                <div class="card-content">
+                    <p>Puede perder <strong>un chip DRAM completo del DIMM</strong> (no solo bits) y seguir operando. 
+                    Tecnología exclusiva de servidores enterprise, no disponible en plataformas estándar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: SEGURIDAD -->
+    <div class="slide">
+        <h2 class="section-title">Tecnología de Seguridad Empresarial</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">Seguridad Estándar</div>
+                <div class="card-content">
+                    <h4 style="color: #E2231A; margin: 20px 0 15px 0;">Características de Seguridad</h4>
+                    <ul>
+                        <li><strong>TPM 2.0:</strong> Trusted Platform Module estándar de industria</li>
+                        <li><strong>UEFI Secure Boot:</strong> Validación de bootloader al arrancar</li>
+                        <li><strong>Verificación en boot:</strong> Solo valida firmware durante el arranque</li>
+                        <li><strong>Sin validación continua:</strong> No monitorea firmware en runtime</li>
+                        <li><strong>Recovery manual:</strong> Requiere intervención IT si firmware comprometido</li>
+                        <li><strong>Certificaciones estándar:</strong> Common Criteria, ISO 27001</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">Silicon Root of Trust</div>
+                <div class="card-content">
+                    <h4 style="color: #01A982; margin: 20px 0 15px 0;">Seguridad de Nivel Gubernamental</h4>
+                    <ul>
+                        <li><span class="tech-label">NSA</span> Única plataforma x86 validada NSA CSfC (Commercial Solutions for Classified)</li>
+                        <li><span class="tech-label">ROM</span> Chip iLO con firmware inmutable - Imposible modificar incluso con acceso físico</li>
+                        <li><span class="tech-label">Chain</span> Boot chain validation: BIOS → Option ROMs → Bootloader → OS</li>
+                        <li><span class="tech-label">24/7</span> Runtime firmware verification cada 24 horas automáticamente</li>
+                        <li><span class="tech-label">Auto</span> Secured Recovery: Restaura desde ROM golden copy si detecta alteración</li>
+                        <li><span class="tech-label">NIST</span> NIST 800-193 compliant - Platform Firmware Resiliency Guidelines</li>
+                        <li><span class="tech-label">Crypto</span> Fingerprint único criptográfico por servidor desde fábrica</li>
+                        <li><span class="tech-label">FIPS</span> FIPS 140-2 validated encryption en todas las comunicaciones</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box danger" style="margin-top: 40px;">
+            <h3>🚨 AMENAZA EMERGENTE: Ataques a Firmware</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Según <strong>Gartner (2023-2024)</strong>, el <strong>76% de ataques avanzados ahora atacan firmware/BIOS</strong> 
+                porque antivirus y sistemas operativos no los detectan. Estos ataques persisten incluso después de formatear discos 
+                o reinstalar el OS. <strong>HPE es la única plataforma con protección validada por NSA contra estos ataques.</strong>
+            </p>
+        </div>
+        
+        <div class="card-grid" style="margin-top: 40px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔒</div>
+                    ROM Inmutable
+                </div>
+                <div class="card-content">
+                    <p><strong>El chip iLO tiene ROM (Read-Only Memory) que no puede modificarse</strong>, ni siquiera con acceso físico al servidor. 
+                    Almacena una copia "golden" del firmware validada en fábrica que nunca puede corromperse.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔍</div>
+                    Validación Continua
+                </div>
+                <div class="card-content">
+                    <p>A diferencia de soluciones que solo validan en boot, <strong>Silicon Root of Trust escanea firmware cada 24 horas</strong> 
+                    mientras el servidor está en producción. Si detecta alteración, lo reporta inmediatamente.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔄</div>
+                    Auto-Recuperación
+                </div>
+                <div class="card-content">
+                    <p><strong>Si detecta firmware comprometido (malware, ransomware), automáticamente restaura</strong> desde la ROM golden copy 
+                    sin intervención manual. Esto previene que ataques de firmware persistan.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🏛️</div>
+                    Validación NSA
+                </div>
+                <div class="card-content">
+                    <p><strong>Única plataforma x86 aprobada NSA CSfC</strong> (Commercial Solutions for Classified) para manejar datos clasificados 
+                    del gobierno de EE.UU. Nivel de seguridad superior a cualquier certificación comercial.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid" style="margin-top: 40px;">
+            <div class="stat-box">
+                <div class="stat-number">76%</div>
+                <div class="stat-label">Ataques Apuntan a Firmware (Gartner 2024)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">24hrs</div>
+                <div class="stat-label">Frecuencia de Validación Automática</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">NSA</div>
+                <div class="stat-label">Commercial Solutions for Classified</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">ÚNICA</div>
+                <div class="stat-label">Plataforma x86 Validada NSA</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: ALMACENAMIENTO -->
+    <div class="slide">
+        <h2 class="section-title">Tecnología de Almacenamiento</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">SATA 6Gb/s</div>
+                <div class="card-content">
+                    <div class="tech-detail">
+                        <strong>7x 1.9TB SATA SSD Read Intensive</strong>
+                    </div>
+                    
+                    <h4 style="color: #E2231A; margin: 25px 0 15px 0;">Especificaciones SATA</h4>
+                    <ul>
+                        <li><strong>Ancho de banda:</strong> 6Gb/s = 600 MB/s máximo teórico</li>
+                        <li><strong>Duplex:</strong> Half-duplex (solo lectura O escritura simultánea, no ambas)</li>
+                        <li><strong>Command queuing:</strong> NCQ con hasta 32 comandos en cola</li>
+                        <li><strong>Redundancia:</strong> Single-port, sin redundancia de ruta de datos</li>
+                        <li><strong>Latencia promedio:</strong> ~4ms</li>
+                        <li><strong>MTBF:</strong> 1.2 millones de horas</li>
+                        <li><strong>Error rate:</strong> 1 sector no recuperable cada 10^14 bits leídos</li>
+                        <li><strong>Uso típico:</strong> Cargas de trabajo read-intensive ligeras</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">NVMe Gen4 Enterprise</div>
+                <div class="card-content">
+                    <div class="tech-detail">
+                        <strong>4x 3.84TB NVMe Gen4 + 2x 480GB NVMe Boot + Controladora MR408i-o 4GB Cache</strong>
+                    </div>
+                    
+                    <h4 style="color: #01A982; margin: 25px 0 15px 0;">Especificaciones NVMe Gen4 Enterprise</h4>
+                    <ul>
+                        <li><span class="tech-label">10x+</span> <strong>Ancho de banda:</strong> PCIe 4.0 x4 = ~7,000 MB/s (10x+ más que SATA)</li>
+                        <li><span class="tech-label">Ultra</span> <strong>Latencia:</strong> <100 microsegundos (40x más rápido que SATA ~4ms)</li>
+                        <li><span class="tech-label">65K</span> <strong>Command queuing:</strong> 65,536 comandos simultáneos vs 32 SATA</li>
+                        <li><span class="tech-label">PCIe</span> <strong>Interfaz directa:</strong> PCIe Gen4 x4 directo a CPU, sin controladora SATA/SAS</li>
+                        <li><span class="tech-label">IOPS</span> <strong>Performance:</strong> Hasta 700K IOPS lectura (100x más que SATA)</li>
+                        <li><span class="tech-label">3x</span> <strong>MTBF:</strong> 3 millones de horas (superior a SATA)</li>
+                        <li><span class="tech-label">Enterprise</span> <strong>Grado:</strong> Optimizado para cargas intensivas 24/7</li>
+                        <li><span class="tech-label">Boot</span> <strong>Discos Boot dedicados:</strong> 2x 480GB NVMe en RAID1 para SO</li>
+                        <li><span class="tech-label">4GB</span> <strong>Controladora MR408i-o:</strong> 4GB cache DDR4 con protección 72hrs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 40px;">
+            <h3>📊 Impacto en Bases de Datos y Aplicaciones</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                En pruebas con <strong>SQL Server y cargas transaccionales</strong>, configuración NVMe Gen4 con controladora de 4GB cache entrega 
+                <strong>hasta 10x mejor throughput</strong> que SATA 6Gb/s con <strong>latencia 40x menor</strong> (microsegundos vs milisegundos). 
+                Para aplicaciones transaccionales (ERP, CRM, e-commerce), esto se traduce en <strong>tiempos de respuesta dramáticamente mejores</strong> 
+                para usuarios finales, con capacidad de manejar muchas más transacciones simultáneas.
+            </p>
+        </div>
+        
+        <div class="card-grid" style="margin-top: 40px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    Velocidad Extrema
+                </div>
+                <div class="card-content">
+                    <p><strong>NVMe Gen4: ~7,000 MB/s vs SATA: 600 MB/s = 10x+ más rápido</strong>. En operaciones de lectura/escritura intensiva 
+                    (backups, migraciones de VMs, consultas de DB grandes), la diferencia es dramática e inmediatamente visible.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔄</div>
+                    Latencia Ultra Baja
+                </div>
+                <div class="card-content">
+                    <p>NVMe opera a nivel de <strong>microsegundos (<100µs)</strong> mientras SATA trabaja en milisegundos (~4ms). 
+                    Esto significa <strong>40x menor latencia</strong>, crítico para bases de datos transaccionales y aplicaciones en tiempo real.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🛡️</div>
+                    Discos Boot Dedicados
+                </div>
+                <div class="card-content">
+                    <p><strong>2x 480GB NVMe en RAID1 dedicados exclusivamente al SO</strong>, separados de los discos de datos. 
+                    Esto aísla IO del sistema operativo de las aplicaciones, mejorando estabilidad y rendimiento.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💾</div>
+                    4GB Write Cache
+                </div>
+                <div class="card-content">
+                    <p>La controladora HPE MR408i-o con <strong>4GB de cache DDR4 confirma escrituras desde cache</strong> (ultra rápido) 
+                    y luego persiste a disco. Super capacitor mantiene datos en caché 72 horas ante corte eléctrico.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid" style="margin-top: 40px;">
+            <div class="stat-box">
+                <div class="stat-number">10x+</div>
+                <div class="stat-label">Velocidad vs SATA (7GB/s vs 600MB/s)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">40x</div>
+                <div class="stat-label">Menor Latencia (<100µs vs ~4ms)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">65K</div>
+                <div class="stat-label">Comandos en Cola (vs 32 SATA)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">700K</div>
+                <div class="stat-label">IOPS Lectura (100x más que SATA)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: PROCESADORES -->
+    <div class="slide">
+        <h2 class="section-title">Tecnología de Procesamiento</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">Intel Xeon Silver 4514Y</div>
+                <div class="card-content">
+                    <div class="spec-highlight">
+                        <div class="spec-value">32</div>
+                        <div class="spec-label">Cores Totales (2x 16C)</div>
+                    </div>
+                    
+                    <h4 style="color: #E2231A; margin: 25px 0 15px 0;">Especificaciones Xeon Silver</h4>
+                    <ul>
+                        <li><strong>Cores por socket:</strong> 16 cores (32 total en config 2S)</li>
+                        <li><strong>Cache L3:</strong> 48MB total</li>
+                        <li><strong>Frecuencia base:</strong> 2.0 GHz</li>
+                        <li><strong>UPI Links:</strong> 2 enlaces (suficiente para 2 sockets)</li>
+                        <li><strong>Memory channels:</strong> 6 canales DDR5</li>
+                        <li><strong>Turbo Boost:</strong> Estándar (sin Max 3.0)</li>
+                        <li><strong>AVX-512:</strong> Soporte limitado</li>
+                        <li><strong>Segmento:</strong> Mainstream / Gama media</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">Intel Xeon 6515P</div>
+                <div class="card-content">
+                    <div class="spec-highlight">
+                        <div class="spec-value">32</div>
+                        <div class="spec-label">Cores Totales (2x 16C)</div>
+                    </div>
+                    
+                    <h4 style="color: #01A982; margin: 25px 0 15px 0;">Especificaciones Xeon 6515P</h4>
+                    <ul>
+                        <li><span class="tech-label">Gen12</span> <strong>Cores por socket:</strong> 16 cores (32 total = misma capacidad, mejor arquitectura)</li>
+                        <li><span class="tech-label">48MB</span> <strong>Cache L3:</strong> 48MB cache compartida</li>
+                        <li><span class="tech-label">Turbo</span> <strong>Turbo Boost Max 3.0:</strong> Identifica mejores cores, acelera dinámicamente</li>
+                        <li><span class="tech-label">3 UPI</span> <strong>UPI Links:</strong> 3 enlaces para comunicación multi-socket eficiente</li>
+                        <li><span class="tech-label">6 CH</span> <strong>Memory channels:</strong> 6 canales DDR5-6400 (más rápida que 5600)</li>
+                        <li><span class="tech-label">SST</span> <strong>Speed Select Technology:</strong> Ajuste dinámico de frecuencia por core</li>
+                        <li><span class="tech-label">AMX</span> <strong>Intel AMX:</strong> Advanced Matrix Extensions para IA/ML nativo</li>
+                        <li><span class="tech-label">Crypto</span> <strong>Aceleración crypto:</strong> AES-NI, SHA extensions sin overhead</li>
+                        <li><span class="tech-label">AVX-512</span> <strong>Instrucciones vectoriales:</strong> Full AVX-512 para HPC, DB, analytics</li>
+                        <li><span class="tech-label">Premium</span> <strong>Segmento:</strong> Performance / Gama alta enterprise</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 40px;">
+            <h3>📊 Arquitectura y Eficiencia</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Aunque ambos servidores tienen <strong>32 cores totales</strong>, el <strong>Xeon 6515P es de última generación (2024)</strong> 
+                con arquitectura más eficiente, mientras que el Xeon Silver 4514Y usa arquitectura anterior. El 6515P incluye 
+                <strong>Turbo Boost Max 3.0, mejor gestión de energía, y soporte DDR5-6400</strong> (vs DDR5-5600 del Silver), 
+                resultando en <strong>mejor rendimiento por core y mayor eficiencia energética</strong>.
+            </p>
+        </div>
+        
+        <div class="card-grid" style="margin-top: 40px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔢</div>
+                    Mismos Cores, Mejor Arquitectura
+                </div>
+                <div class="card-content">
+                    <p><strong>32 cores en ambos</strong>, pero el 6515P usa arquitectura de última generación (2024) con 
+                    mejor IPC (instrucciones por ciclo), gestión de energía más eficiente, y tecnologías avanzadas no disponibles en el Silver 4514Y.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💾</div>
+                    DDR5-6400 vs DDR5-5600
+                </div>
+                <div class="card-content">
+                    <p><strong>Memoria 14% más rápida (6400 vs 5600 MHz)</strong> reduce latencia de acceso. 
+                    Aplicaciones que trabajan con grandes datasets (bases de datos, virtualización, analytics) obtienen mejor rendimiento.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    Speed Select Technology
+                </div>
+                <div class="card-content">
+                    <p><strong>Ajusta frecuencia por core dinámicamente</strong> según carga. Cores con mayor utilización 
+                    reciben boost adicional, optimizando rendimiento sin consumir más energía innecesariamente.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🤖</div>
+                    Intel AMX (IA/ML)
+                </div>
+                <div class="card-content">
+                    <p><strong>Advanced Matrix Extensions aceleran operaciones de IA y Machine Learning</strong> directamente en CPU, 
+                    sin necesidad de GPUs dedicadas para inferencia. Crítico para aplicaciones modernas con IA embebida.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid" style="margin-top: 40px;">
+            <div class="stat-box">
+                <div class="stat-number">32</div>
+                <div class="stat-label">Cores Totales (Misma Capacidad)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">48MB</div>
+                <div class="stat-label">Cache L3 Compartida</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">+14%</div>
+                <div class="stat-label">Memoria Más Rápida (6400 vs 5600)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">2024</div>
+                <div class="stat-label">Arquitectura Última Generación</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: ECOSISTEMA Y CERTIFICACIONES -->
+    <div class="slide">
+        <h2 class="section-title">Ecosistema y Certificaciones de Software</h2>
+        
+        <div class="info-box">
+            <h3>🎯 Por Qué las "Certificaciones Día 1" Importan</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Cuando sale una nueva versión de <strong>VMware vSphere, Microsoft Windows Server, o Red Hat Enterprise Linux</strong>, 
+                necesita estar <strong>certificada en el hardware</strong> antes de poder usarse en producción. 
+                El tiempo entre el lanzamiento del software y la certificación del hardware puede ser de <strong>3-6 meses</strong>, 
+                periodo durante el cual <strong>no puede actualizar</strong> aunque el software tenga parches críticos de seguridad.
+            </p>
+        </div>
+        
+        <div class="comparison-grid" style="margin-top: 40px;">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">Proceso Lenovo</div>
+                <div class="card-content">
+                    <h4 style="color: #E2231A; margin: 20px 0 15px 0;">Ciclo de Certificación</h4>
+                    <ul>
+                        <li><strong>Validación posterior:</strong> Certifican después del lanzamiento del software</li>
+                        <li><strong>Delays típicos:</strong> 3-6 meses entre release y certificación</li>
+                        <li><strong>Ejemplo real:</strong> vSphere 8.0 salió en Septiembre 2022, Lenovo SR630 certificado en Febrero 2023 (5 meses después)</li>
+                        <li><strong>Proceso reactivo:</strong> Esperan que vendor lance, luego inician testing</li>
+                        <li><strong>Recursos limitados:</strong> Menor cantidad de labs de certificación</li>
+                    </ul>
+                    
+                    <div class="badge warning" style="display: block; margin-top: 20px; text-align: center;">Espera de 3-6 Meses Post-Release</div>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">Proceso HPE</div>
+                <div class="card-content">
+                    <h4 style="color: #01A982; margin: 20px 0 15px 0;">Co-Engineering y Día 1</h4>
+                    <ul>
+                        <li><span class="tech-label">12-18m</span> <strong>Co-engineering:</strong> HPE trabaja con VMware/Microsoft/Red Hat 12-18 meses ANTES del lanzamiento</li>
+                        <li><span class="tech-label">Labs</span> <strong>Validation labs conjuntos:</strong> Testing paralelo durante desarrollo del software</li>
+                        <li><span class="tech-label">Día 1</span> <strong>Certificado desde lanzamiento:</strong> Cuando sale vSphere X.X, ya está en HCL de VMware</li>
+                        <li><span class="tech-label">SPP</span> <strong>HPE SPP:</strong> Service Pack for ProLiant incluye drivers optimizados específicos</li>
+                        <li><span class="tech-label">Global</span> <strong>Red global de labs:</strong> 25+ centros de validación worldwide</li>
+                    </ul>
+                    
+                    <div class="badge success" style="display: block; margin-top: 20px; text-align: center;">Certificado Día 1 del Release</div>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="section-title" style="font-size: 1.5em; margin-top: 50px;">Partners y Certificaciones HPE</h3>
+        
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">☁️</div>
+                    VMware Platinum Partner
+                </div>
+                <div class="card-content">
+                    <ul>
+                        <li>Certificación día 1 para vSphere, vSAN, NSX, Tanzu</li>
+                        <li>Drivers optimizados en cada SPP release</li>
+                        <li>VMware on HPE reference architecture públicas</li>
+                        <li>Joint support con VMware en casos complejos</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🪟</div>
+                    Microsoft Premier Partner
+                </div>
+                <div class="card-content">
+                    <ul>
+                        <li>Windows Server, SQL Server, Hyper-V, Azure Stack</li>
+                        <li>Storage Spaces Direct optimizado para HPE</li>
+                        <li>Co-engineering en nuevas features de Windows</li>
+                        <li>Microsoft Hardware Compatibility List día 1</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎩</div>
+                    Red Hat Partnership
+                </div>
+                <div class="card-content">
+                    <ul>
+                        <li>RHEL, OpenShift, Ansible certified</li>
+                        <li>Ansible modules para HPE OneView nativos</li>
+                        <li>OpenShift on HPE reference deployments</li>
+                        <li>Red Hat Certified Hardware día 1</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💼</div>
+                    SAP HANA Certified
+                </div>
+                <div class="card-content">
+                    <ul>
+                        <li>SAP S/4HANA, SAP Business Suite certified</li>
+                        <li>HPE en SAP HANA Hardware Directory</li>
+                        <li>Configuraciones pre-validadas publicadas</li>
+                        <li>Joint support SAP + HPE disponible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box success" style="margin-top: 40px;">
+            <h3>💼 Impacto Operacional</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                <strong>Escenario real:</strong> Sale parche crítico de seguridad en vSphere que necesitan aplicar urgentemente. 
+                Con <strong>HPE, pueden actualizar inmediatamente</strong> porque ya está certificado. 
+                Con <strong>Lenovo, deben esperar 3-6 meses</strong> para la certificación, dejando infraestructura vulnerable 
+                o arriesgarse a operar fuera de soporte del vendor (problema de compliance).
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: TCO Y ROI -->
+    <div class="slide">
+        <h2 class="section-title">Costo Total de Propiedad (TCO) - Análisis 2026-2033</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card lenovo">
+                <div class="comparison-header">Lenovo SR630 V3 - TCO 7 Años</div>
+                <div class="spec-highlight">
+                    <div class="spec-value" style="font-size: 2.5em;">ALTO</div>
+                    <div class="spec-label">Requiere Doble Inversión</div>
+                </div>
+                <div class="card-content">
+                    <h4 style="color: #E2231A; margin: 25px 0 15px 0;">Timeline de Costos</h4>
+                    
+                    <div class="tech-detail" style="background: #fff; border-left-color: #E2231A;">
+                        <strong>2026:</strong> Compra inicial Lenovo SR630<br>
+                        <strong>Costo:</strong> Inversión $Y
+                    </div>
+                    
+                    <div class="tech-detail" style="background: #FFF3CD; border-left-color: #F39C12;">
+                        <strong>2027-2029:</strong> End of Service (EOS) alcanzado<br>
+                        <strong>Implicaciones:</strong> Sin soporte oficial, sin parches de seguridad
+                    </div>
+                    
+                    <div class="tech-detail" style="background: #F8D7DA; border-left-color: #E74C3C;">
+                        <strong>2028/2029:</strong> REEMPLAZO FORZADO<br>
+                        <strong>Costo:</strong> Nueva inversión completa $Y + Migración
+                    </div>
+                    
+                    <div class="tech-detail" style="background: #fff; border-left-color: #E2231A;">
+                        <strong>2029-2033:</strong> Operación con nuevo servidor<br>
+                        <strong>Costo:</strong> Soporte y mantenimiento nuevo equipo
+                    </div>
+                    
+                    <div style="background: #E74C3C; color: white; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center;">
+                        <strong style="font-size: 1.3em;">TOTAL TCO:</strong><br>
+                        <span style="font-size: 2em; font-weight: 800;">2 × $Y + Migración</span>
+                    </div>
+                    
+                    <ul style="margin-top: 25px;">
+                        <li><strong>Riesgo compliance:</strong> Operar sin soporte post-EOS</li>
+                        <li><strong>Downtime planificado:</strong> Para migración/reemplazo</li>
+                        <li><strong>Costos ocultos:</strong> Personal IT, testing, validación nueva plataforma</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="comparison-card hpe">
+                <div class="comparison-header">HPE Gen12 - TCO 7 Años</div>
+                <div class="spec-highlight">
+                    <div class="spec-value" style="font-size: 2.5em;">BAJO</div>
+                    <div class="spec-label">Inversión Única</div>
+                </div>
+                <div class="card-content">
+                    <h4 style="color: #01A982; margin: 25px 0 15px 0;">Timeline de Costos</h4>
+                    
+                    <div class="tech-detail" style="background: #D4EDDA; border-left-color: #27AE60;">
+                        <strong>2026:</strong> Compra inicial HPE DL360 Gen12<br>
+                        <strong>Costo:</strong> Inversión $X
+                    </div>
+                    
+                    <div class="tech-detail" style="background: #D1ECF1; border-left-color: #01A982;">
+                        <strong>2027-2033:</strong> Operación normal continua<br>
+                        <strong>Estado:</strong> Soporte oficial activo, firmware updates regulares
+                    </div>
+                    
+                    <div class="tech-detail" style="background: #D4EDDA; border-left-color: #27AE60;">
+                        <strong>Sin reemplazo necesario:</strong> EOS no antes de 2032-2034<br>
+                        <strong>Ahorro:</strong> Evita segunda inversión completa
+                    </div>
+                    
+                    <div class="tech-detail" style="background: #D1ECF1; border-left-color: #01A982;">
+                        <strong>2034+:</strong> Servidor aún soportado oficialmente<br>
+                        <strong>Beneficio:</strong> Años adicionales de operación más allá de 2033
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, var(--primary-hpe), var(--primary-dark)); color: white; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center;">
+                        <strong style="font-size: 1.3em;">TOTAL TCO:</strong><br>
+                        <span style="font-size: 2em; font-weight: 800;">1 × $X</span>
+                    </div>
+                    
+                    <ul style="margin-top: 25px;">
+                        <li><strong>Sin riesgo compliance:</strong> Soporte oficial hasta 2034</li>
+                        <li><strong>Cero downtime de migración:</strong> No requiere reemplazo</li>
+                        <li><strong>Eficiencia operacional:</strong> IT se enfoca en negocio, no en migraciones</li>
+                        <li><strong>Tecnología superior:</strong> NVMe Gen4, DDR5-6400, arquitectura 2024</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-box" style="margin-top: 50px;">
+            <h2>💰 Ahorro Real Comprobable</h2>
+            <div style="font-size: 1.2em; line-height: 2; margin-top: 20px;">
+                <strong>Incluso si el Lenovo SR630 V3 cuesta menos inicialmente ($Y &lt; $X),</strong><br>
+                <strong>2 × $Y + Costos de Migración &gt;&gt; 1 × $X SIEMPRE</strong>
+            </div>
+            <div style="margin-top: 30px; font-size: 1.1em; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                Evitar una compra completa adicional en 2028/2029 + eliminar costos de migración/downtime = <strong>25-35% menor TCO con HPE Gen12</strong>
+            </div>
+        </div>
+        
+        <div class="stats-grid" style="margin-top: 40px;">
+            <div class="stat-box">
+                <div class="stat-number">50%</div>
+                <div class="stat-label">Menos Inversiones (1 vs 2)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Migraciones Forzadas</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">25-35%</div>
+                <div class="stat-label">Menor TCO a 7 Años</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">6-8</div>
+                <div class="stat-label">Años de Soporte Garantizado</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: RESUMEN EJECUTIVO FINAL -->
+    <div class="slide">
+        <h2 class="section-title">Resumen Ejecutivo - Decisión de Compra</h2>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Factor de Decisión</th>
+                    <th style="width: 35%;">Lenovo SR630 V3</th>
+                    <th style="width: 35%;">HPE DL360 Gen12</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Generación Tecnológica</strong></td>
+                    <td>2023 (V3 Sapphire Rapids)</td>
+                    <td class="highlight">2024 (Gen12 última generación)</td>
+                </tr>
+                <tr>
+                    <td><strong>Capacidad Procesamiento</strong></td>
+                    <td>32 cores (Xeon Silver 4514Y)</td>
+                    <td class="highlight"><strong>32 cores Xeon 6515P (Gen12 2024)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Administración Remota</strong></td>
+                    <td>XClarity (básico)</td>
+                    <td class="highlight"><strong>iLO 6 con IA (86% prevención fallas)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Memoria RAM</strong></td>
+                    <td>DDR5 estándar</td>
+                    <td class="highlight"><strong>Smart Memory (45% menos fallos)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Seguridad</strong></td>
+                    <td>TPM 2.0 estándar</td>
+                    <td class="highlight"><strong>Silicon Root of Trust (NSA validated)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Almacenamiento</strong></td>
+                    <td>7x 1.9TB SATA 6Gb/s</td>
+                    <td class="highlight"><strong>4x 3.84TB NVMe Gen4 (10x+ velocidad)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Soporte Restante</strong></td>
+                    <td><span class="badge warning">5-7 años</span></td>
+                    <td class="highlight"><span class="badge success">6-8 años</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Certificaciones Software</strong></td>
+                    <td>Post-release (3-6 meses delay)</td>
+                    <td class="highlight"><strong>Día 1 (VMware, MS, RH, SAP)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>TCO 7 años</strong></td>
+                    <td>2 inversiones requeridas</td>
+                    <td class="highlight"><strong>1 inversión única (25-35% menos)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Market Share Global</strong></td>
+                    <td>8.7% (#4-5 mundial)</td>
+                    <td class="highlight"><strong>25.3% (#1 mundial)</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="cta-box" style="margin-top: 50px;">
+            <h2>✅ RECOMENDACIÓN TÉCNICA FINAL</h2>
+            <div style="font-size: 1.2em; line-height: 2; margin-top: 25px;">
+                <strong>HPE ProLiant DL360 Gen12 es la única opción que garantiza:</strong>
+            </div>
+            <div class="card-grid" style="margin-top: 30px; color: white;">
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px;">
+                    <strong style="font-size: 1.3em;">✓</strong> Arquitectura de procesador última generación
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px;">
+                    <strong style="font-size: 1.3em;">✓</strong> 6-8 años de soporte garantizado
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px;">
+                    <strong style="font-size: 1.3em;">✓</strong> Tecnología de última generación (2024)
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px;">
+                    <strong style="font-size: 1.3em;">✓</strong> 25-35% menor TCO a largo plazo
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px;">
+                    <strong style="font-size: 1.3em;">✓</strong> Seguridad NSA-validated única
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px;">
+                    <strong style="font-size: 1.3em;">✓</strong> Líder mundial #1 en servidores
+                </div>
+            </div>
+            <div style="margin-top: 40px; padding: 25px; background: rgba(255,255,255,0.2); border-radius: 10px; font-size: 1.3em; font-weight: 600;">
+                No es solo comprar un servidor — es asegurar la infraestructura crítica del negocio para la próxima década
+            </div>
+        </div>
+        
+        <div class="slide-footer" style="margin-top: 60px;">
+            <p><strong>Propuesta Técnica Confidencial</strong></p>
+            <p>HPE ProLiant DL360 Gen12 vs Lenovo ThinkSystem SR630 V3</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">Febrero 2026 | Documento preparado para evaluación técnica ejecutiva</p>
+            <p style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #E0E0E0;">
+                <strong style="font-size: 1.1em; color: var(--primary-hpe);">ESPEX</strong><br>
+                Avenida Del Valle 570, Huechuraba, Chile<br>
+                <span style="font-size: 0.85em;">ISO 9001 | ISO 27001 Certified</span>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
