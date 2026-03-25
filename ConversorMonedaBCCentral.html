@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Monedas - Banco Central de Chile</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #0D47A1;
+            --secondary-color: #1976D2;
+            --accent-color: #FFC107;
+            --success-color: #4CAF50;
+            --danger-color: #F44336;
+            --light-bg: #F5F7FA;
+            --dark-text: #212529;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            border-bottom: 4px solid var(--primary-color);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .header-icon {
+            font-size: 50px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        /* Cards */
+        .converter-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+            animation: slideInUp 0.6s ease-out;
+            border-top: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .converter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .converter-card.dolar {
+            border-top-color: #2196F3;
+        }
+        
+        .converter-card.uf {
+            border-top-color: #FF9800;
+        }
+        
+        .converter-card.utm {
+            border-top-color: #4CAF50;
+        }
+        
+        /* Card Header */
+        .card-header-custom {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+        
+        .card-icon {
+            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--light-bg);
+        }
+        
+        .dolar .card-icon { background: rgba(33, 150, 243, 0.15); color: #2196F3; }
+        .uf .card-icon { background: rgba(255, 152, 0, 0.15); color: #FF9800; }
+        .utm .card-icon { background: rgba(76, 175, 80, 0.15); color: #4CAF50; }
+        
+        .card-title-group h3 {
+            color: var(--dark-text);
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            font-size: 1.5rem;
+        }
+        
+        .card-title-group p {
+            color: #999;
+            margin: 0;
+            font-size: 0.85rem;
+        }
+        
+        /* Input Groups */
+        .input-group-custom {
+            margin-bottom: 20px;
+        }
+        
+        .input-group-custom label {
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+            display: block;
+            font-size: 0.95rem;
+        }
+        
+        .input-group-custom input {
+            border: 2px solid var(--light-bg);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-custom select {
+            border: 2px solid var(--light-bg);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            background: #fff;
+        }
+        
+        .input-group-custom input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.15);
+            outline: none;
+        }
+
+        .input-group-custom select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.15);
+            outline: none;
+        }
+        
+        /* Value Display */
+        .value-display {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+            border-left: 4px solid;
+        }
+        
+        .value-display.dolar { border-left-color: #2196F3; }
+        .value-display.uf { border-left-color: #FF9800; }
+        .value-display.utm { border-left-color: #4CAF50; }
+        
+        .value-display-label {
+            color: #999;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .value-display-amount {
+            color: var(--dark-text);
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .value-display-amount small {
+            display: block;
+            font-size: 0.6em;
+            color: #999;
+            margin-top: 5px;
+            font-weight: 400;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .status-badge.loading {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FF9800;
+        }
+        
+        .status-badge.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+        
+        .status-badge.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+        
+        /* Loading Spinner */
+        .spinner-custom {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--light-bg);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Buttons */
+        .btn-custom {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-refresh {
+            background: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-refresh:hover {
+            background: #0D3480;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 71, 161, 0.3);
+        }
+        
+        /* Información de actualización */
+        .update-info {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #333;
+        }
+        
+        .update-info i {
+            color: #4CAF50;
+            margin-right: 8px;
+        }
+        
+        .update-info .timestamp {
+            color: #999;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+        
+        /* Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .row-converters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 60px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .converter-card {
+                padding: 20px;
+            }
+            
+            .value-display-amount {
+                font-size: 1.5rem;
+            }
+            
+            .row-converters {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Estado de carga */
+        .loading-state {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="bi bi-bank2"></i>
+            </div>
+            <h1>Conversor de Monedas</h1>
+            <p>Banco Central de Chile - Valores Actualizados en Tiempo Real</p>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="container main-container">
+        <div class="row-converters">
+            
+            <!-- Card Dólar Observado -->
+            <div class="converter-card dolar" id="card-dolar">
+                <div class="card-header-custom">
+                    <div class="card-icon">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div class="card-title-group">
+                        <h3>Dólar Observado</h3>
+                        <p>Valor oficial del Banco Central</p>
+                    </div>
+                </div>
+                
+                <div class="input-group-custom">
+                    <label for="mode-dolar">Tipo de conversión</label>
+                    <select id="mode-dolar" class="form-select">
+                        <option value="clp_to_usd" selected>CLP a USD</option>
+                        <option value="usd_to_clp">USD a CLP</option>
+                    </select>
+                </div>
+
+                <div class="input-group-custom">
+                    <label for="input-dolar">Cantidad en CLP</label>
+                    <input 
+                        type="number" 
+                        id="input-dolar" 
+                        class="form-control" 
+                        placeholder="Ingrese monto en pesos chilenos"
+                        min="0"
+                        step="100"
+                    >
+                </div>
+                
+                <div class="value-display dolar">
+                    <div class="value-display-label" id="label-result-dolar">Conversión a USD</div>
+                    <div class="value-display-amount" id="result-dolar">
+                        $ 0.00
+                        <small>USD</small>
+                    </div>
+                </div>
+                
+                <div id="status-dolar" class="status-badge loading">
+                    <i class="spinner-custom"></i> Cargando precio...
+                </div>
+                
+                <button class="btn-custom btn-refresh" onclick="refrescarDolar()">
+                    <i class="bi bi-arrow-repeat"></i> Actualizar Valor
+                </button>
+                
+                <div class="update-info">
+                    <i class="bi bi-info-circle"></i>
+                    <div>
+                        Valor Dólar: <strong id="valor-dolar-display">---</strong>
+                        <div class="timestamp" id="timestamp-dolar">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card UF -->
+            <div class="converter-card uf" id="card-uf">
+                <div class="card-header-custom">
+                    <div class="card-icon">
+                        <i class="bi bi-percent"></i>
+                    </div>
+                    <div class="card-title-group">
+                        <h3>Unidad de Fomento (UF)</h3>
+                        <p>Índice de reajustabilidad</p>
+                    </div>
+                </div>
+                
+                <div class="input-group-custom">
+                    <label for="mode-uf">Tipo de conversión</label>
+                    <select id="mode-uf" class="form-select">
+                        <option value="uf_to_clp" selected>UF a CLP</option>
+                        <option value="clp_to_uf">CLP a UF</option>
+                    </select>
+                </div>
+
+                <div class="input-group-custom">
+                    <label for="input-uf">Cantidad en UF</label>
+                    <input 
+                        type="number" 
+                        id="input-uf" 
+                        class="form-control" 
+                        placeholder="Ingrese cantidad de UF"
+                        min="0"
+                        step="0.01"
+                    >
+                </div>
+                
+                <div class="value-display uf">
+                    <div class="value-display-label" id="label-result-uf">Conversión a CLP</div>
+                    <div class="value-display-amount" id="result-uf">
+                        $ 0
+                        <small>CLP</small>
+                    </div>
+                </div>
+                
+                <div id="status-uf" class="status-badge loading">
+                    <i class="spinner-custom"></i> Cargando precio...
+                </div>
+                
+                <button class="btn-custom btn-refresh" onclick="refrescarUF()">
+                    <i class="bi bi-arrow-repeat"></i> Actualizar Valor
+                </button>
+                
+                <div class="update-info">
+                    <i class="bi bi-info-circle"></i>
+                    <div>
+                        Valor UF: <strong id="valor-uf-display">---</strong>
+                        <div class="timestamp" id="timestamp-uf">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card UTM -->
+            <div class="converter-card utm" id="card-utm">
+                <div class="card-header-custom">
+                    <div class="card-icon">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                    <div class="card-title-group">
+                        <h3>Unidad Tributaria (UTM)</h3>
+                        <p>Para fines tributarios y legales</p>
+                    </div>
+                </div>
+                
+                <div class="input-group-custom">
+                    <label for="mode-utm">Tipo de conversión</label>
+                    <select id="mode-utm" class="form-select">
+                        <option value="utm_to_clp" selected>UTM a CLP</option>
+                        <option value="clp_to_utm">CLP a UTM</option>
+                    </select>
+                </div>
+
+                <div class="input-group-custom">
+                    <label for="input-utm">Cantidad en UTM</label>
+                    <input 
+                        type="number" 
+                        id="input-utm" 
+                        class="form-control" 
+                        placeholder="Ingrese cantidad de UTM"
+                        min="0"
+                        step="0.01"
+                    >
+                </div>
+                
+                <div class="value-display utm">
+                    <div class="value-display-label" id="label-result-utm">Conversión a CLP</div>
+                    <div class="value-display-amount" id="result-utm">
+                        $ 0
+                        <small>CLP</small>
+                    </div>
+                </div>
+                
+                <div id="status-utm" class="status-badge loading">
+                    <i class="spinner-custom"></i> Cargando precio...
+                </div>
+                
+                <button class="btn-custom btn-refresh" onclick="refrescarUTM()">
+                    <i class="bi bi-arrow-repeat"></i> Actualizar Valor
+                </button>
+                
+                <div class="update-info">
+                    <i class="bi bi-info-circle"></i>
+                    <div>
+                        Valor UTM: <strong id="valor-utm-display">---</strong>
+                        <div class="timestamp" id="timestamp-utm">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p><strong>Conversor de Monedas</strong> - Integración con API Banco Central de Chile</p>
+        <p>Los valores se actualizan automáticamente al cargar la página</p>
+        <p>Datos en tiempo real | <a href="https://www.bcentralchile.cl/" target="_blank">www.bcentralchile.cl</a></p>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts inline - Todos los módulos integrados -->
+    <script>
+        const BC_BASE_URL = 'https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx';
+        const SERIES = {
+            dolar: 'F073.TCO.PRE.Z.D',
+            uf: 'F073.UFF.PRE.Z.D',
+            utm: 'F073.UTR.PRE.Z.M'
+        };
+
+        const appState = {
+            valorDolar: null,
+            valorUF: null,
+            valorUTM: null,
+            ultimaActualizacionDolar: null,
+            ultimaActualizacionUF: null,
+            ultimaActualizacionUTM: null
+        };
+
+        let credenciales = null;
+
+        function getCredenciales() {
+            if (credenciales) {
+                return credenciales;
+            }
+
+            const savedUser = sessionStorage.getItem('bc_user') || '';
+            const savedPass = sessionStorage.getItem('bc_pass') || '';
+
+            if (savedUser && savedPass) {
+                credenciales = { user: savedUser, pass: savedPass };
+                return credenciales;
+            }
+
+            const user = prompt('Usuario API Banco Central (correo):', savedUser);
+            if (!user) {
+                throw new Error('Debes ingresar usuario para consultar la API BDE.');
+            }
+
+            const pass = prompt('Password API Banco Central:', savedPass);
+            if (!pass) {
+                throw new Error('Debes ingresar password para consultar la API BDE.');
+            }
+
+            sessionStorage.setItem('bc_user', user);
+            sessionStorage.setItem('bc_pass', pass);
+            credenciales = { user, pass };
+            return credenciales;
+        }
+
+        async function obtenerUltimoValorSerie(seriesId, firstDate) {
+            const { user, pass } = getCredenciales();
+            const lastDate = new Date().toISOString().slice(0, 10);
+            const url = `${BC_BASE_URL}?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&function=GetSeries&timeseries=${encodeURIComponent(seriesId)}&firstdate=${firstDate}&lastdate=${lastDate}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.Codigo !== 0) {
+                throw new Error(data.Descripcion || 'Error de API BDE');
+            }
+
+            const obs = data?.Series?.Obs || [];
+            if (!obs.length) {
+                throw new Error('Serie sin observaciones disponibles.');
+            }
+
+            const ultimaObs = obs[obs.length - 1];
+            const valor = parseFloat(String(ultimaObs.value).replace(',', '.'));
+            return { valor, indexDateString: ultimaObs.indexDateString };
+        }
+
+        function formatearMoneda(valor, decimals = 2) {
+            return Number(valor).toLocaleString('es-CL', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        function setStatus(id, html, tipo) {
+            const el = document.getElementById(id);
+            el.innerHTML = html;
+            el.className = `status-badge ${tipo}`;
+        }
+
+        function formatFechaActual() {
+            const now = new Date();
+            const hora = now.toLocaleTimeString('es-CL', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            const fecha = now.toLocaleDateString('es-CL');
+            return `Actualizado: ${fecha} a las ${hora}`;
+        }
+
+        async function obtenerValorDolar() {
+            const card = document.getElementById('card-dolar');
+            card.classList.add('loading-state');
+            setStatus('status-dolar', '<i class="spinner-custom"></i> Consultando API BDE...', 'loading');
+            try {
+                const dato = await obtenerUltimoValorSerie(SERIES.dolar, '2026-01-01');
+                appState.valorDolar = dato.valor;
+                appState.ultimaActualizacionDolar = new Date();
+
+                document.getElementById('valor-dolar-display').textContent = `$ ${formatearMoneda(appState.valorDolar, 2)}`;
+                document.getElementById('timestamp-dolar').textContent = formatFechaActual();
+                setStatus('status-dolar', '<i class="bi bi-check-circle"></i> Datos cargados correctamente', 'success');
+                convertirDolar();
+            } catch (error) {
+                console.error(error);
+                setStatus('status-dolar', '<i class="bi bi-exclamation-triangle"></i> Error al cargar datos', 'error');
+            } finally {
+                card.classList.remove('loading-state');
+            }
+        }
+
+        function convertirDolar() {
+            const modo = document.getElementById('mode-dolar').value;
+            const input = parseFloat(document.getElementById('input-dolar').value || '0');
+            const result = document.getElementById('result-dolar');
+            const labelInput = document.querySelector('label[for="input-dolar"]');
+            const labelResult = document.getElementById('label-result-dolar');
+
+            if (!appState.valorDolar || !input) {
+                result.innerHTML = '$ 0.00 <small>' + (modo === 'clp_to_usd' ? 'USD' : 'CLP') + '</small>';
+                return;
+            }
+
+            if (modo === 'clp_to_usd') {
+                labelInput.textContent = 'Cantidad en CLP';
+                labelResult.textContent = 'Conversión a USD';
+                const valor = input / appState.valorDolar;
+                result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>USD</small>`;
+            } else {
+                labelInput.textContent = 'Cantidad en USD';
+                labelResult.textContent = 'Conversión a CLP';
+                const valor = input * appState.valorDolar;
+                result.innerHTML = `$ ${formatearMoneda(valor, 0)} <small>CLP</small>`;
+            }
+        }
+
+        function refrescarDolar() {
+            obtenerValorDolar();
+        }
+
+        async function obtenerValorUF() {
+            const card = document.getElementById('card-uf');
+            card.classList.add('loading-state');
+            setStatus('status-uf', '<i class="spinner-custom"></i> Consultando API BDE...', 'loading');
+            try {
+                const dato = await obtenerUltimoValorSerie(SERIES.uf, '2026-01-01');
+                appState.valorUF = dato.valor;
+                appState.ultimaActualizacionUF = new Date();
+
+                document.getElementById('valor-uf-display').textContent = `$ ${formatearMoneda(appState.valorUF, 2)}`;
+                document.getElementById('timestamp-uf').textContent = formatFechaActual();
+                setStatus('status-uf', '<i class="bi bi-check-circle"></i> Datos cargados correctamente', 'success');
+                convertirUF();
+            } catch (error) {
+                console.error(error);
+                setStatus('status-uf', '<i class="bi bi-exclamation-triangle"></i> Error al cargar datos', 'error');
+            } finally {
+                card.classList.remove('loading-state');
+            }
+        }
+
+        function convertirUF() {
+            const modo = document.getElementById('mode-uf').value;
+            const input = parseFloat(document.getElementById('input-uf').value || '0');
+            const result = document.getElementById('result-uf');
+            const labelInput = document.querySelector('label[for="input-uf"]');
+            const labelResult = document.getElementById('label-result-uf');
+
+            if (!appState.valorUF || !input) {
+                result.innerHTML = '$ 0.00 <small>' + (modo === 'uf_to_clp' ? 'CLP' : 'UF') + '</small>';
+                return;
+            }
+
+            if (modo === 'uf_to_clp') {
+                labelInput.textContent = 'Cantidad en UF';
+                labelResult.textContent = 'Conversión a CLP';
+                const valor = input * appState.valorUF;
+                result.innerHTML = `$ ${formatearMoneda(valor, 0)} <small>CLP</small>`;
+            } else {
+                labelInput.textContent = 'Cantidad en CLP';
+                labelResult.textContent = 'Conversión a UF';
+                const valor = input / appState.valorUF;
+                result.innerHTML = `${formatearMoneda(valor, 4)} <small>UF</small>`;
+            }
+        }
+
+        function refrescarUF() {
+            obtenerValorUF();
+        }
+
+        async function obtenerValorUTM() {
+            const card = document.getElementById('card-utm');
+            card.classList.add('loading-state');
+            setStatus('status-utm', '<i class="spinner-custom"></i> Consultando API BDE...', 'loading');
+            try {
+                const dato = await obtenerUltimoValorSerie(SERIES.utm, '2026-01-01');
+                appState.valorUTM = dato.valor;
+                appState.ultimaActualizacionUTM = new Date();
+
+                document.getElementById('valor-utm-display').textContent = `$ ${formatearMoneda(appState.valorUTM, 0)}`;
+                document.getElementById('timestamp-utm').textContent = formatFechaActual();
+                setStatus('status-utm', '<i class="bi bi-check-circle"></i> Datos cargados correctamente', 'success');
+                convertirUTM();
+            } catch (error) {
+                console.error(error);
+                setStatus('status-utm', '<i class="bi bi-exclamation-triangle"></i> Error al cargar datos', 'error');
+            } finally {
+                card.classList.remove('loading-state');
+            }
+        }
+
+        function convertirUTM() {
+            const modo = document.getElementById('mode-utm').value;
+            const input = parseFloat(document.getElementById('input-utm').value || '0');
+            const result = document.getElementById('result-utm');
+            const labelInput = document.querySelector('label[for="input-utm"]');
+            const labelResult = document.getElementById('label-result-utm');
+
+            if (!appState.valorUTM || !input) {
+                result.innerHTML = '$ 0.00 <small>' + (modo === 'utm_to_clp' ? 'CLP' : 'UTM') + '</small>';
+                return;
+            }
+
+            if (modo === 'utm_to_clp') {
+                labelInput.textContent = 'Cantidad en UTM';
+                labelResult.textContent = 'Conversión a CLP';
+                const valor = input * appState.valorUTM;
+                result.innerHTML = `$ ${formatearMoneda(valor, 0)} <small>CLP</small>`;
+            } else {
+                labelInput.textContent = 'Cantidad en CLP';
+                labelResult.textContent = 'Conversión a UTM';
+                const valor = input / appState.valorUTM;
+                result.innerHTML = `${formatearMoneda(valor, 4)} <small>UTM</small>`;
+            }
+        }
+
+        function refrescarUTM() {
+            obtenerValorUTM();
+        }
+
+        function registrarEventosUI() {
+            document.getElementById('input-dolar').addEventListener('input', convertirDolar);
+            document.getElementById('input-uf').addEventListener('input', convertirUF);
+            document.getElementById('input-utm').addEventListener('input', convertirUTM);
+
+            document.getElementById('mode-dolar').addEventListener('change', convertirDolar);
+            document.getElementById('mode-uf').addEventListener('change', convertirUF);
+            document.getElementById('mode-utm').addEventListener('change', convertirUTM);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            registrarEventosUI();
+            obtenerValorDolar();
+            obtenerValorUF();
+            obtenerValorUTM();
+        });
+    </script>
+    
+</body>
+</html>
