@@ -939,6 +939,11 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             registrarEventosUI();
+            // Inicializar labels correctamente
+            convertirDolar();
+            convertirUF();
+            convertirUTM();
+            // Luego cargar valores desde API
             obtenerValorDolar();
             obtenerValorUF();
             obtenerValorUTM();
