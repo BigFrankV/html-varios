@@ -595,11 +595,11 @@
     
     <!-- Scripts inline - Todos los módulos integrados -->
     <script>
-        const BC_BASE_URL = 'https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx';
+        const BC_PROXY_URL = 'https://bcch-proxy.fr-vogt.workers.dev';
         const SERIES = {
-            dolar: 'F073.TCO.PRE.Z.D',
-            uf: 'F073.UFF.PRE.Z.D',
-            utm: 'F073.UTR.PRE.Z.M'
+            dolar: 'dolar',
+            uf: 'uf',
+            utm: 'utm'
         };
 
         const appState = {
@@ -611,41 +611,8 @@
             ultimaActualizacionUTM: null
         };
 
-        let credenciales = null;
-
-        function getCredenciales() {
-            if (credenciales) {
-                return credenciales;
-            }
-
-            const savedUser = sessionStorage.getItem('bc_user') || '';
-            const savedPass = sessionStorage.getItem('bc_pass') || '';
-
-            if (savedUser && savedPass) {
-                credenciales = { user: savedUser, pass: savedPass };
-                return credenciales;
-            }
-
-            const user = prompt('Usuario API Banco Central (correo):', savedUser);
-            if (!user) {
-                throw new Error('Debes ingresar usuario para consultar la API BDE.');
-            }
-
-            const pass = prompt('Password API Banco Central:', savedPass);
-            if (!pass) {
-                throw new Error('Debes ingresar password para consultar la API BDE.');
-            }
-
-            sessionStorage.setItem('bc_user', user);
-            sessionStorage.setItem('bc_pass', pass);
-            credenciales = { user, pass };
-            return credenciales;
-        }
-
-        async function obtenerUltimoValorSerie(seriesId, firstDate) {
-            const { user, pass } = getCredenciales();
-            const lastDate = new Date().toISOString().slice(0, 10);
-            const url = `${BC_BASE_URL}?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&function=GetSeries&timeseries=${encodeURIComponent(seriesId)}&firstdate=${firstDate}&lastdate=${lastDate}`;
+        async function obtenerUltimoValorSerie(indicador) {
+            const url = `${BC_PROXY_URL}/api/indicator?name=${encodeURIComponent(indicador)}`;
 
             const response = await fetch(url);
             if (!response.ok) {
@@ -653,18 +620,14 @@
             }
 
             const data = await response.json();
-            if (data.Codigo !== 0) {
-                throw new Error(data.Descripcion || 'Error de API BDE');
+            if (data.error) {
+                throw new Error(data.error);
             }
 
-            const obs = data?.Series?.Obs || [];
-            if (!obs.length) {
-                throw new Error('Serie sin observaciones disponibles.');
-            }
-
-            const ultimaObs = obs[obs.length - 1];
-            const valor = parseFloat(String(ultimaObs.value).replace(',', '.'));
-            return { valor, indexDateString: ultimaObs.indexDateString };
+            return {
+                valor: Number(data.valor),
+                indexDateString: data.fecha
+            };
         }
 
         function formatearMoneda(valor, decimals = 2) {
@@ -696,7 +659,7 @@
             card.classList.add('loading-state');
             setStatus('status-dolar', '<i class="spinner-custom"></i> Consultando API BDE...', 'loading');
             try {
-                const dato = await obtenerUltimoValorSerie(SERIES.dolar, '2026-01-01');
+                const dato = await obtenerUltimoValorSerie(SERIES.dolar);
                 appState.valorDolar = dato.valor;
                 appState.ultimaActualizacionDolar = new Date();
 
@@ -746,7 +709,7 @@
             card.classList.add('loading-state');
             setStatus('status-uf', '<i class="spinner-custom"></i> Consultando API BDE...', 'loading');
             try {
-                const dato = await obtenerUltimoValorSerie(SERIES.uf, '2026-01-01');
+                const dato = await obtenerUltimoValorSerie(SERIES.uf);
                 appState.valorUF = dato.valor;
                 appState.ultimaActualizacionUF = new Date();
 
@@ -796,7 +759,7 @@
             card.classList.add('loading-state');
             setStatus('status-utm', '<i class="spinner-custom"></i> Consultando API BDE...', 'loading');
             try {
-                const dato = await obtenerUltimoValorSerie(SERIES.utm, '2026-01-01');
+                const dato = await obtenerUltimoValorSerie(SERIES.utm);
                 appState.valorUTM = dato.valor;
                 appState.ultimaActualizacionUTM = new Date();
 
