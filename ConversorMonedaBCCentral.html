@@ -186,6 +186,22 @@
             padding: 12px 15px;
             font-size: 1rem;
             transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-group-custom input:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .input-group-custom input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.25);
+            outline: none;
+        }
+
+        .input-group-custom input:invalid {
+            border-color: var(--danger-color);
         }
 
         .input-group-custom select {
@@ -196,24 +212,44 @@
             transition: all 0.3s ease;
             width: 100%;
             background: #fff;
+            box-sizing: border-box;
+            cursor: pointer;
         }
-        
-        .input-group-custom input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.15);
-            outline: none;
+
+        .input-group-custom select:hover {
+            border-color: var(--secondary-color);
         }
 
         .input-group-custom select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.25);
             outline: none;
         }
-        
-        /* Value Display */
-        .value-display {
-            background: var(--light-bg);
-            border-radius: 10px;
+
+        .input-group-custom label {
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .input-group-custom .help-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .input-group-custom .error-text {
+            font-size: 0.8rem;
+            color: var(--danger-color);
+            margin-top: 5px;
+            display: none;
+        }
+
+        .input-group-custom input:invalid ~ .error-text {
+            display: block;
             padding: 20px;
             text-align: center;
             margin-top: 15px;
@@ -435,10 +471,15 @@
                         type="number" 
                         id="input-dolar" 
                         class="form-control" 
-                        placeholder="Ingrese monto en pesos chilenos"
+                        placeholder="0"
                         min="0"
-                        step="100"
+                        max="999999999"
+                        step="1"
+                        aria-label="Cantidad a convertir"
+                        aria-describedby="help-dolar"
                     >
+                    <span class="help-text" id="help-dolar">Máximo: 999.999.999</span>
+                    <span class="error-text">Ingresa un valor válido</span>
                 </div>
                 
                 <div class="value-display dolar">
@@ -492,10 +533,15 @@
                         type="number" 
                         id="input-uf" 
                         class="form-control" 
-                        placeholder="Ingrese cantidad de UF"
+                        placeholder="0"
                         min="0"
+                        max="999999"
                         step="0.01"
+                        aria-label="Cantidad a convertir"
+                        aria-describedby="help-uf"
                     >
+                    <span class="help-text" id="help-uf">Máximo: 999.999</span>
+                    <span class="error-text">Ingresa un valor válido</span>
                 </div>
                 
                 <div class="value-display uf">
@@ -549,10 +595,15 @@
                         type="number" 
                         id="input-utm" 
                         class="form-control" 
-                        placeholder="Ingrese cantidad de UTM"
+                        placeholder="0"
                         min="0"
+                        max="999999"
                         step="0.01"
+                        aria-label="Cantidad a convertir"
+                        aria-describedby="help-utm"
                     >
+                    <span class="help-text" id="help-utm">Máximo: 999.999</span>
+                    <span class="error-text">Ingresa un valor válido</span>
                 </div>
                 
                 <div class="value-display utm">
@@ -677,12 +728,17 @@
 
         function convertirDolar() {
             const modo = document.getElementById('mode-dolar').value;
-            const input = parseFloat(document.getElementById('input-dolar').value || '0');
+            const inputEl = document.getElementById('input-dolar');
+            const input = parseFloat(inputEl.value || '0');
             const result = document.getElementById('result-dolar');
             const labelInput = document.querySelector('label[for="input-dolar"]');
             const labelResult = document.getElementById('label-result-dolar');
+            const helpText = document.getElementById('help-dolar');
 
-            if (!appState.valorDolar || !input) {
+            const maxDolar = 999999999;
+            const maxUSD = 1000000;
+
+            if (!appState.valorDolar || !input || input < 0) {
                 result.innerHTML = '$ 0.00 <small>' + (modo === 'clp_to_usd' ? 'USD' : 'CLP') + '</small>';
                 return;
             }
@@ -690,13 +746,29 @@
             if (modo === 'clp_to_usd') {
                 labelInput.textContent = 'Cantidad en CLP';
                 labelResult.textContent = 'Conversión a USD';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxDolar, 0)}`;
+                inputEl.max = maxDolar.toString();
+                
+                if (input > maxDolar) {
+                    result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
+                    return;
+                }
+                
                 const valor = input / appState.valorDolar;
                 result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>USD</small>`;
             } else {
                 labelInput.textContent = 'Cantidad en USD';
                 labelResult.textContent = 'Conversión a CLP';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxUSD, 0)}`;
+                inputEl.max = maxUSD.toString();
+                
+                if (input > maxUSD) {
+                    result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
+                    return;
+                }
+                
                 const valor = input * appState.valorDolar;
-                result.innerHTML = `$ ${formatearMoneda(valor, 0)} <small>CLP</small>`;
+                result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>CLP</small>`;
             }
         }
 
@@ -727,12 +799,17 @@
 
         function convertirUF() {
             const modo = document.getElementById('mode-uf').value;
-            const input = parseFloat(document.getElementById('input-uf').value || '0');
+            const inputEl = document.getElementById('input-uf');
+            const input = parseFloat(inputEl.value || '0');
             const result = document.getElementById('result-uf');
             const labelInput = document.querySelector('label[for="input-uf"]');
             const labelResult = document.getElementById('label-result-uf');
+            const helpText = document.getElementById('help-uf');
 
-            if (!appState.valorUF || !input) {
+            const maxUF = 999999;
+            const maxCLPparaUF = 99999999999;
+
+            if (!appState.valorUF || !input || input < 0) {
                 result.innerHTML = '$ 0.00 <small>' + (modo === 'uf_to_clp' ? 'CLP' : 'UF') + '</small>';
                 return;
             }
@@ -740,11 +817,27 @@
             if (modo === 'uf_to_clp') {
                 labelInput.textContent = 'Cantidad en UF';
                 labelResult.textContent = 'Conversión a CLP';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxUF, 0)}`;
+                inputEl.max = maxUF.toString();
+                
+                if (input > maxUF) {
+                    result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
+                    return;
+                }
+                
                 const valor = input * appState.valorUF;
-                result.innerHTML = `$ ${formatearMoneda(valor, 0)} <small>CLP</small>`;
+                result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>CLP</small>`;
             } else {
                 labelInput.textContent = 'Cantidad en CLP';
                 labelResult.textContent = 'Conversión a UF';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxCLPparaUF, 0)}`;
+                inputEl.max = maxCLPparaUF.toString();
+                
+                if (input > maxCLPparaUF) {
+                    result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
+                    return;
+                }
+                
                 const valor = input / appState.valorUF;
                 result.innerHTML = `${formatearMoneda(valor, 4)} <small>UF</small>`;
             }
@@ -777,12 +870,17 @@
 
         function convertirUTM() {
             const modo = document.getElementById('mode-utm').value;
-            const input = parseFloat(document.getElementById('input-utm').value || '0');
+            const inputEl = document.getElementById('input-utm');
+            const input = parseFloat(inputEl.value || '0');
             const result = document.getElementById('result-utm');
             const labelInput = document.querySelector('label[for="input-utm"]');
             const labelResult = document.getElementById('label-result-utm');
+            const helpText = document.getElementById('help-utm');
 
-            if (!appState.valorUTM || !input) {
+            const maxUTM = 999999;
+            const maxCLPparaUTM = 99999999999;
+
+            if (!appState.valorUTM || !input || input < 0) {
                 result.innerHTML = '$ 0.00 <small>' + (modo === 'utm_to_clp' ? 'CLP' : 'UTM') + '</small>';
                 return;
             }
@@ -790,11 +888,27 @@
             if (modo === 'utm_to_clp') {
                 labelInput.textContent = 'Cantidad en UTM';
                 labelResult.textContent = 'Conversión a CLP';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxUTM, 0)}`;
+                inputEl.max = maxUTM.toString();
+                
+                if (input > maxUTM) {
+                    result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
+                    return;
+                }
+                
                 const valor = input * appState.valorUTM;
-                result.innerHTML = `$ ${formatearMoneda(valor, 0)} <small>CLP</small>`;
+                result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>CLP</small>`;
             } else {
                 labelInput.textContent = 'Cantidad en CLP';
                 labelResult.textContent = 'Conversión a UTM';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxCLPparaUTM, 0)}`;
+                inputEl.max = maxCLPparaUTM.toString();
+                
+                if (input > maxCLPparaUTM) {
+                    result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
+                    return;
+                }
+                
                 const valor = input / appState.valorUTM;
                 result.innerHTML = `${formatearMoneda(valor, 4)} <small>UTM</small>`;
             }
@@ -809,9 +923,18 @@
             document.getElementById('input-uf').addEventListener('input', convertirUF);
             document.getElementById('input-utm').addEventListener('input', convertirUTM);
 
-            document.getElementById('mode-dolar').addEventListener('change', convertirDolar);
-            document.getElementById('mode-uf').addEventListener('change', convertirUF);
-            document.getElementById('mode-utm').addEventListener('change', convertirUTM);
+            document.getElementById('mode-dolar').addEventListener('change', function() {
+                document.getElementById('input-dolar').value = '';
+                convertirDolar();
+            });
+            document.getElementById('mode-uf').addEventListener('change', function() {
+                document.getElementById('input-uf').value = '';
+                convertirUF();
+            });
+            document.getElementById('mode-utm').addEventListener('change', function() {
+                document.getElementById('input-utm').value = '';
+                convertirUTM();
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
