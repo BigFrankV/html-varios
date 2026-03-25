@@ -738,35 +738,37 @@
             const maxDolar = 999999999;
             const maxUSD = 1000000;
 
+            // Cambiar labels SIEMPRE según el modo
+            if (modo === 'clp_to_usd') {
+                labelInput.textContent = 'Cantidad en CLP';
+                labelResult.textContent = 'Conversión a USD';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxDolar, 0)}`;
+                inputEl.max = maxDolar.toString();
+            } else {
+                labelInput.textContent = 'Cantidad en USD';
+                labelResult.textContent = 'Conversión a CLP';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxUSD, 0)}`;
+                inputEl.max = maxUSD.toString();
+            }
+
+            // Validar y calcular conversión
             if (!appState.valorDolar || !input || input < 0) {
                 result.innerHTML = '$ 0.00 <small>' + (modo === 'clp_to_usd' ? 'USD' : 'CLP') + '</small>';
                 return;
             }
 
             if (modo === 'clp_to_usd') {
-                labelInput.textContent = 'Cantidad en CLP';
-                labelResult.textContent = 'Conversión a USD';
-                helpText.textContent = `Máximo: ${formatearMoneda(maxDolar, 0)}`;
-                inputEl.max = maxDolar.toString();
-                
                 if (input > maxDolar) {
                     result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
                     return;
                 }
-                
                 const valor = input / appState.valorDolar;
                 result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>USD</small>`;
             } else {
-                labelInput.textContent = 'Cantidad en USD';
-                labelResult.textContent = 'Conversión a CLP';
-                helpText.textContent = `Máximo: ${formatearMoneda(maxUSD, 0)}`;
-                inputEl.max = maxUSD.toString();
-                
                 if (input > maxUSD) {
                     result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
                     return;
                 }
-                
                 const valor = input * appState.valorDolar;
                 result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>CLP</small>`;
             }
@@ -809,35 +811,37 @@
             const maxUF = 999999;
             const maxCLPparaUF = 99999999999;
 
+            // Cambiar labels SIEMPRE según el modo
+            if (modo === 'uf_to_clp') {
+                labelInput.textContent = 'Cantidad en UF';
+                labelResult.textContent = 'Conversión a CLP';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxUF, 0)}`;
+                inputEl.max = maxUF.toString();
+            } else {
+                labelInput.textContent = 'Cantidad en CLP';
+                labelResult.textContent = 'Conversión a UF';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxCLPparaUF, 0)}`;
+                inputEl.max = maxCLPparaUF.toString();
+            }
+
+            // Validar y calcular conversión
             if (!appState.valorUF || !input || input < 0) {
                 result.innerHTML = '$ 0.00 <small>' + (modo === 'uf_to_clp' ? 'CLP' : 'UF') + '</small>';
                 return;
             }
 
             if (modo === 'uf_to_clp') {
-                labelInput.textContent = 'Cantidad en UF';
-                labelResult.textContent = 'Conversión a CLP';
-                helpText.textContent = `Máximo: ${formatearMoneda(maxUF, 0)}`;
-                inputEl.max = maxUF.toString();
-                
                 if (input > maxUF) {
                     result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
                     return;
                 }
-                
                 const valor = input * appState.valorUF;
                 result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>CLP</small>`;
             } else {
-                labelInput.textContent = 'Cantidad en CLP';
-                labelResult.textContent = 'Conversión a UF';
-                helpText.textContent = `Máximo: ${formatearMoneda(maxCLPparaUF, 0)}`;
-                inputEl.max = maxCLPparaUF.toString();
-                
                 if (input > maxCLPparaUF) {
                     result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
                     return;
                 }
-                
                 const valor = input / appState.valorUF;
                 result.innerHTML = `${formatearMoneda(valor, 4)} <small>UF</small>`;
             }
@@ -880,35 +884,37 @@
             const maxUTM = 999999;
             const maxCLPparaUTM = 99999999999;
 
+            // Cambiar labels SIEMPRE según el modo
+            if (modo === 'utm_to_clp') {
+                labelInput.textContent = 'Cantidad en UTM';
+                labelResult.textContent = 'Conversión a CLP';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxUTM, 0)}`;
+                inputEl.max = maxUTM.toString();
+            } else {
+                labelInput.textContent = 'Cantidad en CLP';
+                labelResult.textContent = 'Conversión a UTM';
+                helpText.textContent = `Máximo: ${formatearMoneda(maxCLPparaUTM, 0)}`;
+                inputEl.max = maxCLPparaUTM.toString();
+            }
+
+            // Validar y calcular conversión
             if (!appState.valorUTM || !input || input < 0) {
                 result.innerHTML = '$ 0.00 <small>' + (modo === 'utm_to_clp' ? 'CLP' : 'UTM') + '</small>';
                 return;
             }
 
             if (modo === 'utm_to_clp') {
-                labelInput.textContent = 'Cantidad en UTM';
-                labelResult.textContent = 'Conversión a CLP';
-                helpText.textContent = `Máximo: ${formatearMoneda(maxUTM, 0)}`;
-                inputEl.max = maxUTM.toString();
-                
                 if (input > maxUTM) {
                     result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
                     return;
                 }
-                
                 const valor = input * appState.valorUTM;
                 result.innerHTML = `$ ${formatearMoneda(valor, 2)} <small>CLP</small>`;
             } else {
-                labelInput.textContent = 'Cantidad en CLP';
-                labelResult.textContent = 'Conversión a UTM';
-                helpText.textContent = `Máximo: ${formatearMoneda(maxCLPparaUTM, 0)}`;
-                inputEl.max = maxCLPparaUTM.toString();
-                
                 if (input > maxCLPparaUTM) {
                     result.innerHTML = `<span style="color: var(--danger-color);">Máximo excedido</span>`;
                     return;
                 }
-                
                 const valor = input / appState.valorUTM;
                 result.innerHTML = `${formatearMoneda(valor, 4)} <small>UTM</small>`;
             }
