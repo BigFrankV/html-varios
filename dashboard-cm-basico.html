@@ -206,15 +206,33 @@
       gap: 10px;
     }
 
+    .actions-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .price {
       font-weight: 700;
       color: #15344e;
     }
 
-    .link {
+    .link,
+    .link-btn {
       text-decoration: none;
       font-weight: 700;
       color: var(--brand-2);
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      font-size: .92rem;
+    }
+
+    .link-secondary {
+      color: #4b6480;
+      font-weight: 600;
+      font-size: .84rem;
     }
 
     .empty {
@@ -225,6 +243,93 @@
       background: #ffffffb5;
       color: #35506d;
       text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: #081a2c7a;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 30;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(840px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #d8e0e9;
+      box-shadow: 0 20px 48px #0415273d;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+    }
+
+    .close-btn {
+      border: 1px solid #c9d8e7;
+      border-radius: 10px;
+      padding: 6px 10px;
+      background: #f3f8fe;
+      color: #1f4264;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .modal-box {
+      border: 1px solid #dce7f3;
+      border-radius: 12px;
+      background: #f9fcff;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .modal-box b {
+      color: #214365;
+      font-size: .8rem;
+    }
+
+    .modal-desc {
+      border: 1px solid #dce7f3;
+      border-radius: 12px;
+      background: #fbfdff;
+      padding: 10px;
+      white-space: pre-wrap;
+      color: #2a425c;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 700px) {
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 900px) {
@@ -277,6 +382,37 @@
     <div id="empty" class="empty" style="display:none;">No hay resultados con esos filtros.</div>
   </main>
 
+  <section id="detailModal" class="modal" aria-hidden="true">
+    <article class="modal-card">
+      <header class="modal-head">
+        <div>
+          <p class="code" id="mCode" style="margin:0 0 6px 0;">-</p>
+          <h2 class="modal-title" id="mTitle">Detalle</h2>
+        </div>
+        <button id="closeModalBtn" class="close-btn" type="button">Cerrar</button>
+      </header>
+
+      <div class="modal-grid">
+        <div class="modal-box"><b>Organismo</b><span id="mBuyer">-</span></div>
+        <div class="modal-box"><b>Proveedor</b><span id="mSupplier">-</span></div>
+        <div class="modal-box"><b>Estado</b><span id="mStatus">-</span></div>
+        <div class="modal-box"><b>Monto</b><span id="mAmount">-</span></div>
+        <div class="modal-box"><b>Publicacion</b><span id="mDate">-</span></div>
+        <div class="modal-box"><b>Categoria</b><span id="mCategory">-</span></div>
+      </div>
+
+      <div>
+        <b style="color:#214365; font-size:.82rem;">Descripcion</b>
+        <div class="modal-desc" id="mDesc">-</div>
+      </div>
+
+      <div class="actions-right">
+        <a class="link" id="mDocLink" href="#" target="_blank" rel="noopener noreferrer">Abrir orden en Mercado Publico</a>
+        <a class="link-secondary" id="mJsonLink" href="#" target="_blank" rel="noopener noreferrer">Ver JSON</a>
+      </div>
+    </article>
+  </section>
+
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
 
@@ -294,7 +430,20 @@
       totalChip: document.getElementById("totalChip"),
       filteredChip: document.getElementById("filteredChip"),
       updatedChip: document.getElementById("updatedChip"),
-      reloadBtn: document.getElementById("reloadBtn")
+      reloadBtn: document.getElementById("reloadBtn"),
+      detailModal: document.getElementById("detailModal"),
+      closeModalBtn: document.getElementById("closeModalBtn"),
+      mCode: document.getElementById("mCode"),
+      mTitle: document.getElementById("mTitle"),
+      mBuyer: document.getElementById("mBuyer"),
+      mSupplier: document.getElementById("mSupplier"),
+      mStatus: document.getElementById("mStatus"),
+      mAmount: document.getElementById("mAmount"),
+      mDate: document.getElementById("mDate"),
+      mCategory: document.getElementById("mCategory"),
+      mDesc: document.getElementById("mDesc"),
+      mDocLink: document.getElementById("mDocLink"),
+      mJsonLink: document.getElementById("mJsonLink")
     };
 
     function toNumber(value) {
@@ -414,11 +563,64 @@
 
             <div class="actions">
               <span class="price">${formatCLP(row.Monto)}</span>
-              <a class="link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Ver detalle</a>
+              <div class="actions-right">
+                <button class="link-btn" type="button" data-code="${escapeHtml(row.CodigoExterno)}">Ver detalle</button>
+                <a class="link-secondary" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">JSON</a>
+              </div>
             </div>
           </article>
         `;
       }).join("");
+    }
+
+    async function openDetailModal(codigoExterno) {
+      const row = state.rows.find(r => r.CodigoExterno === codigoExterno);
+      if (!row) return;
+
+      refs.mCode.textContent = row.CodigoExterno || "-";
+      refs.mTitle.textContent = row.Nombre || "Convenio Marco";
+      refs.mBuyer.textContent = row.Organismo || "-";
+      refs.mSupplier.textContent = "Cargando...";
+      refs.mStatus.textContent = "Cargando...";
+      refs.mAmount.textContent = formatCLP(row.Monto);
+      refs.mDate.textContent = row.FechaPublicacion || "-";
+      refs.mCategory.textContent = row.Categoria || "Otros";
+      refs.mDesc.textContent = row.Descripcion || "Sin descripcion";
+      refs.mDocLink.href = "#";
+      refs.mJsonLink.href = row.URLLicitacion || "#";
+
+      refs.detailModal.classList.add("open");
+      refs.detailModal.setAttribute("aria-hidden", "false");
+
+      try {
+        const response = await fetch(row.URLLicitacion);
+        const json = await response.json();
+        const rel = Array.isArray(json.releases) && json.releases.length ? json.releases[0] : {};
+        const award = Array.isArray(rel.awards) && rel.awards.length ? rel.awards[0] : {};
+
+        const supplier = Array.isArray(award.suppliers) && award.suppliers.length
+          ? award.suppliers.map(s => s.name).join(" | ")
+          : "No informado";
+        const status = award.statusDetails || award.status || "No informado";
+        const amount = award.value && award.value.amount ? award.value.amount : row.Monto;
+        const doc = Array.isArray(award.documents) && award.documents.length ? award.documents[0].url : "";
+
+        refs.mSupplier.textContent = supplier;
+        refs.mStatus.textContent = status;
+        refs.mAmount.textContent = formatCLP(amount);
+        refs.mDate.textContent = rel.date || json.publishedDate || row.FechaPublicacion || "-";
+        refs.mDesc.textContent = award.description || row.Descripcion || "Sin descripcion";
+        refs.mDocLink.href = doc || row.URLLicitacion || "#";
+      } catch (error) {
+        refs.mSupplier.textContent = "No disponible";
+        refs.mStatus.textContent = "No disponible";
+        refs.mDocLink.href = row.URLLicitacion || "#";
+      }
+    }
+
+    function closeDetailModal() {
+      refs.detailModal.classList.remove("open");
+      refs.detailModal.setAttribute("aria-hidden", "true");
     }
 
     function loadCsv() {
@@ -450,6 +652,15 @@
     refs.categoria.addEventListener("change", applyFilters);
     refs.organismo.addEventListener("change", applyFilters);
     refs.reloadBtn.addEventListener("click", loadCsv);
+    refs.cards.addEventListener("click", event => {
+      const btn = event.target.closest(".link-btn");
+      if (!btn) return;
+      openDetailModal(btn.dataset.code);
+    });
+    refs.closeModalBtn.addEventListener("click", closeDetailModal);
+    refs.detailModal.addEventListener("click", event => {
+      if (event.target === refs.detailModal) closeDetailModal();
+    });
 
     loadCsv();
   </script>
