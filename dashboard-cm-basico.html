@@ -975,6 +975,18 @@
     }
 
     const fmt = n => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(Number(n) || 0);
+    const dateOnly = value => {
+      if (!value) return "-";
+      const s = String(value).trim();
+      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (isoMatch) return isoMatch[1];
+      const d = new Date(s);
+      if (Number.isNaN(d.getTime())) return s;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
     const isNew = r => {
       const d = new Date(r.FechaPublicacion);
       if (Number.isNaN(d.getTime())) return false;
@@ -1191,8 +1203,8 @@
       el.mdOrg.textContent = r.Organismo || "-";
       el.mdProv.textContent = r.Proveedor || "-";
       el.mdMonto.textContent = fmt(r.Monto);
-      el.mdPub.textContent = r.FechaPublicacion || "-";
-      el.mdCloseDate.textContent = r.FechaCierre || "-";
+      el.mdPub.textContent = dateOnly(r.FechaPublicacion);
+      el.mdCloseDate.textContent = dateOnly(r.FechaCierre);
       el.mdDias.textContent = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
       el.mdCat.textContent = r.Categoria || "-";
       el.mdEstado.textContent = r.EstadoTrabajo || "No Tomada";
@@ -1223,7 +1235,7 @@
         el.mdMonto.textContent = fmt(amount);
         el.mdEstado.textContent = status;
         el.mdDesc.textContent = award.description || r.Descripcion || "Sin descripcion";
-        el.mdPub.textContent = rel.date || json.publishedDate || r.FechaPublicacion || "-";
+        el.mdPub.textContent = dateOnly(rel.date || json.publishedDate || r.FechaPublicacion);
         el.openDoc.dataset.url = doc || r.URLLicitacion;
       } catch (error) {
         el.openDoc.dataset.url = r.URLLicitacion || "";
