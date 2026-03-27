@@ -888,6 +888,7 @@
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
     const st = { rows: [], filtered: [], view: "cards", selected: null };
 
@@ -1248,17 +1249,50 @@
       st.selected = null;
     }
 
-    function saveLocal() {
+    async function saveLocal() {
       if (!st.selected) return;
       const r = st.rows.find(x => x.CodigoExterno === st.selected);
       if (!r) return;
-      r.Visto = el.edVisto.value;
-      r.EstadoTrabajo = el.edEstado.value;
-      r.Responsable = el.edOwner.value.trim();
-      r.Comentario = el.edCom.value.trim();
+      
+      const nuevoVisto = el.edVisto.value;
+      const nuevoEstado = el.edEstado.value;
+      const nuevoResponsable = el.edOwner.value.trim();
+      const nuevoComentario = el.edCom.value.trim();
+      
+      // Actualizar datos locales
+      r.Visto = nuevoVisto;
+      r.EstadoTrabajo = nuevoEstado;
+      r.Responsable = nuevoResponsable;
+      r.Comentario = nuevoComentario;
+      
+      // Intenta sincronizar con Sheet
+      try {
+        const payload = {
+          codigo_externo: st.selected,
+          visto: nuevoVisto,
+          estado_trabajo: nuevoEstado,
+          responsable: nuevoResponsable,
+          comentario: nuevoComentario
+        };
+        
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          toast("Cambios guardados en el Sheet ✓");
+        } else {
+          toast("Cambios locales (sincronización con Sheet falló)");
+        }
+      } catch (err) {
+        console.error("Error sincronizando:", err);
+        toast("Cambios guardados localmente (sin conexión a Sheet)");
+      }
+      
       apply();
       closeModal();
-      toast("Cambios guardados localmente (aun no se sincronizan al Sheet).");
     }
 
     function resetFilters() {
@@ -1283,8 +1317,36 @@
       apply();
     }
 
+    async function triggerAPISync() {
+      try {
+        el.mUpd.textContent = "Actualizado: consultando API...";
+        toast("Buscando nuevas licitaciones en la API...");
+        
+        const response = await fetch(APPS_SCRIPT_URL + "?action=updateLicitaciones", {
+          method: "GET"
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          el.mUpd.textContent = `Actualizado: ${result.count} nuevas licitaciones`;
+          toast(`API sincronizada: +${result.count} nuevos registros`);
+          // Espera un segundo antes de recargar el CSV
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+          toast("API: No hay nuevas licitaciones");
+        }
+      } catch (err) {
+        console.error("Error sincronizando API:", err);
+        toast("Error al consultar API (continuando con recarga local)");
+      }
+      
+      // Luego recarga el CSV actualizado
+      loadCsv();
+    }
+
     function loadCsv() {
-      el.mUpd.textContent = "Actualizado: cargando...";
+      el.mUpd.textContent = "Actualizado: cargando datos...";
 
       if (typeof Papa === "undefined") {
         toast("No se pudo cargar PapaParse.");
@@ -1337,7 +1399,7 @@
     el.viewCards.addEventListener("click", () => setView("cards"));
     el.viewList.addEventListener("click", () => setView("list"));
     el.viewBoard.addEventListener("click", () => setView("board"));
-    el.reload.addEventListener("click", loadCsv);
+    el.reload.addEventListener("click", triggerAPISync);
     el.themeToggle.addEventListener("click", toggleTheme);
 
     document.addEventListener("click", e => {
