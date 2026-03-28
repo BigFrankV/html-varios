@@ -769,10 +769,10 @@
         <section class="toolbar">
           <div class="field">
             <label for="q">Busqueda general</label>
-            <input id="q" type="text" placeholder="nombre, codigo, organismo, proveedor..." />
+            <input id="q" type="text" placeholder="nombre, ID, organismo, producto, tipo..." />
           </div>
           <div class="field">
-            <label for="cat">Categoria</label>
+            <label for="cat">Tipo Licitacion</label>
             <select id="cat"><option value="">Todas</option></select>
           </div>
           <div class="field">
@@ -832,12 +832,12 @@
 
       <div class="grid3">
         <div class="box"><b>Organismo</b><span id="mdOrg">-</span></div>
-        <div class="box"><b>Proveedor</b><span id="mdProv">-</span></div>
+        <div class="box"><b>Producto</b><span id="mdProv">-</span></div>
         <div class="box"><b>Monto</b><span id="mdMonto">-</span></div>
         <div class="box"><b>Publicacion</b><span id="mdPub">-</span></div>
         <div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div>
         <div class="box"><b>Dias</b><span id="mdDias">-</span></div>
-        <div class="box"><b>Categoria</b><span id="mdCat">-</span></div>
+        <div class="box"><b>Tipo Licitacion</b><span id="mdCat">-</span></div>
         <div class="box"><b>Estado</b><span id="mdEstado">-</span></div>
         <div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div>
       </div>
@@ -955,20 +955,21 @@
     function normalizeRow(r) {
       return {
         FechaCaptura: r.FechaCaptura || "",
-        CodigoExterno: r.CodigoExterno || "",
+        CodigoExterno: r["ID Licitacion"] || r.CodigoExterno || "",
         Nombre: r.Nombre || "",
-        Monto: toNumber(r.Monto),
-        FechaCierre: r.FechaCierre || "",
+        Monto: toNumber(r["Monto Estimado"] || r.Monto),
+        FechaCierre: r["Fecha Cierre"] || r.FechaCierre || "",
         Descripcion: r.Descripcion || "",
-        RubroMP: r.RubroMP || "",
-        Categoria: r.Categoria || "Otros",
-        Organismo: r.Organismo || "",
-        FechaPublicacion: r.FechaPublicacion || "",
-        DiasRestantes: r.DiasRestantes || "",
-        URLLicitacion: r.URLLicitacion || "",
+        TipoLicitacion: r["Tipo Licitacion"] || r.Categoria || "Sin tipo",
+        Organismo: r["Nombre Organismo"] || r.Organismo || "",
+        EstadoAPI: r.Estado || "",
+        CodigoEstadoAPI: r["Codigo Estado"] || "",
+        FechaPublicacion: r["Fecha Publicacion"] || r.FechaPublicacion || "",
+        DiasRestantes: r["Dias Disponibles"] || r.DiasRestantes || "",
+        URLLicitacion: r.URL || r.URLLicitacion || "",
         Visto: String(r.Visto || "FALSE").toUpperCase(),
         EstadoTrabajo: r.EstadoTrabajo || "No Tomada",
-        Proveedor: r.Proveedor || "",
+        Producto: r["Nombre Producto (1er Item)"] || r.Proveedor || "",
         Responsable: r.Responsable || "",
         Comentario: r.Comentario || "",
         Prioridad: r.Prioridad || "Media"
@@ -1032,7 +1033,7 @@
 
     function fillFilters() {
       const orgs = [...new Set(st.rows.map(r => r.Organismo).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
-      const cats = [...new Set(st.rows.map(r => r.Categoria).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
     }
@@ -1045,9 +1046,9 @@
       const visto = el.visto.value;
 
       st.filtered = st.rows.filter(r => {
-        const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Proveedor, r.Descripcion].join(" ").toLowerCase();
+        const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Producto, r.Descripcion, r.TipoLicitacion].join(" ").toLowerCase();
         const mQ = !q || text.includes(q);
-        const mCat = !cat || r.Categoria === cat;
+        const mCat = !cat || r.TipoLicitacion === cat;
         const mOrg = !org || r.Organismo === org;
         const mEst = !est || r.EstadoTrabajo === est;
         let mV = true;
@@ -1100,9 +1101,9 @@
             <h3 class="name">${esc(r.Nombre)}</h3>
             <p class="desc">${esc(r.Descripcion || "Sin descripcion")}</p>
             <div class="kv">
-              <b>Categoria</b><span>${esc(r.Categoria)}</span>
+              <b>Tipo</b><span>${esc(r.TipoLicitacion)}</span>
               <b>Organismo</b><span>${esc(r.Organismo)}</span>
-              <b>Proveedor</b><span>${esc(r.Proveedor || "-")}</span>
+              <b>Producto</b><span>${esc(r.Producto || "-")}</span>
             </div>
             <div class="foot">
               <div>
@@ -1122,7 +1123,7 @@
     function renderList(rows) {
       el.list.innerHTML = `
         <header class="list-head">
-          <span>Nombre</span><span>Categoria</span><span>Monto</span><span>Dias</span><span>Estado</span><span>Acciones</span>
+          <span>Nombre</span><span>Tipo</span><span>Monto</span><span>Dias</span><span>Estado</span><span>Acciones</span>
         </header>
         ${rows.map(r => `
           <article class="list-row">
@@ -1130,7 +1131,7 @@
               <strong>${esc(r.Nombre)}</strong>
               <span>${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</span>
             </div>
-            <span>${esc(r.Categoria)}</span>
+            <span>${esc(r.TipoLicitacion)}</span>
             <span>${fmt(r.Monto)}</span>
             <span>${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</span>
             <span><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></span>
@@ -1202,13 +1203,13 @@
       el.mdCode.textContent = r.CodigoExterno;
       el.mdTitle.textContent = r.Nombre;
       el.mdOrg.textContent = r.Organismo || "-";
-      el.mdProv.textContent = r.Proveedor || "-";
+      el.mdProv.textContent = r.Producto || "-";
       el.mdMonto.textContent = fmt(r.Monto);
       el.mdPub.textContent = dateOnly(r.FechaPublicacion);
       el.mdCloseDate.textContent = dateOnly(r.FechaCierre);
       el.mdDias.textContent = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
-      el.mdCat.textContent = r.Categoria || "-";
-      el.mdEstado.textContent = r.EstadoTrabajo || "No Tomada";
+      el.mdCat.textContent = r.TipoLicitacion || "-";
+      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "No Tomada";
       el.mdPrio.textContent = r.Prioridad || "Media";
       el.mdDesc.textContent = r.Descripcion || "Sin descripcion";
       el.edVisto.value = r.Visto === "TRUE" ? "TRUE" : "FALSE";
@@ -1227,7 +1228,7 @@
         const rel = Array.isArray(json.releases) && json.releases.length ? json.releases[0] : {};
         const award = Array.isArray(rel.awards) && rel.awards.length ? rel.awards[0] : {};
         const suppliers = Array.isArray(award.suppliers) ? award.suppliers : [];
-        const supplierText = suppliers.length ? suppliers.map(s => s.name).filter(Boolean).join(" | ") : (r.Proveedor || "No informado");
+        const supplierText = suppliers.length ? suppliers.map(s => s.name).filter(Boolean).join(" | ") : (r.Producto || "No informado");
         const amount = award.value && award.value.amount ? award.value.amount : r.Monto;
         const status = award.statusDetails || award.status || r.EstadoTrabajo || "No informado";
         const doc = Array.isArray(award.documents) && award.documents.length ? award.documents[0].url : "";
