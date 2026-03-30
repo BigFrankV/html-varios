@@ -43,11 +43,12 @@
     }
 
     .app {
-      width: min(1400px, 96vw);
+      width: min(1200px, 96vw);
       margin: 14px auto;
       display: grid;
       grid-template-columns: 1fr;
       gap: 14px;
+      justify-items: center;
     }
 
     .side {
@@ -720,11 +721,15 @@
     }
 
     @media (max-width: 820px) {
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .cards { grid-template-columns: 1fr; }
       .kanban { grid-template-columns: 1fr; }
       .list-head, .list-row { grid-template-columns: 1fr; }
       .grid3, .edit-grid { grid-template-columns: 1fr; }
       .toolbar { grid-template-columns: 1fr; }
+      .switch { flex-direction: column; align-items: stretch; gap: 10px; }
+      .switch-left, .switch-right { width: 100%; justify-content: space-between; }
+      .chips { justify-content: flex-start; gap: 6px; }
     }
   </style>
 </head>
@@ -742,6 +747,7 @@
             <span id="mTotal" class="chip">Total: 0</span>
             <span id="mShow" class="chip">Mostrando: 0</span>
             <span id="mUpd" class="chip">Actualizado: cargando datos...</span>
+            <button id="viewFields" class="btn-lite" type="button">Ver campos</button>
             <button id="themeToggle" class="btn-lite theme-toggle" type="button">Modo oscuro</button>
           </div>
         </header>
@@ -876,6 +882,20 @@
     </article>
   </section>
 
+  <section id="fieldsModal" class="modal" aria-hidden="true">
+    <article class="modal-card">
+      <header class="modal-head">
+        <div>
+          <h3 class="modal-title">Campos CSV (headers)</h3>
+        </div>
+        <button id="fieldsClose" class="close" type="button">Cerrar</button>
+      </header>
+      <div id="fieldsList" class="full" style="white-space:pre-wrap; max-height:60vh; overflow:auto;">
+        <!-- Lista de campos se llenará dinámicamente -->
+      </div>
+    </article>
+  </section>
+
   <div id="toast" class="toast">Accion simulada</div>
 
   <script>
@@ -942,27 +962,39 @@
     }
 
     function normalizeRow(r) {
-      return {
-        FechaCaptura: r.FechaCaptura || "",
-        CodigoExterno: r["ID Licitacion"] || r.CodigoExterno || "",
-        Nombre: r.Nombre || "",
-        Monto: toNumber(r["Monto Estimado"] || r.Monto),
-        FechaCierre: r["Fecha Cierre"] || r.FechaCierre || "",
-        Descripcion: r.Descripcion || "",
-        TipoLicitacion: r["Tipo Licitacion"] || r.Categoria || "Sin tipo",
-        Organismo: r["Nombre Organismo"] || r.Organismo || "",
-        EstadoAPI: r.Estado || "",
-        CodigoEstadoAPI: r["Codigo Estado"] || "",
-        FechaPublicacion: r["Fecha Publicacion"] || r.FechaPublicacion || "",
-        DiasRestantes: r["Dias Disponibles"] || r.DiasRestantes || "",
-        URLLicitacion: r.URL || r.URLLicitacion || "",
-        Visto: String(r.Visto || "FALSE").toUpperCase(),
-        EstadoTrabajo: r.EstadoTrabajo || "No Tomada",
-        Producto: r["Nombre Producto (1er Item)"] || r.Proveedor || "",
-        Responsable: r.Responsable || "",
-        Comentario: r.Comentario || "",
-        Prioridad: r.Prioridad || "Media"
-      };
+      // Preserve the original CSV row keys exactly under _raw
+      const raw = {};
+      for (const k in r) {
+        // keep original header keys as-is (trim whitespace)
+        const key = String(k || "").trim();
+        raw[key] = r[k];
+      }
+
+      // Start output with all original keys intact
+      const out = Object.assign({}, raw);
+      out._raw = Object.assign({}, raw);
+
+      // Provide convenient aliases only if they are missing, do NOT remove or rename original headers
+      if (!out.CodigoExterno) out.CodigoExterno = raw['ID Licitacion'] || raw['ID Licitación'] || raw.CodigoExterno || raw['Codigo Externo'] || "";
+      if (!out.Nombre) out.Nombre = raw.Nombre || raw['Nombre'] || "";
+      out.Monto = toNumber(raw['Monto Estimado'] || raw.Monto || raw['Monto'] || 0);
+      if (!out.FechaCierre) out.FechaCierre = raw['Fecha Cierre'] || raw.FechaCierre || "";
+      if (!out.Descripcion) out.Descripcion = raw.Descripcion || raw['Descripcion'] || raw['Descripción'] || "";
+      if (!out.TipoLicitacion) out.TipoLicitacion = raw['Tipo Licitacion'] || raw.Categoria || raw['Codigo Tipo'] || "Sin tipo";
+      if (!out.Organismo) out.Organismo = raw['Nombre Organismo'] || raw.Organismo || "";
+      if (!out.EstadoAPI) out.EstadoAPI = raw.Estado || raw['Estado'] || "";
+      if (!out.CodigoEstadoAPI) out.CodigoEstadoAPI = raw['Codigo Estado'] || raw['CodigoEstado'] || "";
+      if (!out.FechaPublicacion) out.FechaPublicacion = raw['Fecha Publicacion'] || raw.FechaPublicacion || "";
+      if (!out.DiasRestantes) out.DiasRestantes = raw['Dias Disponibles'] || raw.DiasRestantes || raw['Dias Cierre Licitacion'] || "";
+      if (!out.URLLicitacion) out.URLLicitacion = raw.URL || raw.URLLicitacion || raw['URL'] || "";
+      out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
+      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "No Tomada";
+      if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
+      if (!out.Responsable) out.Responsable = raw.Responsable || raw['Nombre Usuario'] || "";
+      if (!out.Comentario) out.Comentario = raw.Comentario || "";
+      if (!out.Prioridad) out.Prioridad = raw.Prioridad || "Media";
+
+      return out;
     }
 
     const fmt = n => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(Number(n) || 0);
@@ -1413,6 +1445,78 @@
     el.save.addEventListener("click", saveLocal);
     el.mdClose.addEventListener("click", closeModal);
     el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(); });
+
+    // Ver campos CSV -> hace fetch al CSV (simula un curl), verifica status y muestra headers
+    (function setupFieldsViewer(){
+      const fieldsModal = document.getElementById('fieldsModal');
+      const fieldsList = document.getElementById('fieldsList');
+      const viewFieldsBtn = document.getElementById('viewFields');
+      const fieldsCloseBtn = document.getElementById('fieldsClose');
+
+      async function fetchAndShowHeaders(){
+        fieldsList.textContent = 'Verificando conexión al CSV...';
+        try {
+          // Intenta obtener el CSV (evita cache)
+          const res = await fetch(CSV_URL, { method: 'GET', cache: 'no-store' });
+          if (!res.ok) {
+            fieldsList.textContent = `Error HTTP: ${res.status} ${res.statusText}`;
+            fieldsModal.classList.add('open');
+            fieldsModal.setAttribute('aria-hidden','false');
+            return;
+          }
+          const text = await res.text();
+
+          // Usa PapaParse para extraer los headers (meta.fields)
+          const parsed = Papa.parse(text, {
+            header: true,
+            preview: 1,
+            transformHeader: header => String(header || '').replace(/^\uFEFF/, '').trim()
+          });
+
+          const fields = (parsed && parsed.meta && parsed.meta.fields) ? parsed.meta.fields : [];
+          if (fields.length === 0) {
+            // fallback: intenta leer la primera fila sin header
+            const alt = Papa.parse(text, { preview: 1, header: false });
+            const firstRow = Array.isArray(alt.data) && alt.data.length ? alt.data[0] : null;
+            if (firstRow) {
+              fieldsList.textContent = firstRow.join('\n');
+            } else {
+              fieldsList.textContent = 'No se pudieron determinar los headers.';
+            }
+          } else {
+            fieldsList.textContent = `Conexión OK (HTTP ${res.status}).\n\n` + fields.join('\n');
+          }
+
+          // Comparar con lo que ya está cargado en memoria (st.rows) y avisar si difiere
+          if (st.rows && st.rows.length) {
+            const loaded = Object.keys(st.rows[0]._raw || {});
+            const onlyInFetched = fields.filter(f => !loaded.includes(f));
+            const onlyInLoaded = loaded.filter(f => !fields.includes(f));
+            const diffs = onlyInFetched.length + onlyInLoaded.length;
+            if (diffs) {
+              fieldsList.textContent += `\n\nAdvertencia: los headers en tiempo de carga difieren (${diffs} diferencias).`;
+            }
+          }
+
+          fieldsModal.classList.add('open');
+          fieldsModal.setAttribute('aria-hidden','false');
+        } catch (err) {
+          // CORS o network errores quedarán aquí
+          fieldsList.textContent = 'Error conectando al CSV: ' + (err && err.message ? err.message : String(err));
+          fieldsModal.classList.add('open');
+          fieldsModal.setAttribute('aria-hidden','false');
+        }
+      }
+
+      if (viewFieldsBtn) viewFieldsBtn.addEventListener('click', fetchAndShowHeaders);
+
+      if (fieldsCloseBtn) fieldsCloseBtn.addEventListener('click', () => {
+        fieldsModal.classList.remove('open');
+        fieldsModal.setAttribute('aria-hidden', 'true');
+      });
+
+      if (fieldsModal) fieldsModal.addEventListener('click', e => { if (e.target === fieldsModal) { fieldsModal.classList.remove('open'); fieldsModal.setAttribute('aria-hidden','true'); } });
+    })();
 
     init();
   </script>
