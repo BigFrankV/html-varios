@@ -774,6 +774,10 @@
             <select id="org"><option value="">Todos</option></select>
           </div>
           <div class="field">
+            <label for="producto">Producto</label>
+            <select id="producto"><option value="">Todos</option></select>
+          </div>
+          <div class="field">
             <label for="estado">Estado</label>
             <select id="estado">
               <option value="">Todos</option>
@@ -792,6 +796,17 @@
             </select>
           </div>
           <button id="reset" class="btn" type="button">Reset filtros</button>
+          <div class="field">
+            <label for="pageSize">Ver</label>
+            <select id="pageSize"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
+          </div>
+          <div class="field" style="align-self:center;">
+            <div id="pagination" style="display:flex;gap:8px;align-items:center;">
+              <button id="prevPage" class="btn-lite" type="button">Prev</button>
+              <span id="pageInfo">1 / 1</span>
+              <button id="nextPage" class="btn-lite" type="button">Next</button>
+            </div>
+          </div>
         </section>
 
         <section class="switch">
@@ -908,12 +923,17 @@
       q: document.getElementById("q"),
       cat: document.getElementById("cat"),
       org: document.getElementById("org"),
+      producto: document.getElementById("producto"),
       estado: document.getElementById("estado"),
       visto: document.getElementById("visto"),
       quickUrg: document.getElementById("quickUrg"),
       quickNew: document.getElementById("quickNew"),
       quickFree: document.getElementById("quickFree"),
       reset: document.getElementById("reset"),
+      pageSize: document.getElementById("pageSize"),
+      prevPage: document.getElementById("prevPage"),
+      nextPage: document.getElementById("nextPage"),
+      pageInfo: document.getElementById("pageInfo"),
       viewCards: document.getElementById("viewCards"),
       viewList: document.getElementById("viewList"),
       viewBoard: document.getElementById("viewBoard"),
@@ -1055,14 +1075,17 @@
     function fillFilters() {
       const orgs = [...new Set(st.rows.map(r => r.Organismo).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
+      if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
     }
 
     function apply() {
       const q = el.q.value.trim().toLowerCase();
       const cat = el.cat.value;
       const org = el.org.value;
+      const prod = el.producto ? el.producto.value : "";
       const est = el.estado.value;
       const visto = el.visto.value;
 
@@ -1071,14 +1094,18 @@
         const mQ = !q || text.includes(q);
         const mCat = !cat || r.TipoLicitacion === cat;
         const mOrg = !org || r.Organismo === org;
+        const mProd = !prod || (r.Producto === prod);
         const mEst = !est || r.EstadoTrabajo === est;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
         if (visto === "NUEVO") mV = isNew(r);
-        return mQ && mCat && mOrg && mEst && mV;
+        return mQ && mCat && mOrg && mProd && mEst && mV;
       });
 
+      // reset to first page on filter change
+      st.currentPage = 1;
+      updatePagination();
       render();
       kpis();
     }
@@ -1182,7 +1209,7 @@
     }
 
     function render() {
-      const rows = st.filtered;
+      const rows = getCurrentPageRows();
       const empty = rows.length === 0;
       el.empty.style.display = empty ? "block" : "none";
 
@@ -1201,6 +1228,26 @@
       if (st.view === "list") renderList(rows);
       if (st.view === "board") renderBoard(rows);
     }
+
+    function getCurrentPageRows() {
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
+      if (ps === 'all' || st.pageSize === 'all') return st.filtered;
+      const start = (st.currentPage - 1) * ps;
+      return st.filtered.slice(start, start + ps);
+    }
+
+    function updatePagination() {
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
+      const total = st.filtered.length;
+      const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(total / ps));
+      if (st.currentPage > totalPages) st.currentPage = totalPages;
+      if (el.pageInfo) el.pageInfo.textContent = `${st.currentPage} / ${totalPages}`;
+      if (el.prevPage) el.prevPage.disabled = st.currentPage <= 1;
+      if (el.nextPage) el.nextPage.disabled = st.currentPage >= totalPages;
+    }
+
+    function prevPage() { if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); } }
+    function nextPage() { const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps)); if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); } }
 
     function setView(v) {
       st.view = v;
@@ -1317,6 +1364,9 @@
       el.org.value = "";
       el.estado.value = "";
       el.visto.value = "";
+      if (el.producto) el.producto.value = "";
+      if (el.pageSize) el.pageSize.value = "50";
+      st.currentPage = 1;
       apply();
     }
 
@@ -1400,12 +1450,20 @@
       applyTheme(savedTheme || (systemDark ? "dark" : "light"));
       loadCsv();
     }
+    // pagination state defaults
+    st.currentPage = 1;
+    st.pageSize = '50';
 
     el.q.addEventListener("input", apply);
     el.cat.addEventListener("change", apply);
     el.org.addEventListener("change", apply);
     el.estado.addEventListener("change", apply);
     el.visto.addEventListener("change", apply);
+    if (el.producto) el.producto.addEventListener("change", apply);
+    if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
+
+    if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
+    if (el.nextPage) el.nextPage.addEventListener("click", nextPage);
 
     el.quickUrg.addEventListener("click", () => quick("urg"));
     el.quickNew.addEventListener("click", () => quick("new"));
