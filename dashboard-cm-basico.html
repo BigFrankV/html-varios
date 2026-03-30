@@ -292,10 +292,6 @@
       animation: rise .24s ease;
     }
 
-    /* Ensure card text follows theme variables (fix dark-mode black text) */
-    .card .name { color: var(--ink); }
-    .card .desc { color: var(--muted); }
-
     @keyframes rise {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
@@ -1249,7 +1245,6 @@
         try { dtInstance.destroy(); } catch (e) {}
         dtInstance = null;
       }
-      // populate tbody from filtered rows
       const rowsHtml = buildTableRowsHtml(st.filtered);
       $tbl.find('tbody').html(rowsHtml);
       const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
@@ -1274,12 +1269,6 @@
         // place only table then pagination+info at bottom
         dom: 't<"d-flex justify-content-between mt-2"ip>'
       });
-
-      // ensure the external search input (el.q) is bound only once
-      if (el.q) {
-        $(el.q).off('input.dtsearch');
-        $(el.q).on('input.dtsearch', function() { if (dtInstance) dtInstance.search(this.value).draw(); });
-      }
     }
 
     function refreshDataTable() {
@@ -1383,17 +1372,10 @@
       if (v === 'list' && window.jQuery && $.fn.DataTable) {
         if (pagWrap) pagWrap.style.display = 'none';
         if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
-        // initialize DataTable when switching to list
-        initDataTable();
+        if (el.q) $(el.q).off('input.dtsearch');
       } else {
         if (pagWrap) pagWrap.style.display = '';
         if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
-        // destroy DataTable instance when leaving list to avoid stale DOM/handlers
-        if (dtInstance) {
-          try { dtInstance.destroy(); } catch (e) {}
-          dtInstance = null;
-          const tbl = document.getElementById('dtTable'); if (tbl) tbl.style.display = 'none';
-        }
         if (el.q) $(el.q).off('input.dtsearch');
       }
       render();
