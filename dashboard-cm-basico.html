@@ -1223,8 +1223,8 @@
             <small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>
           </td>
           <td>${esc(r.TipoLicitacion)}</td>
-          <td>${fmt(r.Monto)}</td>
-          <td>${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
+          <td data-order="${Number(r.Monto) || 0}">${fmt(r.Monto)}</td>
+          <td data-order="${Number(r.DiasRestantes) || 0}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
           <td><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></td>
           <td>
             <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
@@ -1246,13 +1246,19 @@
       const rowsHtml = buildTableRowsHtml(st.filtered);
       $tbl.find('tbody').html(rowsHtml);
       const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
+      // hide custom pagination controls in toolbar
+      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = 'none';
+      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
+
       dtInstance = $tbl.DataTable({
         order: [[0, 'asc']],
+        ordering: true,
         pageLength: pageLen,
         lengthChange: false,
         searching: false,
-        // keep bootstrap styling
-        responsive: true
+        responsive: true,
+        // place only table then pagination+info at bottom
+        dom: 't<"d-flex justify-content-between mt-2"ip>'
       });
     }
 
