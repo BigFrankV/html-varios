@@ -443,7 +443,7 @@
   <div id="toast" class="toast">Accion simulada</div>
 
   <!-- Dependencias JS: jQuery, DataTables y Bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-/xUj+3OJ+Y3o7y2X6a2a2Q5p2s6b1pXQ5K5m8q0i3Dk=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -1105,7 +1105,19 @@
     el.viewList.addEventListener("click", () => setView("list"));
     el.viewBoard.addEventListener("click", () => setView("board"));
     el.reload.addEventListener("click", triggerAPISync);
-    el.themeToggle.addEventListener("click", toggleTheme);
+    // Ensure dark mode toggle works with Bootstrap switch input
+    if (el.themeToggle) {
+      // Set initial state based on theme
+      const savedTheme = localStorage.getItem("cm-theme");
+      const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const isDark = (savedTheme || (systemDark ? "dark" : "light")) === "dark";
+      el.themeToggle.checked = isDark;
+      el.themeToggle.addEventListener("change", function() {
+        toggleTheme();
+        // Update checked state after toggling
+        el.themeToggle.checked = document.body.getAttribute("data-theme") === "dark";
+      });
+    }
 
     document.addEventListener("click", e => {
       const btn = e.target.closest("[data-a]");
