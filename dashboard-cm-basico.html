@@ -292,6 +292,10 @@
       animation: rise .24s ease;
     }
 
+    /* Ensure card text follows theme variables (fix dark-mode black text) */
+    .card .name { color: var(--ink); }
+    .card .desc { color: var(--muted); }
+
     @keyframes rise {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
@@ -606,7 +610,7 @@
 
     .toast.show { display: block; }
 
-    body[data-theme="dark"] {
+    body[data-theme="dark"], body[data-bs-theme="dark"] {
       --bg: #0f1421;
       --bg-soft: #171f33;
       --panel: #131b2d;
@@ -617,7 +621,7 @@
       --shadow: 0 14px 30px #0000004d;
     }
 
-    body[data-theme="dark"] {
+    body[data-theme="dark"], body[data-bs-theme="dark"] {
       background: radial-gradient(circle at 0% 0%, #1a2440 0%, #10172a 26%), var(--bg);
     }
 
@@ -640,7 +644,7 @@
     }
 
     body[data-theme="dark"] .kpi,
-    body[data-theme="dark"] .card,
+    body[data-theme="dark"], body[data-bs-theme="dark"] .card,
     body[data-theme="dark"] .lane,
     body[data-theme="dark"] .mini,
     body[data-theme="dark"] .modal-card,
@@ -831,8 +835,8 @@
         <section id="cards" class="cards"></section>
         <section id="list" class="list">
           <!-- DataTable (se inicializa dinámicamente). Se mantiene el fallback de lista para dispositivos sin JS o si DataTables falla -->
-          <div style="padding:12px;">
-            <table id="dtTable" class="table table-striped" style="width:100%; display:none;">
+          <div class="table-responsive" style="padding:12px;">
+            <table id="dtTable" class="table table-hover align-middle" style="width:100%; display:none;">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -1073,7 +1077,9 @@
     function applyTheme(theme) {
       const next = theme === "dark" ? "dark" : "light";
       document.body.setAttribute("data-theme", next);
-      el.themeToggle.textContent = next === "dark" ? "Modo claro" : "Modo oscuro";
+      // also set Bootstrap theme attribute so Bootstrap components follow dark mode
+      document.body.setAttribute("data-bs-theme", next);
+      if (el.themeToggle) el.themeToggle.textContent = next === "dark" ? "Modo claro" : "Modo oscuro";
       localStorage.setItem("cm-theme", next);
     }
 
@@ -1250,12 +1256,19 @@
       const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = 'none';
       if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
 
+      // bind external search box to DataTable search
+      if (el.q) {
+        $(el.q).off('input.dtsearch').on('input.dtsearch', function() {
+          if (dtInstance) dtInstance.search(this.value).draw();
+        });
+      }
+
       dtInstance = $tbl.DataTable({
         order: [[0, 'asc']],
         ordering: true,
         pageLength: pageLen,
         lengthChange: false,
-        searching: false,
+        searching: true,
         responsive: true,
         // place only table then pagination+info at bottom
         dom: 't<"d-flex justify-content-between mt-2"ip>'
@@ -1358,6 +1371,17 @@
       el.viewCards.classList.toggle("active", v === "cards");
       el.viewList.classList.toggle("active", v === "list");
       el.viewBoard.classList.toggle("active", v === "board");
+      // show/hide custom pagination/pageSize when not using DataTables
+      const pagWrap = document.getElementById('pagination');
+      if (v === 'list' && window.jQuery && $.fn.DataTable) {
+        if (pagWrap) pagWrap.style.display = 'none';
+        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
+        if (el.q) $(el.q).off('input.dtsearch');
+      } else {
+        if (pagWrap) pagWrap.style.display = '';
+        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
+        if (el.q) $(el.q).off('input.dtsearch');
+      }
       render();
       toast(`Vista ${v} activada.`);
     }
