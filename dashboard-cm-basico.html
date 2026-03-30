@@ -243,8 +243,16 @@
 
     .switch {
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+    }
+
+    .switch-left,
+    .switch-right {
+      display: flex;
+      gap: 8px;
       align-items: center;
     }
 
@@ -733,13 +741,13 @@
           <div class="chips">
             <span id="mTotal" class="chip">Total: 0</span>
             <span id="mShow" class="chip">Mostrando: 0</span>
-            <span id="mUpd" class="chip">Actualizado: -</span>
+            <span id="mUpd" class="chip">Actualizado: cargando datos...</span>
             <button id="themeToggle" class="btn-lite theme-toggle" type="button">Modo oscuro</button>
           </div>
         </header>
 
         <section class="kpis">
-          <article class="kpi"><span>Nuevos 72h</span><b id="kNew">0</b></article>
+          <article class="kpi"><span>Total</span><b id="kNew">0</b></article>
           <article class="kpi"><span>En Proceso</span><b id="kProg">0</b></article>
           <article class="kpi"><span>Trabajadas</span><b id="kDone">0</b></article>
           <article class="kpi"><span>Monto visible</span><b id="kMonto">$0</b></article>
@@ -781,13 +789,17 @@
         </section>
 
         <section class="switch">
-          <button id="quickUrg" class="btn-lite" type="button">Urgentes</button>
-          <button id="quickNew" class="btn-lite" type="button">Nuevos</button>
-          <button id="quickFree" class="btn-lite" type="button">Sin tomar</button>
-          <button id="viewCards" class="btn-lite active" type="button">Cards</button>
-          <button id="viewList" class="btn-lite" type="button">Lista</button>
-          <button id="viewBoard" class="btn-lite" type="button">Tablero</button>
-          <button id="reload" class="btn-lite" type="button">Recargar CSV</button>
+          <div class="switch-left">
+            <button id="viewCards" class="btn-lite active" type="button">Cards</button>
+            <button id="viewList" class="btn-lite" type="button">Lista</button>
+            <button id="viewBoard" class="btn-lite" type="button">Tablero</button>
+          </div>
+          <div class="switch-right">
+            <button id="quickUrg" class="btn-lite" type="button">Urgentes</button>
+            <button id="quickNew" class="btn-lite" type="button">Nuevos</button>
+            <button id="quickFree" class="btn-lite" type="button">Sin tomar</button>
+            <button id="reload" class="btn-lite" type="button">Recargar CSV</button>
+          </div>
         </section>
       </section>
 
