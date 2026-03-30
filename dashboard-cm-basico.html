@@ -1372,11 +1372,9 @@
       if (v === 'list' && window.jQuery && $.fn.DataTable) {
         if (pagWrap) pagWrap.style.display = 'none';
         if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
-        if (el.q) $(el.q).off('input.dtsearch');
       } else {
         if (pagWrap) pagWrap.style.display = '';
         if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
-        if (el.q) $(el.q).off('input.dtsearch');
       }
       render();
       toast(`Vista ${v} activada.`);
