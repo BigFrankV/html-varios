@@ -902,14 +902,11 @@
       list: document.getElementById("list"),
       kanban: document.getElementById("kanban"),
       empty: document.getElementById("empty"),
-      kTotal: document.getElementById("kTotal"),
       kNew: document.getElementById("kNew"),
-      kNoSeen: document.getElementById("kNoSeen"),
       kProg: document.getElementById("kProg"),
       kDone: document.getElementById("kDone"),
       kMonto: document.getElementById("kMonto"),
       kFree: document.getElementById("kFree"),
-      kUrg: document.getElementById("kUrg"),
       mTotal: document.getElementById("mTotal"),
       mShow: document.getElementById("mShow"),
       mUpd: document.getElementById("mUpd"),
@@ -1056,25 +1053,19 @@
 
     function kpis() {
       const total = st.rows.length;
-      const news = st.rows.filter(isNew).length;
-      const noSeen = st.rows.filter(r => r.Visto !== "TRUE").length;
       const prog = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
       const done = st.rows.filter(r => r.EstadoTrabajo === "Trabajada").length;
       const free = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada").length;
-      const urg = st.rows.filter(r => Number(r.DiasRestantes) <= 2).length;
       const m = st.filtered.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
 
-      el.kTotal.textContent = total;
-      el.kNew.textContent = news;
-      el.kNoSeen.textContent = noSeen;
-      el.kProg.textContent = prog;
-      el.kDone.textContent = done;
-      el.kMonto.textContent = fmt(m);
-      el.kFree.textContent = free;
-      el.kUrg.textContent = urg;
-      el.mTotal.textContent = `Total: ${total}`;
-      el.mShow.textContent = `Mostrando: ${st.filtered.length}`;
-      el.mUpd.textContent = `Actualizado: ${new Date().toLocaleString("es-CL")}`;
+      if (el.kNew) el.kNew.textContent = total;
+      if (el.kProg) el.kProg.textContent = prog;
+      if (el.kDone) el.kDone.textContent = done;
+      if (el.kMonto) el.kMonto.textContent = fmt(m);
+      if (el.kFree) el.kFree.textContent = free;
+      if (el.mTotal) el.mTotal.textContent = `Total: ${total}`;
+      if (el.mShow) el.mShow.textContent = `Mostrando: ${st.filtered.length}`;
+      if (el.mUpd) el.mUpd.textContent = `Actualizado: ${new Date().toLocaleString("es-CL")}`;
     }
 
     function renderCards(rows) {
