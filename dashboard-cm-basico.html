@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Bootstrap + DataTables (estilos) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
   <style>
     :root {
       --bg: #f6f7fb;
@@ -826,7 +829,24 @@
 
       <section class="section">
         <section id="cards" class="cards"></section>
-        <section id="list" class="list"></section>
+        <section id="list" class="list">
+          <!-- DataTable (se inicializa dinámicamente). Se mantiene el fallback de lista para dispositivos sin JS o si DataTables falla -->
+          <div style="padding:12px;">
+            <table id="dtTable" class="table table-striped" style="width:100%; display:none;">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Tipo</th>
+                  <th>Monto</th>
+                  <th>Dias</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
         <section id="kanban" class="kanban"></section>
         <div id="empty" class="chip" style="display:none; text-align:center; padding:16px;">No hay resultados para esos filtros.</div>
       </section>
@@ -912,6 +932,12 @@
   </section>
 
   <div id="toast" class="toast">Accion simulada</div>
+
+  <!-- Dependencias JS: jQuery, DataTables y Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-/xUj+3OJ+Y3o7y2X6a2a2Q5p2s6b1pXQ5K5m8q0i3Dk=" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
@@ -1186,6 +1212,61 @@
       `;
     }
 
+    // DataTables integration
+    let dtInstance = null;
+
+    function buildTableRowsHtml(rows) {
+      return rows.map(r => `
+        <tr>
+          <td>
+            <strong>${esc(r.Nombre)}</strong><br/>
+            <small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>
+          </td>
+          <td>${esc(r.TipoLicitacion)}</td>
+          <td>${fmt(r.Monto)}</td>
+          <td>${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
+          <td><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></td>
+          <td>
+            <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
+            <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function initDataTable() {
+      if (!window.jQuery || !$.fn.DataTable) return;
+      const $tbl = $('#dtTable');
+      $tbl.show();
+      // destroy previous instance if any
+      if (dtInstance) {
+        try { dtInstance.destroy(); } catch (e) {}
+        dtInstance = null;
+      }
+      const rowsHtml = buildTableRowsHtml(st.filtered);
+      $tbl.find('tbody').html(rowsHtml);
+      const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
+      dtInstance = $tbl.DataTable({
+        order: [[0, 'asc']],
+        pageLength: pageLen,
+        lengthChange: false,
+        searching: false,
+        // keep bootstrap styling
+        responsive: true
+      });
+    }
+
+    function refreshDataTable() {
+      if (!window.jQuery || !$.fn.DataTable) return initDataTable();
+      const $tbl = $('#dtTable');
+      if (dtInstance) {
+        try { dtInstance.destroy(); } catch (e) {}
+        dtInstance = null;
+      }
+      $tbl.find('tbody').html(buildTableRowsHtml(st.filtered));
+      initDataTable();
+    }
+
     function renderBoard(rows) {
       const lanes = ["No Tomada", "En Proceso", "Trabajada"];
       el.kanban.innerHTML = lanes.map(l => {
@@ -1219,13 +1300,30 @@
 
       if (empty) {
         el.cards.innerHTML = "";
-        el.list.innerHTML = "";
+        // if DataTables is present we keep the table DOM but hide it, otherwise clear the fallback list HTML
+        if (!(window.jQuery && $.fn.DataTable)) el.list.innerHTML = "";
         el.kanban.innerHTML = "";
+        if (window.jQuery && $.fn.DataTable) {
+          const tbl = document.getElementById('dtTable'); if (tbl) tbl.style.display = 'none';
+        }
         return;
       }
 
       if (st.view === "cards") renderCards(rows);
-      if (st.view === "list") renderList(rows);
+      if (st.view === "list") {
+        // If DataTables is available, use it (table is inside #dtTable). Otherwise fallback to renderList.
+        if (window.jQuery && $.fn.DataTable) {
+          // ensure cards/kanban hidden and show table
+          el.cards.style.display = "none";
+          el.kanban.style.display = "none";
+          // show table and populate
+          const tbl = document.getElementById('dtTable');
+          if (tbl) tbl.style.display = '';
+          refreshDataTable();
+        } else {
+          renderList(rows);
+        }
+      }
       if (st.view === "board") renderBoard(rows);
     }
 
