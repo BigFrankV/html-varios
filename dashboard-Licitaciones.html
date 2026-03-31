@@ -280,13 +280,15 @@
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap: 16px;
     }
     .card {
       aspect-ratio: 1/1;
-      min-height: 270px;
+      min-width: 0;
+      min-height: 220px;
       max-width: 100%;
+      font-size: 1rem;
       border: 1px solid var(--line);
       border-radius: 14px;
       background: linear-gradient(145deg, #fff, #fbfcff);
@@ -299,6 +301,9 @@
     @media (max-width: 900px) {
       .cards {
         grid-template-columns: 1fr;
+      }
+      .card {
+        min-height: 180px;
       }
     }
     /* Mejorar el contenido interno para que no se desborde */
@@ -510,18 +515,19 @@
       position: fixed;
       inset: 0;
       display: none;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 14px;
-      z-index: 40;
+      z-index: 9999 !important;
       background: #111a2c73;
     }
 
     .modal.open { display: flex; }
 
     .modal-card {
-      width: min(900px, 100%);
-      max-height: 90vh;
+      margin-top: 24px;
+      width: min(900px, 98vw);
+      max-height: 92vh;
       overflow: auto;
       border-radius: 16px;
       border: 1px solid var(--line);
@@ -764,12 +770,6 @@
                 <b>ESPEX</b>
               </div>
               <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-3"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
-              <nav class="nav-list mb-4">
-                <a class="nav-item active" href="#"><i class="bi bi-house-door me-2"></i>Inicio</a>
-                <a class="nav-item" href="#"><i class="bi bi-bar-chart-line me-2"></i>KPIs</a>
-                <a class="nav-item" href="#"><i class="bi bi-table me-2"></i>Tabla</a>
-                <a class="nav-item" href="#"><i class="bi bi-kanban me-2"></i>Kanban</a>
-              </nav>
               <form id="sidebar-filtros" class="mb-4">
                 <div class="field mb-2">
                   <label for="q">Buscar</label>
@@ -1041,7 +1041,11 @@
       edCom: document.getElementById("edCom"),
       openDoc: document.getElementById("openDoc"),
       save: document.getElementById("save"),
-      toast: document.getElementById("toast")
+      toast: document.getElementById("toast"),
+      fechaDesde: document.getElementById("fechaDesde"),
+      fechaHasta: document.getElementById("fechaHasta"),
+      ordenarPor: document.getElementById("ordenarPor"),
+      exportarExcel: document.getElementById("exportarExcel")
     };
 
     function toNumber(value) {
@@ -1160,6 +1164,9 @@
       const prod = el.producto ? el.producto.value : "";
       const est = el.estado.value;
       const visto = el.visto.value;
+      const fechaDesde = el.fechaDesde.value;
+      const fechaHasta = el.fechaHasta.value;
+      const ordenarPor = el.ordenarPor.value;
 
       st.filtered = st.rows.filter(r => {
         const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Producto, r.Descripcion, r.TipoLicitacion].join(" ").toLowerCase();
@@ -1172,8 +1179,27 @@
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
         if (visto === "NUEVO") mV = isNew(r);
-        return mQ && mCat && mOrg && mProd && mEst && mV;
+        // Filtro de fechas
+        let mFecha = true;
+        if (fechaDesde) {
+          const fc = dateOnly(r.FechaCierre);
+          mFecha = mFecha && (!fc || fc >= fechaDesde);
+        }
+        if (fechaHasta) {
+          const fc = dateOnly(r.FechaCierre);
+          mFecha = mFecha && (!fc || fc <= fechaHasta);
+        }
+        return mQ && mCat && mOrg && mProd && mEst && mV && mFecha;
       });
+
+      // Ordenar
+      if (ordenarPor === "dias") {
+        st.filtered.sort((a, b) => (Number(a.DiasRestantes) || 9999) - (Number(b.DiasRestantes) || 9999));
+      } else if (ordenarPor === "monto") {
+        st.filtered.sort((a, b) => (Number(b.Monto) || 0) - (Number(a.Monto) || 0));
+      } else if (ordenarPor === "nombre") {
+        st.filtered.sort((a, b) => String(a.Nombre || "").localeCompare(String(b.Nombre || ""), "es"));
+      }
 
       // reset to first page on filter change
       st.currentPage = 1;
