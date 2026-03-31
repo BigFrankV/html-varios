@@ -6,101 +6,607 @@
   <title>Dashboard CM Inspired</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
-  <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Bootstrap + DataTables + iconos + animaciones -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-f0dTJEW54V5tqF8KbX0FfYj62PuiqK+wr5ij0da9VUf9Ej14u8KXOYx+4H2nhQRDb5xE4NBN0D3aS1pX/6rWQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <style>
+    :root {
+      --bg: #f6f7fb;
+      --bg-soft: #eef1f8;
+      --panel: #ffffff;
+      --ink: #1f2a3d;
+      --muted: #6c7892;
+      --line: #e4e9f2;
+
+      --navy: #2747c7;
+      --navy-2: #3f5ad6;
+      --violet: #7f56d9;
+      --cyan: #07a0c3;
+
+      --ok: #1f9d5c;
+      --warn: #de8a00;
+      --danger: #d94242;
+      --slate: #7b879c;
+
+      --chip: #eff3ff;
+      --shadow: 0 14px 30px #22335a12;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #f8f9fa;
-      color: #212529;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: radial-gradient(circle at 0% 0%, #ffffff 0%, #f6f7fb 28%), var(--bg);
       min-height: 100vh;
     }
-    [data-bs-theme="dark"] {
-      background-color: #121212 !important;
-      color: #f8f9fa !important;
+
+    .app {
+      width: min(1200px, 96vw);
+      margin: 14px auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      justify-items: center;
     }
-    .navbar-top {
-      background-color: #fff;
-      border-bottom: 1px solid #dee2e6;
-      z-index: 1030;
+
+    .side {
+      background: linear-gradient(165deg, #223268, #2f4691 60%, #324db0);
+      border-radius: 22px;
+      color: #fff;
+      padding: 14px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      position: sticky;
+      top: 12px;
+      height: max-content;
+      box-shadow: var(--shadow);
     }
-    [data-bs-theme="dark"] .navbar-top {
-      background-color: #1e1e1e;
-      border-bottom: 1px solid #383838;
-    }
-    .card-kpi {
-      background-color: #fff;
-      border: 1px solid #dee2e6;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 6px;
       border-radius: 12px;
-      padding: 1.25rem;
-      box-shadow: 0 2px 8px #0001;
+      background: #ffffff17;
     }
-    [data-bs-theme="dark"] .card-kpi {
-      background-color: #1e1e1e;
-      border-color: #383838;
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(130deg, #8ea8ff, #d6dfff);
+      position: relative;
+      overflow: hidden;
     }
-    .kpi-value {
-      font-size: 1.75rem;
-      font-weight: 800;
-    }
-    .data-container {
-      background-color: #fff;
-      border: 1px solid #dee2e6;
-      border-radius: 12px;
-      padding: 20px;
-    }
-    [data-bs-theme="dark"] .data-container {
-      background-color: #1e1e1e;
-      border-color: #383838;
-    }
-    .table thead th {
-      background-color: #f8f9fa;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 700;
-      color: #6c757d;
-      border-top: none;
-    }
-    [data-bs-theme="dark"] .table thead th {
-      background-color: #121212;
-      color: #aab0b6;
-    }
-    .tender-title {
-      font-weight: 600;
-      color: #0d6efd;
-      display: block;
-      margin-bottom: 2px;
-    }
-    .product-tag {
-      background-color: rgba(13, 110, 253, 0.08);
-      color: #0d6efd;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-    .status-dot {
-      height: 8px;
-      width: 8px;
+
+    .logo-mark:before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      display: inline-block;
-      margin-right: 5px;
+      background: #2d47bf;
+      right: -4px;
+      top: -4px;
     }
-    .nav-pills .nav-link {
-      color: #6c757d;
+
+    .logo b { font-family: "Outfit", sans-serif; letter-spacing: .25px; }
+    .logo span { font-size: .75rem; opacity: .86; display: block; margin-top: 2px; }
+
+    .nav-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav-item {
+      border-radius: 11px;
+      padding: 9px 10px;
+      font-size: .84rem;
+      font-weight: 600;
+      color: #dce6ff;
+      background: transparent;
       border: 1px solid transparent;
     }
-    .nav-pills .nav-link.active {
-      background-color: #0d6efd;
-      color: white;
-    }
-  
 
+    .nav-item.active {
+      background: #ffffff1c;
+      border-color: #ffffff35;
+      color: #fff;
+    }
+
+    .small-card {
+      border-radius: 12px;
+      padding: 10px;
+      background: #ffffff17;
+      border: 1px solid #ffffff2d;
+      display: grid;
+      gap: 4px;
+      font-size: .8rem;
+    }
+
+    .small-card b { font-size: 1.05rem; }
+
+    .main {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .top {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+    }
+
+    .top-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-family: "Outfit", sans-serif;
+      font-size: clamp(1.2rem, 2.1vw, 1.7rem);
+      letter-spacing: .2px;
+    }
+
+    .title p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid #dce4f4;
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: .74rem;
+      color: #38507f;
+      font-weight: 700;
+    }
+
+    .theme-toggle {
+      min-width: 128px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: linear-gradient(145deg, #fff, #fbfcff);
+      display: grid;
+      gap: 3px;
+    }
+
+    .kpi span { color: var(--muted); font-size: .75rem; font-weight: 700; }
+    .kpi b { font-size: 1.2rem; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr)) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .field { display: grid; gap: 4px; }
+    .field label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+
+    input, select, button, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 700;
+      background: linear-gradient(120deg, var(--navy), var(--violet));
+    }
+
+    .btn-lite {
+      width: auto;
+      border: 1px solid #d8e2f1;
+      background: #f5f8ff;
+      color: #37517d;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .switch {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .switch-left,
+    .switch-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .switch .btn-lite.active {
+      background: linear-gradient(120deg, var(--navy), var(--violet));
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 10px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(145deg, #fff, #fbfcff);
+      padding: 11px;
+      display: grid;
+      gap: 8px;
+      animation: rise .24s ease;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .head-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 8px;
+    }
+
+    .code {
+      font-family: monospace;
+      font-size: .73rem;
+      background: #f1f5ff;
+      border-radius: 8px;
+      color: #3a5494;
+      padding: 4px 6px;
+      max-width: 66%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .flags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: end; }
+
+    .flag {
+      border-radius: 999px;
+      padding: 4px 7px;
+      font-size: .67rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .f-new { background: var(--navy); }
+    .f-v { background: var(--ok); }
+    .f-nv { background: var(--slate); }
+    .f-u { background: var(--danger); }
+
+    .name {
+      margin: 0;
+      font-size: .94rem;
+      line-height: 1.33;
+    }
+
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.45;
+      max-height: 5.2em;
+      overflow: hidden;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 7px;
+      font-size: .79rem;
+    }
+
+    .kv b { color: #425782; }
+
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .money { font-weight: 800; color: #263b66; }
+
+    .status {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: .67rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .st-nt { background: #7e8da4; }
+    .st-ep { background: var(--warn); }
+    .st-tr { background: var(--ok); }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .link-btn {
+      border: none;
+      width: auto;
+      background: transparent;
+      color: #2e56ad;
+      font-weight: 800;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .list,
+    .kanban {
+      display: none;
+    }
+
+    .list {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .list-head,
+    .list-row {
+      display: grid;
+      grid-template-columns: 1.2fr .68fr .62fr .55fr .58fr auto;
+      gap: 7px;
+      align-items: center;
+      padding: 9px;
+    }
+
+    .list-head {
+      background: #f3f6ff;
+      border-bottom: 1px solid var(--line);
+      font-size: .75rem;
+      color: #3a527f;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .list-row {
+      border-bottom: 1px solid #edf1f9;
+      font-size: .82rem;
+    }
+
+    .list-row:last-child { border-bottom: none; }
+
+    .name-cell { display: grid; gap: 2px; min-width: 0; }
+    .name-cell strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .name-cell span { font-size: .74rem; color: var(--muted); }
+
+    .kanban {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcff;
+      padding: 8px;
+      display: grid;
+      gap: 8px;
+      min-height: 120px;
+    }
+
+    .lane-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 5px;
+      border-bottom: 1px dashed #d8deeb;
+      font-size: .8rem;
+      color: #3b5687;
+      font-weight: 800;
+    }
+
+    .count {
+      border: 1px solid #d8e1f0;
+      border-radius: 999px;
+      background: #eff3ff;
+      padding: 2px 7px;
+      font-size: .72rem;
+      font-family: monospace;
+    }
+
+    .mini {
+      border: 1px solid #dde4f0;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .mini h4 {
+      margin: 0;
+      font-size: .82rem;
+      line-height: 1.3;
+    }
+
+    .mini-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .73rem;
+      color: #51698f;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 40;
+      background: #111a2c73;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(900px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 8px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.35;
+    }
+
+    .close {
+      width: auto;
+      border: 1px solid #d8e1f0;
+      background: #f3f6ff;
+      color: #3b5687;
+      font-weight: 700;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .box {
+      border: 1px solid #dde5f1;
+      border-radius: 10px;
+      background: #fbfdff;
+      padding: 8px;
+      display: grid;
+      gap: 4px;
+      font-size: .83rem;
+    }
+
+    .box b { font-size: .75rem; color: #415b8a; }
+
+    .full {
+      border: 1px solid #dde5f1;
+      border-radius: 10px;
+      background: #fbfdff;
+      padding: 10px;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      color: #526a8f;
+      font-size: .88rem;
+    }
+
+    .edit {
+      border: 1px solid #dde5f1;
+      border-radius: 10px;
+      background: #fcfdff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .save {
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toast {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      background: #2d4cbfcc;
+      color: #fff;
+      border: 1px solid #5570cb;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: .82rem;
+      display: none;
+      z-index: 60;
+    }
+
+    .toast.show { display: block; }
 
     body[data-theme="dark"], body[data-bs-theme="dark"] {
       --bg: #0f1421;
@@ -232,199 +738,202 @@
     }
   </style>
 </head>
-  <body data-bs-theme="light">
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-top fixed-top shadow-sm animate__animated animate__fadeInDown">
-      <div class="container-fluid px-4">
-        <span class="navbar-brand fw-bold"><i class="fa fa-scale-balanced me-2 text-primary"></i>Licitaciones <span class="text-primary">Mercado Público</span></span>
-        <div class="d-flex align-items-center gap-3">
-          <div class="form-check form-switch mt-1">
-            <input class="form-check-input" type="checkbox" id="themeToggle">
-            <label class="form-check-label small" for="themeToggle">Modo Oscuro</label>
-          </div>
-          <button id="viewFields" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa fa-table me-1"></i>Ver campos</button>
-        </div>
+<body>
+  <div class="container-fluid py-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+      <div>
+        <h1 class="h4 mb-1">Dashboard Licitaciones</h1>
+        <p class="mb-0 text-muted">Datos Mercado Público + filtros dinámicos + gestión local</p>
       </div>
-    </nav>
-
-    <main class="container-fluid px-4" style="margin-top: 80px;">
-      <!-- KPIs -->
-      <div class="row g-3 mb-4 animate__animated animate__fadeIn">
-        <div class="col-md-3">
-          <div class="card-kpi shadow-sm">
-            <div class="small text-muted fw-bold mb-1">TOTAL MERCADO</div>
-            <div class="kpi-value" id="kNew">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-kpi shadow-sm border-start border-warning border-4">
-            <div class="small text-muted fw-bold mb-1">SIN TOMAR</div>
-            <div class="kpi-value text-warning" id="kFree">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-kpi shadow-sm">
-            <div class="small text-muted fw-bold mb-1">MONTO ESTIMADO</div>
-            <div class="kpi-value text-success" id="kMonto">$0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-kpi shadow-sm">
-            <div class="small text-muted fw-bold mb-1">TRABAJADAS</div>
-            <div class="kpi-value" id="kDone">0</div>
-          </div>
-        </div>
+      <div class="btn-group mb-2">
+        <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button"><i class="fa fa-moon me-1"></i>Modo oscuro</button>
+        <button id="reload" class="btn btn-primary btn-sm" type="button"><i class="fa fa-sync-alt me-1"></i>Recargar CSV</button>
       </div>
+    </div>
 
-      <!-- FILTROS Y BUSQUEDA -->
-      <div class="card border-0 shadow-sm mb-4 animate__animated animate__fadeIn">
-        <div class="card-body">
-          <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-              <div class="input-group">
-                <span class="input-group-text bg-transparent border-end-0"><i class="fa fa-search text-muted"></i></span>
-                <input id="q" type="text" class="form-control border-start-0" placeholder="Buscar licitación, ID, organismo, producto...">
+    <div class="row g-3">
+      <aside class="col-12 col-xl-3">
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body p-3">
+            <h6 class="card-title">Resumen KPIs</h6>
+            <div class="row g-2 text-center">
+              <div class="col-6 col-xxl-12">
+                <div class="p-2 rounded bg-light">
+                  <small class="text-muted">Total</small>
+                  <h5 id="kNew" class="mb-0">0</h5>
+                </div>
+              </div>
+              <div class="col-6 col-xxl-12">
+                <div class="p-2 rounded bg-light">
+                  <small class="text-muted">En Proceso</small>
+                  <h5 id="kProg" class="mb-0">0</h5>
+                </div>
+              </div>
+              <div class="col-6 col-xxl-12">
+                <div class="p-2 rounded bg-light">
+                  <small class="text-muted">Trabajadas</small>
+                  <h5 id="kDone" class="mb-0">0</h5>
+                </div>
+              </div>
+              <div class="col-6 col-xxl-12">
+                <div class="p-2 rounded bg-light">
+                  <small class="text-muted">Sin tomar</small>
+                  <h5 id="kFree" class="mb-0">0</h5>
+                </div>
               </div>
             </div>
-            <div class="col-md-2">
-              <select id="cat" class="form-select"><option value="">Tipo: Todos</option></select>
-            </div>
-            <div class="col-md-2">
-              <select id="org" class="form-select"><option value="">Organismo: Todos</option></select>
-            </div>
-            <div class="col-md-2">
-              <select id="producto" class="form-select"><option value="">Producto: Todos</option></select>
-            </div>
-            <div class="col-md-2 d-flex gap-2">
-              <button id="reset" class="btn btn-outline-primary w-100"><i class="fa fa-rotate"></i> Reset</button>
-              <button id="reload" class="btn btn-light"><i class="fa fa-refresh"></i></button>
-            </div>
           </div>
         </div>
-      </div>
 
-      <!-- SWITCH DE VISTAS -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex align-items-center gap-3">
-          <h5 class="mb-0 fw-bold">Listado de Oportunidades</h5>
-          <span class="badge bg-light text-dark border" id="mShow">Mostrando: 0</span>
-          <span class="badge bg-light text-dark border" id="mTotal">Total: 0</span>
-          <span class="badge bg-info-subtle text-info border" id="mUpd">Actualizado: cargando datos...</span>
-        </div>
-        <ul class="nav nav-pills nav-pills-sm" id="pills-tab" role="tablist">
-          <li class="nav-item">
-            <button id="viewList" class="nav-link active" data-bs-toggle="pill" type="button"><i class="fa fa-list me-1"></i> Lista</button>
-          </li>
-          <li class="nav-item">
-            <button id="viewCards" class="nav-link" data-bs-toggle="pill" type="button"><i class="fa fa-th-large me-1"></i> Cards</button>
-          </li>
-          <li class="nav-item">
-            <button id="viewBoard" class="nav-link" data-bs-toggle="pill" type="button"><i class="fa fa-columns me-1"></i> Tablero</button>
-          </li>
-        </ul>
-      </div>
-
-      <!-- CONTENEDOR PRINCIPAL DE VISTAS -->
-      <div class="data-container shadow-sm animate__animated animate__fadeIn">
-        <!-- CARDS VIEW -->
-        <div id="cards" class="row g-3" style="display:none;"></div>
-        <!-- LIST VIEW -->
-        <div id="list" style="display:block;">
-          <div class="table-responsive">
-            <table id="dtTable" class="table table-striped table-hover align-middle" style="width:100%; display:none;">
-              <thead class="table-light">
-                <tr>
-                  <th>Nombre</th>
-                  <th>Tipo</th>
-                  <th>Monto</th>
-                  <th>Días</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <!-- PAGINACIÓN Y CONTROLES -->
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <div class="d-flex gap-2 align-items-center">
-              <label for="pageSize" class="form-label mb-0 small">Ver</label>
-              <select id="pageSize" class="form-select form-select-sm w-auto">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50" selected>50</option>
-                <option value="100">100</option>
-                <option value="all">Todo</option>
+        <div class="card shadow-sm">
+          <div class="card-body p-3">
+            <h6 class="card-title">Filtros</h6>
+            <div class="mb-2">
+              <label for="q" class="form-label small">Busqueda</label>
+              <input id="q" type="text" class="form-control form-control-sm" placeholder="nombre, ID, organismo..." />
+            </div>
+            <div class="mb-2">
+              <label for="cat" class="form-label small">Tipo Licitación</label>
+              <select id="cat" class="form-select form-select-sm"><option value="">Todas</option></select>
+            </div>
+            <div class="mb-2">
+              <label for="org" class="form-label small">Organismo</label>
+              <select id="org" class="form-select form-select-sm"><option value="">Todos</option></select>
+            </div>
+            <div class="mb-2">
+              <label for="producto" class="form-label small">Producto</label>
+              <select id="producto" class="form-select form-select-sm"><option value="">Todos</option></select>
+            </div>
+            <div class="mb-2">
+              <label for="estado" class="form-label small">Estado</label>
+              <select id="estado" class="form-select form-select-sm">
+                <option value="">Todos</option><option value="No Tomada">No Tomada</option><option value="En Proceso">En Proceso</option><option value="Trabajada">Trabajada</option>
               </select>
             </div>
-            <div id="pagination" class="btn-group" role="group">
-              <button id="prevPage" class="btn btn-outline-secondary btn-sm" type="button"><i class="fa fa-chevron-left"></i></button>
-              <span id="pageInfo" class="btn btn-light btn-sm disabled">1 / 1</span>
-              <button id="nextPage" class="btn btn-outline-secondary btn-sm" type="button"><i class="fa fa-chevron-right"></i></button>
+            <div class="mb-2">
+              <label for="visto" class="form-label small">Visto</label>
+              <select id="visto" class="form-select form-select-sm">
+                <option value="">Todos</option><option value="FALSE">No visto</option><option value="TRUE">Visto</option><option value="NUEVO">Solo nuevos</option>
+              </select>
+            </div>
+            <div class="d-grid gap-2">
+              <button id="reset" class="btn btn-sm btn-outline-secondary" type="button"><i class="fa fa-rotate-left me-1"></i>Reset filtros</button>
+              <button id="quickNew" class="btn btn-sm btn-outline-primary" type="button"><i class="fa fa-star me-1"></i>Nuevos</button>
+              <button id="quickUrg" class="btn btn-sm btn-outline-warning" type="button"><i class="fa fa-bolt me-1"></i>Urgentes</button>
+              <button id="quickFree" class="btn btn-sm btn-outline-info" type="button"><i class="fa fa-user-clock me-1"></i>Sin tomar</button>
             </div>
           </div>
         </div>
-        <!-- KANBAN VIEW -->
-        <div id="kanban" style="display:none;"></div>
-        <!-- EMPTY STATE -->
-        <div id="empty" class="alert alert-warning text-center mt-3" style="display:none;">No hay resultados para esos filtros.</div>
-      </div>
-    </main>
+      </aside>
 
-      <section class="section">
-        <section id="cards" class="cards"></section>
-        <section id="list" class="list">
-          <!-- DataTable (se inicializa dinámicamente). Se mantiene el fallback de lista para dispositivos sin JS o si DataTables falla -->
-          <div class="table-responsive" style="padding:12px;">
-            <table id="dtTable" class="table table-hover align-middle" style="width:100%; display:none;">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Tipo</th>
-                  <th>Monto</th>
-                  <th>Dias</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+      <section class="col-12 col-xl-9">
+        <div class="card shadow-sm">
+          <div class="card-body p-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+              <div class="d-flex gap-2">
+                <button id="viewCards" class="btn btn-sm btn-outline-primary active">Cards</button>
+                <button id="viewList" class="btn btn-sm btn-outline-primary">Lista</button>
+                <button id="viewBoard" class="btn btn-sm btn-outline-primary">Tablero</button>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-secondary"><i class="fa fa-table me-1"></i> <span id="mTotal">Total: 0</span></span>
+                <span class="badge bg-secondary"><i class="fa fa-filter me-1"></i> <span id="mShow">Mostrando: 0</span></span>
+                <span class="badge bg-secondary"><i class="fa fa-clock me-1"></i> <span id="mUpd">Actualizado: cargando datos...</span></span>
+                <button id="viewFields" class="btn btn-sm btn-outline-dark"><i class="fa fa-eye me-1"></i>Ver campos</button>
+              </div>
+            </div>
+
+            <div id="cards" class="cards"></div>
+            <div id="list" class="list" style="display:none;"></div>
+            <div id="kanban" class="kanban" style="display:none;"></div>
+            <div id="empty" class="alert alert-warning mt-3" style="display:none;">No hay resultados para esos filtros.</div>
+
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+              <div class="small text-muted">Página <span id="pageInfo">1 / 1</span></div>
+              <div class="btn-group btn-group-sm" role="group">
+                <button id="prevPage" class="btn btn-outline-secondary">Anterior</button>
+                <button id="nextPage" class="btn btn-outline-secondary">Siguiente</button>
+              </div>
+              <div class="input-group input-group-sm" style="width: 155px;">
+                <span class="input-group-text">Mostrar</span>
+                <select id="pageSize" class="form-select">
+                  <option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </section>
-        <section id="kanban" class="kanban"></section>
-        <div id="empty" class="chip" style="display:none; text-align:center; padding:16px;">No hay resultados para esos filtros.</div>
+        </div>
       </section>
-    </section>
-  </main>
+    </div>
+  </div>
 
-    <!-- MODAL DE DETALLE BOOTSTRAP -->
-    <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="detalleModalLabel"><i class="fa fa-info-circle me-2"></i>Detalle de Oportunidad</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+    <div id="toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;"><div class="d-flex"><div class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" onclick="document.getElementById('toast').style.display='none'"></button></div></div>
+  </div>
+
+  <section id="modal" class="modal" aria-hidden="true">
+    <article class="modal-card">
+      <header class="modal-head">
+        <div>
+          <span id="mdCode" class="code">-</span>
+          <h3 id="mdTitle" class="modal-title">Detalle</h3>
+        </div>
+        <button id="mdClose" class="close" type="button">Cerrar</button>
+      </header>
+
+      <div class="grid3">
+        <div class="box"><b>Organismo</b><span id="mdOrg">-</span></div>
+        <div class="box"><b>Producto</b><span id="mdProv">-</span></div>
+        <div class="box"><b>Monto</b><span id="mdMonto">-</span></div>
+        <div class="box"><b>Publicacion</b><span id="mdPub">-</span></div>
+        <div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div>
+        <div class="box"><b>Dias</b><span id="mdDias">-</span></div>
+        <div class="box"><b>Tipo Licitacion</b><span id="mdCat">-</span></div>
+        <div class="box"><b>Estado</b><span id="mdEstado">-</span></div>
+        <div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div>
+      </div>
+
+      <div>
+        <b style="font-size:.75rem; color:#415b8a;">Descripcion</b>
+        <div id="mdDesc" class="full"></div>
+      </div>
+
+      <section class="edit">
+        <strong style="font-size:.9rem; color:#324f84;">Gestion (simulada)</strong>
+        <div class="edit-grid">
+          <div class="field">
+            <label for="edVisto">Visto</label>
+            <select id="edVisto">
+              <option value="FALSE">No visto</option>
+              <option value="TRUE">Visto</option>
+            </select>
           </div>
-          <div class="modal-body">
-            <div id="detalleBody">Cargando...</div>
+          <div class="field">
+            <label for="edEstado">Estado</label>
+            <select id="edEstado">
+              <option value="No Tomada">No Tomada</option>
+              <option value="En Proceso">En Proceso</option>
+              <option value="Trabajada">Trabajada</option>
+            </select>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-success" id="btnAccionDetalle"><i class="fa fa-check"></i> Acción</button>
+          <div class="field">
+            <label for="edOwner">Responsable</label>
+            <input id="edOwner" type="text" placeholder="Ej: Camila P." />
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- TOASTS BOOTSTRAP -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-      <div id="mainToast" class="toast align-items-center text-bg-primary border-0 animate__animated animate__fadeInUp" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body"><i class="fa fa-info-circle me-2"></i><span id="toastMsg">Mensaje</span></div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        <div class="field">
+          <label for="edCom">Comentario</label>
+          <textarea id="edCom" rows="3" placeholder="Notas de seguimiento comercial..."></textarea>
         </div>
-      </div>
-    </div>
+
+        <div class="save">
+          <button id="openDoc" class="btn-lite" type="button">Abrir documento</button>
+          <button id="save" class="btn" type="button">Guardar cambios (local)</button>
+        </div>
+      </section>
+    </article>
+  </section>
 
   <section id="fieldsModal" class="modal" aria-hidden="true">
     <article class="modal-card">
@@ -434,792 +943,41 @@
         </div>
         <button id="fieldsClose" class="close" type="button">Cerrar</button>
       </header>
-      <div id="fieldsList" class="full" style="white-space:pre-wrap; max-height:60vh; overflow:auto;">
-        <!-- Lista de campos se llenará dinámicamente -->
-      </div>
+      <div id="fieldsList" class="full" style="white-space:pre-wrap; max-height:60vh; overflow:auto;"></div>
     </article>
   </section>
 
-  <div id="toast" class="toast">Accion simulada</div>
-
-  <!-- Dependencias JS: jQuery, DataTables y Bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
-
-    const st = { rows: [], filtered: [], view: "cards", selected: null };
-
-    const el = {
-      q: document.getElementById("q"),
-      cat: document.getElementById("cat"),
-      org: document.getElementById("org"),
-      producto: document.getElementById("producto"),
-      estado: document.getElementById("estado"),
-      visto: document.getElementById("visto"),
-      quickUrg: document.getElementById("quickUrg"),
-      quickNew: document.getElementById("quickNew"),
-      quickFree: document.getElementById("quickFree"),
-      reset: document.getElementById("reset"),
-      pageSize: document.getElementById("pageSize"),
-      prevPage: document.getElementById("prevPage"),
-      nextPage: document.getElementById("nextPage"),
-      pageInfo: document.getElementById("pageInfo"),
-      viewCards: document.getElementById("viewCards"),
-      viewList: document.getElementById("viewList"),
-      viewBoard: document.getElementById("viewBoard"),
-      reload: document.getElementById("reload"),
-      cards: document.getElementById("cards"),
-      list: document.getElementById("list"),
-      kanban: document.getElementById("kanban"),
-      empty: document.getElementById("empty"),
-      kNew: document.getElementById("kNew"),
-      kProg: document.getElementById("kProg"),
-      kDone: document.getElementById("kDone"),
-      kMonto: document.getElementById("kMonto"),
-      kFree: document.getElementById("kFree"),
-      mTotal: document.getElementById("mTotal"),
-      mShow: document.getElementById("mShow"),
-      mUpd: document.getElementById("mUpd"),
-      themeToggle: document.getElementById("themeToggle"),
-      modal: document.getElementById("modal"),
-      mdClose: document.getElementById("mdClose"),
-      mdCode: document.getElementById("mdCode"),
-      mdTitle: document.getElementById("mdTitle"),
-      mdOrg: document.getElementById("mdOrg"),
-      mdProv: document.getElementById("mdProv"),
-      mdMonto: document.getElementById("mdMonto"),
-      mdPub: document.getElementById("mdPub"),
-      mdCloseDate: document.getElementById("mdCloseDate"),
-      mdDias: document.getElementById("mdDias"),
-      mdCat: document.getElementById("mdCat"),
-      mdEstado: document.getElementById("mdEstado"),
-      mdPrio: document.getElementById("mdPrio"),
-      mdDesc: document.getElementById("mdDesc"),
-      edVisto: document.getElementById("edVisto"),
-      edEstado: document.getElementById("edEstado"),
-      edOwner: document.getElementById("edOwner"),
-      edCom: document.getElementById("edCom"),
-      openDoc: document.getElementById("openDoc"),
-      save: document.getElementById("save"),
-      toast: document.getElementById("toast")
-    };
-
-    function toNumber(value) {
-      if (value == null || value === "") return 0;
-      const clean = String(value).replace(/[.$\s]/g, "").replace(/,/g, ".");
-      const n = Number(clean);
-      return Number.isFinite(n) ? n : 0;
-    }
-
-    function normalizeRow(r) {
-      // Preserve the original CSV row keys exactly under _raw
-      const raw = {};
-      for (const k in r) {
-        // keep original header keys as-is (trim whitespace)
-        const key = String(k || "").trim();
-        raw[key] = r[k];
-      }
-
-      // Start output with all original keys intact
-      const out = Object.assign({}, raw);
-      out._raw = Object.assign({}, raw);
-
-      // Provide convenient aliases only if they are missing, do NOT remove or rename original headers
-      if (!out.CodigoExterno) out.CodigoExterno = raw['ID Licitacion'] || raw['ID Licitación'] || raw.CodigoExterno || raw['Codigo Externo'] || "";
-      if (!out.Nombre) out.Nombre = raw.Nombre || raw['Nombre'] || "";
-      out.Monto = toNumber(raw['Monto Estimado'] || raw.Monto || raw['Monto'] || 0);
-      if (!out.FechaCierre) out.FechaCierre = raw['Fecha Cierre'] || raw.FechaCierre || "";
-      if (!out.Descripcion) out.Descripcion = raw.Descripcion || raw['Descripcion'] || raw['Descripción'] || "";
-      if (!out.TipoLicitacion) out.TipoLicitacion = raw['Tipo Licitacion'] || raw.Categoria || raw['Codigo Tipo'] || "Sin tipo";
-      if (!out.Organismo) out.Organismo = raw['Nombre Organismo'] || raw.Organismo || "";
-      if (!out.EstadoAPI) out.EstadoAPI = raw.Estado || raw['Estado'] || "";
-      if (!out.CodigoEstadoAPI) out.CodigoEstadoAPI = raw['Codigo Estado'] || raw['CodigoEstado'] || "";
-      if (!out.FechaPublicacion) out.FechaPublicacion = raw['Fecha Publicacion'] || raw.FechaPublicacion || "";
-      if (!out.DiasRestantes) out.DiasRestantes = raw['Dias Disponibles'] || raw.DiasRestantes || raw['Dias Cierre Licitacion'] || "";
-      if (!out.URLLicitacion) out.URLLicitacion = raw.URL || raw.URLLicitacion || raw['URL'] || "";
-      out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
-      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "No Tomada";
-      if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
-      if (!out.Responsable) out.Responsable = raw.Responsable || raw['Nombre Usuario'] || "";
-      if (!out.Comentario) out.Comentario = raw.Comentario || "";
-      if (!out.Prioridad) out.Prioridad = raw.Prioridad || "Media";
-
-      return out;
-    }
-
-    const fmt = n => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(Number(n) || 0);
-    const dateOnly = value => {
-      if (!value) return "-";
-      const s = String(value).trim();
-      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-      if (isoMatch) return isoMatch[1];
-      const d = new Date(s);
-      if (Number.isNaN(d.getTime())) return s;
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    };
-    const isNew = r => {
-      const d = new Date(r.FechaPublicacion);
-      if (Number.isNaN(d.getTime())) return false;
-      return (Date.now() - d.getTime()) <= 72 * 60 * 60 * 1000;
-    };
-    const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
-
-    function toast(msg) {
-      el.toast.textContent = msg;
-      el.toast.classList.add("show");
-      clearTimeout(toast._t);
-      toast._t = setTimeout(() => el.toast.classList.remove("show"), 1800);
-    }
+    const THEME_KEY = 'dashboard-cm-theme';
+    const themeToggleBtn = document.getElementById('themeToggle');
 
     function applyTheme(theme) {
-      const next = theme === "dark" ? "dark" : "light";
-      document.body.setAttribute("data-theme", next);
-      // also set Bootstrap theme attribute so Bootstrap components follow dark mode
-      document.body.setAttribute("data-bs-theme", next);
-      if (el.themeToggle) el.themeToggle.textContent = next === "dark" ? "Modo claro" : "Modo oscuro";
-      localStorage.setItem("cm-theme", next);
+      const next = theme === 'dark' ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', next);
+      document.body.setAttribute('data-bs-theme', next);
+      if (themeToggleBtn) {
+        themeToggleBtn.innerHTML = next === 'dark'
+          ? '<i class="fa fa-sun me-1"></i>Modo claro'
+          : '<i class="fa fa-moon me-1"></i>Modo oscuro';
+      }
+      localStorage.setItem(THEME_KEY, next);
     }
 
     function toggleTheme() {
-      const current = document.body.getAttribute("data-theme") || "light";
-      const next = current === "dark" ? "light" : "dark";
-      applyTheme(next);
-      toast(`Tema ${next === "dark" ? "oscuro" : "claro"} activado.`);
+      const current = document.body.getAttribute('data-theme') || 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
     }
 
-    function statusClass(s) {
-      if (s === "Trabajada") return "st-tr";
-      if (s === "En Proceso") return "st-ep";
-      return "st-nt";
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', toggleTheme);
     }
 
-    function flagByDays(dias) {
-      const n = Number(dias);
-      if (!Number.isFinite(n)) return "f-nv";
-      if (n <= 2) return "f-u";
-      if (n <= 7) return "f-new";
-      return "f-v";
-    }
-
-    function fillFilters() {
-      const orgs = [...new Set(st.rows.map(r => r.Organismo).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
-      const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
-      const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
-      el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
-      el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
-      if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
-    }
-
-    function apply() {
-      const q = el.q.value.trim().toLowerCase();
-      const cat = el.cat.value;
-      const org = el.org.value;
-      const prod = el.producto ? el.producto.value : "";
-      const est = el.estado.value;
-      const visto = el.visto.value;
-
-      st.filtered = st.rows.filter(r => {
-        const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Producto, r.Descripcion, r.TipoLicitacion].join(" ").toLowerCase();
-        const mQ = !q || text.includes(q);
-        const mCat = !cat || r.TipoLicitacion === cat;
-        const mOrg = !org || r.Organismo === org;
-        const mProd = !prod || (r.Producto === prod);
-        const mEst = !est || r.EstadoTrabajo === est;
-        let mV = true;
-        if (visto === "TRUE") mV = r.Visto === "TRUE";
-        if (visto === "FALSE") mV = r.Visto !== "TRUE";
-        if (visto === "NUEVO") mV = isNew(r);
-        return mQ && mCat && mOrg && mProd && mEst && mV;
-      });
-
-      // reset to first page on filter change
-      st.currentPage = 1;
-      updatePagination();
-      render();
-      kpis();
-    }
-
-    function kpis() {
-      const total = st.rows.length;
-      const prog = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
-      const done = st.rows.filter(r => r.EstadoTrabajo === "Trabajada").length;
-      const free = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada").length;
-      const m = st.filtered.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
-
-      if (el.kNew) el.kNew.textContent = total;
-      if (el.kProg) el.kProg.textContent = prog;
-      if (el.kDone) el.kDone.textContent = done;
-      if (el.kMonto) el.kMonto.textContent = fmt(m);
-      if (el.kFree) el.kFree.textContent = free;
-      if (el.mTotal) el.mTotal.textContent = `Total: ${total}`;
-      if (el.mShow) el.mShow.textContent = `Mostrando: ${st.filtered.length}`;
-      if (el.mUpd) el.mUpd.textContent = `Actualizado: ${new Date().toLocaleString("es-CL")}`;
-    }
-
-    function renderCards(rows) {
-      el.cards.innerHTML = rows.map(r => {
-        const visto = r.Visto === "TRUE";
-        return `
-          <article class="card">
-            <div class="head-row">
-              <span class="code">${esc(r.CodigoExterno)}</span>
-              <div class="flags">
-                <span class="flag ${flagByDays(r.DiasRestantes)}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "sin cierre"}</span>
-                ${isNew(r) ? '<span class="flag f-new">NUEVO</span>' : ""}
-                <span class="flag ${visto ? "f-v" : "f-nv"}">${visto ? "VISTO" : "NO VISTO"}</span>
-              </div>
-            </div>
-            <h3 class="name">${esc(r.Nombre)}</h3>
-            <p class="desc">${esc(r.Descripcion || "Sin descripcion")}</p>
-            <div class="kv">
-              <b>Tipo</b><span>${esc(r.TipoLicitacion)}</span>
-              <b>Organismo</b><span>${esc(r.Organismo)}</span>
-              <b>Producto</b><span>${esc(r.Producto || "-")}</span>
-            </div>
-            <div class="foot">
-              <div>
-                <div class="money">${fmt(r.Monto)}</div>
-                <span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span>
-              </div>
-              <div class="actions">
-                <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
-                <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
-              </div>
-            </div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    function renderList(rows) {
-      el.list.innerHTML = `
-        <header class="list-head">
-          <span>Nombre</span><span>Tipo</span><span>Monto</span><span>Dias</span><span>Estado</span><span>Acciones</span>
-        </header>
-        ${rows.map(r => `
-          <article class="list-row">
-            <div class="name-cell">
-              <strong>${esc(r.Nombre)}</strong>
-              <span>${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</span>
-            </div>
-            <span>${esc(r.TipoLicitacion)}</span>
-            <span>${fmt(r.Monto)}</span>
-            <span>${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</span>
-            <span><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></span>
-            <div class="actions">
-              <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
-              <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
-            </div>
-          </article>
-        `).join("")}
-      `;
-    }
-
-    // DataTables integration
-    let dtInstance = null;
-
-    function buildTableRowsHtml(rows) {
-      return rows.map(r => `
-        <tr>
-          <td>
-            <strong>${esc(r.Nombre)}</strong><br/>
-            <small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>
-          </td>
-          <td>${esc(r.TipoLicitacion)}</td>
-          <td data-order="${Number(r.Monto) || 0}">${fmt(r.Monto)}</td>
-          <td data-order="${Number(r.DiasRestantes) || 0}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
-          <td><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></td>
-          <td>
-            <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
-            <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function initDataTable() {
-      if (!window.jQuery || !$.fn.DataTable) return;
-      const $tbl = $('#dtTable');
-      $tbl.show();
-      // destroy previous instance if any
-      if (dtInstance) {
-        try { dtInstance.destroy(); } catch (e) {}
-        dtInstance = null;
-      }
-      const rowsHtml = buildTableRowsHtml(st.filtered);
-      $tbl.find('tbody').html(rowsHtml);
-      const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
-      // hide custom pagination controls in toolbar
-      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = 'none';
-      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
-
-      // bind external search box to DataTable search
-      if (el.q) {
-        $(el.q).off('input.dtsearch').on('input.dtsearch', function() {
-          if (dtInstance) dtInstance.search(this.value).draw();
-        });
-      }
-
-      dtInstance = $tbl.DataTable({
-        order: [[0, 'asc']],
-        ordering: true,
-        pageLength: pageLen,
-        lengthChange: false,
-        searching: true,
-        responsive: true,
-        // place only table then pagination+info at bottom
-        dom: 't<"d-flex justify-content-between mt-2"ip>'
-      });
-    }
-
-    function refreshDataTable() {
-      if (!window.jQuery || !$.fn.DataTable) return initDataTable();
-      const $tbl = $('#dtTable');
-      if (dtInstance) {
-        try { dtInstance.destroy(); } catch (e) {}
-        dtInstance = null;
-      }
-      $tbl.find('tbody').html(buildTableRowsHtml(st.filtered));
-      initDataTable();
-    }
-
-    function renderBoard(rows) {
-      const lanes = ["No Tomada", "En Proceso", "Trabajada"];
-      el.kanban.innerHTML = lanes.map(l => {
-        const rs = rows.filter(r => (r.EstadoTrabajo || "No Tomada") === l);
-        return `
-          <article class="lane">
-            <header class="lane-head"><span>${l}</span><span class="count">${rs.length}</span></header>
-            ${rs.map(r => `
-              <div class="mini">
-                <span class="code">${esc(r.CodigoExterno)}</span>
-                <h4>${esc(r.Nombre)}</h4>
-                <div class="mini-foot">
-                  <span>${fmt(r.Monto)}</span>
-                  <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
-                </div>
-              </div>
-            `).join("")}
-          </article>
-        `;
-      }).join("");
-    }
-
-    function render() {
-      const rows = getCurrentPageRows();
-      const empty = rows.length === 0;
-      el.empty.style.display = empty ? "block" : "none";
-
-      el.cards.style.display = st.view === "cards" ? "grid" : "none";
-      el.list.style.display = st.view === "list" ? "block" : "none";
-      el.kanban.style.display = st.view === "board" ? "grid" : "none";
-
-      if (empty) {
-        el.cards.innerHTML = "";
-        // if DataTables is present we keep the table DOM but hide it, otherwise clear the fallback list HTML
-        if (!(window.jQuery && $.fn.DataTable)) el.list.innerHTML = "";
-        el.kanban.innerHTML = "";
-        if (window.jQuery && $.fn.DataTable) {
-          const tbl = document.getElementById('dtTable'); if (tbl) tbl.style.display = 'none';
-        }
-        return;
-      }
-
-      if (st.view === "cards") renderCards(rows);
-      if (st.view === "list") {
-        // If DataTables is available, use it (table is inside #dtTable). Otherwise fallback to renderList.
-        if (window.jQuery && $.fn.DataTable) {
-          // ensure cards/kanban hidden and show table
-          el.cards.style.display = "none";
-          el.kanban.style.display = "none";
-          // show table and populate
-          const tbl = document.getElementById('dtTable');
-          if (tbl) tbl.style.display = '';
-          refreshDataTable();
-        } else {
-          renderList(rows);
-        }
-      }
-      if (st.view === "board") renderBoard(rows);
-    }
-
-    function getCurrentPageRows() {
-      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
-      if (ps === 'all' || st.pageSize === 'all') return st.filtered;
-      const start = (st.currentPage - 1) * ps;
-      return st.filtered.slice(start, start + ps);
-    }
-
-    function updatePagination() {
-      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
-      const total = st.filtered.length;
-      const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(total / ps));
-      if (st.currentPage > totalPages) st.currentPage = totalPages;
-      if (el.pageInfo) el.pageInfo.textContent = `${st.currentPage} / ${totalPages}`;
-      if (el.prevPage) el.prevPage.disabled = st.currentPage <= 1;
-      if (el.nextPage) el.nextPage.disabled = st.currentPage >= totalPages;
-    }
-
-    function prevPage() { if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); } }
-    function nextPage() { const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps)); if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); } }
-
-    function setView(v) {
-      st.view = v;
-      el.viewCards.classList.toggle("active", v === "cards");
-      el.viewList.classList.toggle("active", v === "list");
-      el.viewBoard.classList.toggle("active", v === "board");
-      // show/hide custom pagination/pageSize when not using DataTables
-      const pagWrap = document.getElementById('pagination');
-      if (v === 'list' && window.jQuery && $.fn.DataTable) {
-        if (pagWrap) pagWrap.style.display = 'none';
-        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
-      } else {
-        if (pagWrap) pagWrap.style.display = '';
-        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
-      }
-      render();
-      toast(`Vista ${v} activada.`);
-    }
-
-    async function openModal(code) {
-      const r = st.rows.find(x => x.CodigoExterno === code);
-      if (!r) return;
-      st.selected = code;
-      el.mdCode.textContent = r.CodigoExterno;
-      el.mdTitle.textContent = r.Nombre;
-      el.mdOrg.textContent = r.Organismo || "-";
-      el.mdProv.textContent = r.Producto || "-";
-      el.mdMonto.textContent = fmt(r.Monto);
-      el.mdPub.textContent = dateOnly(r.FechaPublicacion);
-      el.mdCloseDate.textContent = dateOnly(r.FechaCierre);
-      el.mdDias.textContent = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
-      el.mdCat.textContent = r.TipoLicitacion || "-";
-      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "No Tomada";
-      el.mdPrio.textContent = r.Prioridad || "Media";
-      el.mdDesc.textContent = r.Descripcion || "Sin descripcion";
-      el.edVisto.value = r.Visto === "TRUE" ? "TRUE" : "FALSE";
-      el.edEstado.value = r.EstadoTrabajo || "No Tomada";
-      el.edOwner.value = r.Responsable || "";
-      el.edCom.value = r.Comentario || "";
-      el.openDoc.dataset.url = r.URLLicitacion || "";
-      el.modal.classList.add("open");
-      el.modal.setAttribute("aria-hidden", "false");
-
-      if (!r.URLLicitacion) return;
-
-      try {
-        const response = await fetch(r.URLLicitacion);
-        const json = await response.json();
-        const rel = Array.isArray(json.releases) && json.releases.length ? json.releases[0] : {};
-        const award = Array.isArray(rel.awards) && rel.awards.length ? rel.awards[0] : {};
-        const suppliers = Array.isArray(award.suppliers) ? award.suppliers : [];
-        const supplierText = suppliers.length ? suppliers.map(s => s.name).filter(Boolean).join(" | ") : (r.Producto || "No informado");
-        const amount = award.value && award.value.amount ? award.value.amount : r.Monto;
-        const status = award.statusDetails || award.status || r.EstadoTrabajo || "No informado";
-        const doc = Array.isArray(award.documents) && award.documents.length ? award.documents[0].url : "";
-
-        el.mdProv.textContent = supplierText;
-        el.mdMonto.textContent = fmt(amount);
-        el.mdEstado.textContent = status;
-        el.mdDesc.textContent = award.description || r.Descripcion || "Sin descripcion";
-        el.mdPub.textContent = dateOnly(rel.date || json.publishedDate || r.FechaPublicacion);
-        el.openDoc.dataset.url = doc || r.URLLicitacion;
-      } catch (error) {
-        el.openDoc.dataset.url = r.URLLicitacion || "";
-      }
-    }
-
-    function closeModal() {
-      el.modal.classList.remove("open");
-      el.modal.setAttribute("aria-hidden", "true");
-      st.selected = null;
-    }
-
-    async function saveLocal() {
-      if (!st.selected) return;
-      const r = st.rows.find(x => x.CodigoExterno === st.selected);
-      if (!r) return;
-      
-      const nuevoVisto = el.edVisto.value;
-      const nuevoEstado = el.edEstado.value;
-      const nuevoResponsable = el.edOwner.value.trim();
-      const nuevoComentario = el.edCom.value.trim();
-      
-      // Actualizar datos locales
-      r.Visto = nuevoVisto;
-      r.EstadoTrabajo = nuevoEstado;
-      r.Responsable = nuevoResponsable;
-      r.Comentario = nuevoComentario;
-      
-      // Intenta sincronizar con Sheet
-      try {
-        const payload = {
-          codigo_externo: st.selected,
-          visto: nuevoVisto,
-          estado_trabajo: nuevoEstado,
-          responsable: nuevoResponsable,
-          comentario: nuevoComentario
-        };
-        
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-        
-        const result = await response.json();
-        if (result.success) {
-          toast("Cambios guardados en el Sheet ✓");
-        } else {
-          toast("Cambios locales (sincronización con Sheet falló)");
-        }
-      } catch (err) {
-        console.error("Error sincronizando:", err);
-        toast("Cambios guardados localmente (sin conexión a Sheet)");
-      }
-      
-      apply();
-      closeModal();
-    }
-
-    function resetFilters() {
-      el.q.value = "";
-      el.cat.value = "";
-      el.org.value = "";
-      el.estado.value = "";
-      el.visto.value = "";
-      if (el.producto) el.producto.value = "";
-      if (el.pageSize) el.pageSize.value = "50";
-      st.currentPage = 1;
-      apply();
-    }
-
-    function quick(type) {
-      if (type === "urg") {
-        el.visto.value = "";
-        st.filtered = st.rows.filter(r => Number(r.DiasRestantes) <= 2);
-        render();
-        kpis();
-        return;
-      }
-      if (type === "new") el.visto.value = "NUEVO";
-      if (type === "free") el.estado.value = "No Tomada";
-      apply();
-    }
-
-    async function triggerAPISync() {
-      try {
-        el.mUpd.textContent = "Actualizado: consultando API...";
-        toast("Buscando nuevas licitaciones en la API...");
-        
-        const response = await fetch(APPS_SCRIPT_URL + "?action=updateLicitaciones", {
-          method: "GET"
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          el.mUpd.textContent = `Actualizado: ${result.count} nuevas licitaciones`;
-          toast(`API sincronizada: +${result.count} nuevos registros`);
-          // Espera un segundo antes de recargar el CSV
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        } else {
-          toast("API: No hay nuevas licitaciones");
-        }
-      } catch (err) {
-        console.error("Error sincronizando API:", err);
-        toast("Error al consultar API (continuando con recarga local)");
-      }
-      
-      // Luego recarga el CSV actualizado
-      loadCsv();
-    }
-
-    function loadCsv() {
-      el.mUpd.textContent = "Actualizado: cargando datos...";
-
-      if (typeof Papa === "undefined") {
-        toast("No se pudo cargar PapaParse.");
-        el.mUpd.textContent = "Actualizado: error";
-        return;
-      }
-
-      Papa.parse(CSV_URL, {
-        download: true,
-        header: true,
-        transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim(),
-        skipEmptyLines: true,
-        complete: result => {
-          const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
-          st.rows = parsed;
-          st.filtered = [...parsed];
-          fillFilters();
-          apply();
-          toast(`CSV cargado: ${parsed.length} registros.`);
-        },
-        error: () => {
-          st.rows = [];
-          st.filtered = [];
-          render();
-          kpis();
-          el.mUpd.textContent = "Actualizado: error al cargar";
-          toast("No se pudo cargar el CSV.");
-        }
-      });
-    }
-
-    function init() {
-      const savedTheme = localStorage.getItem("cm-theme");
-      const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      applyTheme(savedTheme || (systemDark ? "dark" : "light"));
-      loadCsv();
-    }
-    // pagination state defaults
-    st.currentPage = 1;
-    st.pageSize = '50';
-
-    if (el.q) el.q.addEventListener("input", apply);
-    if (el.cat) el.cat.addEventListener("change", apply);
-    if (el.org) el.org.addEventListener("change", apply);
-    if (el.estado) el.estado.addEventListener("change", apply);
-    if (el.visto) el.visto.addEventListener("change", apply);
-    if (el.producto) el.producto.addEventListener("change", apply);
-    if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
-
-    if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
-    if (el.nextPage) el.nextPage.addEventListener("click", nextPage);
-
-    if (el.quickUrg) el.quickUrg.addEventListener("click", () => quick("urg"));
-    if (el.quickNew) el.quickNew.addEventListener("click", () => quick("new"));
-    if (el.quickFree) el.quickFree.addEventListener("click", () => quick("free"));
-    if (el.reset) el.reset.addEventListener("click", resetFilters);
-
-    if (el.viewCards) el.viewCards.addEventListener("click", () => setView("cards"));
-    if (el.viewList) el.viewList.addEventListener("click", () => setView("list"));
-    if (el.viewBoard) el.viewBoard.addEventListener("click", () => setView("board"));
-    if (el.reload) el.reload.addEventListener("click", triggerAPISync);
-    // Ensure dark mode toggle works with Bootstrap switch input
-    if (el.themeToggle) {
-      // Set initial state based on theme
-      const savedTheme = localStorage.getItem("cm-theme");
-      const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const isDark = (savedTheme || (systemDark ? "dark" : "light")) === "dark";
-      el.themeToggle.checked = isDark;
-      el.themeToggle.addEventListener("change", function() {
-        toggleTheme();
-        // Update checked state after toggling
-        el.themeToggle.checked = document.body.getAttribute("data-theme") === "dark";
-      });
-    }
-
-    document.addEventListener("click", e => {
-      const btn = e.target.closest("[data-a]");
-      if (!btn) return;
-      if (btn.dataset.a === "view") openModal(btn.dataset.c);
-      if (btn.dataset.a === "open") {
-        const row = st.rows.find(x => x.CodigoExterno === btn.dataset.c);
-        if (row && row.URLLicitacion) {
-          window.open(row.URLLicitacion, "_blank", "noopener,noreferrer");
-        } else {
-          toast("No hay URL disponible para este registro.");
-        }
-      }
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem(THEME_KEY);
+      const matchesDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(saved || (matchesDark ? 'dark' : 'light'));
     });
-
-    el.openDoc.addEventListener("click", () => {
-      const row = st.rows.find(x => x.CodigoExterno === st.selected);
-      const url = el.openDoc.dataset.url || (row ? row.URLLicitacion : "");
-      if (url) {
-        window.open(url, "_blank", "noopener,noreferrer");
-      } else {
-        toast("No hay documento disponible.");
-      }
-    });
-
-    el.save.addEventListener("click", saveLocal);
-    el.mdClose.addEventListener("click", closeModal);
-    el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(); });
-
-    // Ver campos CSV -> hace fetch al CSV (simula un curl), verifica status y muestra headers
-    (function setupFieldsViewer(){
-      const fieldsModal = document.getElementById('fieldsModal');
-      const fieldsList = document.getElementById('fieldsList');
-      const viewFieldsBtn = document.getElementById('viewFields');
-      const fieldsCloseBtn = document.getElementById('fieldsClose');
-
-      async function fetchAndShowHeaders(){
-        fieldsList.textContent = 'Verificando conexión al CSV...';
-        try {
-          // Intenta obtener el CSV (evita cache)
-          const res = await fetch(CSV_URL, { method: 'GET', cache: 'no-store' });
-          if (!res.ok) {
-            fieldsList.textContent = `Error HTTP: ${res.status} ${res.statusText}`;
-            fieldsModal.classList.add('open');
-            fieldsModal.setAttribute('aria-hidden','false');
-            return;
-          }
-          const text = await res.text();
-
-          // Usa PapaParse para extraer los headers (meta.fields)
-          const parsed = Papa.parse(text, {
-            header: true,
-            preview: 1,
-            transformHeader: header => String(header || '').replace(/^\uFEFF/, '').trim()
-          });
-
-          const fields = (parsed && parsed.meta && parsed.meta.fields) ? parsed.meta.fields : [];
-          if (fields.length === 0) {
-            // fallback: intenta leer la primera fila sin header
-            const alt = Papa.parse(text, { preview: 1, header: false });
-            const firstRow = Array.isArray(alt.data) && alt.data.length ? alt.data[0] : null;
-            if (firstRow) {
-              fieldsList.textContent = firstRow.join('\n');
-            } else {
-              fieldsList.textContent = 'No se pudieron determinar los headers.';
-            }
-          } else {
-            fieldsList.textContent = `Conexión OK (HTTP ${res.status}).\n\n` + fields.join('\n');
-          }
-
-          // Comparar con lo que ya está cargado en memoria (st.rows) y avisar si difiere
-          if (st.rows && st.rows.length) {
-            const loaded = Object.keys(st.rows[0]._raw || {});
-            const onlyInFetched = fields.filter(f => !loaded.includes(f));
-            const onlyInLoaded = loaded.filter(f => !fields.includes(f));
-            const diffs = onlyInFetched.length + onlyInLoaded.length;
-            if (diffs) {
-              fieldsList.textContent += `\n\nAdvertencia: los headers en tiempo de carga difieren (${diffs} diferencias).`;
-            }
-          }
-
-          fieldsModal.classList.add('open');
-          fieldsModal.setAttribute('aria-hidden','false');
-        } catch (err) {
-          // CORS o network errores quedarán aquí
-          fieldsList.textContent = 'Error conectando al CSV: ' + (err && err.message ? err.message : String(err));
-          fieldsModal.classList.add('open');
-          fieldsModal.setAttribute('aria-hidden','false');
-        }
-      }
-
-      if (viewFieldsBtn) viewFieldsBtn.addEventListener('click', fetchAndShowHeaders);
-
-      if (fieldsCloseBtn) fieldsCloseBtn.addEventListener('click', () => {
-        fieldsModal.classList.remove('open');
-        fieldsModal.setAttribute('aria-hidden', 'true');
-      });
-
-      if (fieldsModal) fieldsModal.addEventListener('click', e => { if (e.target === fieldsModal) { fieldsModal.classList.remove('open'); fieldsModal.setAttribute('aria-hidden','true'); } });
-    })();
-
-    init();
   </script>
 </body>
 </html>
+
