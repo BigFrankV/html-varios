@@ -1832,16 +1832,16 @@
     if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
     if (el.nextPage) el.nextPage.addEventListener("click", nextPage);
 
-    el.quickUrg.addEventListener("click", () => quick("urg"));
-    el.quickNew.addEventListener("click", () => quick("new"));
-    el.quickFree.addEventListener("click", () => quick("free"));
-    el.reset.addEventListener("click", resetFilters);
+    if (el.quickUrg) el.quickUrg.addEventListener("click", () => quick("urg"));
+    if (el.quickNew) el.quickNew.addEventListener("click", () => quick("new"));
+    if (el.quickFree) el.quickFree.addEventListener("click", () => quick("free"));
+    if (el.reset) el.reset.addEventListener("click", resetFilters);
 
-    el.viewCards.addEventListener("click", () => setView("cards"));
-    el.viewList.addEventListener("click", () => setView("list"));
-    el.viewBoard.addEventListener("click", () => setView("board"));
-    el.reload.addEventListener("click", triggerAPISync);
-    el.themeToggle.addEventListener("click", toggleTheme);
+    if (el.viewCards) el.viewCards.addEventListener("click", () => setView("cards"));
+    if (el.viewList) el.viewList.addEventListener("click", () => setView("list"));
+    if (el.viewBoard) el.viewBoard.addEventListener("click", () => setView("board"));
+    if (el.reload) el.reload.addEventListener("click", triggerAPISync);
+    if (el.themeToggle) el.themeToggle.addEventListener("click", toggleTheme);
 
     document.addEventListener("click", e => {
       const btn = e.target.closest("[data-a]");
