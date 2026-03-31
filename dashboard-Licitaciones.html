@@ -301,7 +301,19 @@
     }
     .card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px #22335a10; }
 
-    .card .desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .card .desc {
+      /* Fallback for non-webkit browsers: limit height by lines */
+      line-height: 1.45;
+      max-height: calc(1.45em * 4);
+      overflow: hidden;
+      display: block; /* fallback */
+      white-space: normal;
+
+      /* Better truncation in WebKit/Blink using line-clamp */
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
     @media (max-width: 900px) {
       .cards {
         grid-template-columns: 1fr;
@@ -311,10 +323,7 @@
       }
     }
     /* Mejorar el contenido interno para que no se desborde */
-    .card .desc {
-      max-height: 3.5em;
-      overflow: hidden;
-    }
+    /* (card .desc consolidated above with fallback + webkit clamp) */
 
     @keyframes rise {
       from { opacity: 0; transform: translateY(6px); }
