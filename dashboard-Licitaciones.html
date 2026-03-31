@@ -52,7 +52,8 @@
       margin: 14px auto;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 8px !important;
       justify-items: center;
     }
 
@@ -281,7 +282,7 @@
     .cards {
       display: grid;
       grid-template-columns: repeat(2, minmax(220px, 1fr));
-      gap: 14px;
+      gap: 10px;
     }
     .card {
       min-width: 0;
@@ -1508,8 +1509,8 @@
       el.empty.style.display = empty ? "block" : "none";
 
       el.cards.style.display = st.view === "cards" ? "" : "none";
-      el.list.style.display = st.view === "list" ? "block" : "none";
-      el.kanban.style.display = st.view === "board" ? "grid" : "none";
+      el.list.style.display = st.view === "list" ? "" : "none";
+      el.kanban.style.display = st.view === "board" ? "" : "none";
 
       if (empty) {
         el.cards.innerHTML = "";
