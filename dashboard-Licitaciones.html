@@ -195,39 +195,60 @@
 
     .kpis {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
       align-items: stretch;
+      width: 100%;
+      max-width: 100%;
     }
 
     .kpi {
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 8px;
+      border-radius: 14px;
+      padding: 14px;
       background: linear-gradient(145deg, #fff, #fbfcff);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       aspect-ratio: 1 / 1;
-      min-height: 0;
+      min-width: 0;
+      min-height: 150px;
       width: 100%;
-      height: auto;
       box-sizing: border-box;
-      overflow: hidden;
+      overflow: visible;
+      font-size: 1.1rem;
     }
 
-    .kpi span { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kpi b { font-size: 1.05rem; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kpi:nth-child(-n+2) {
+      grid-column: span 2;
+    }
 
-    /* Ajuste especial para monto total en pantallas pequeñas */
+    .kpi:nth-child(n+3) {
+      grid-column: span 1;
+    }
+
+    .kpi span { color: var(--muted); font-size: .78rem; font-weight: 700; white-space: normal; text-align: center; }
+    .kpi b { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-word; text-align: center; }
+
+    @media (max-width: 900px) {
+      .kpis {
+        grid-template-columns: 1fr 1fr;
+      }
+      .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
+        grid-column: auto;
+      }
+    }
     @media (max-width: 600px) {
-      .kpi b#kMonto { font-size: 0.92rem; }
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+      .kpi {
+        aspect-ratio: unset;
+        min-height: 80px;
+      }
     }
-
-    .kpi span { color: var(--muted); font-size: .75rem; font-weight: 700; }
-    .kpi b { font-size: 1.2rem; }
 
     .toolbar {
       display: grid;
@@ -921,36 +942,26 @@
             <span id="mShow" class="chip">Mostrando: 0</span>
             <span id="mUpd" class="chip">Actualizado: cargando datos...</span>
           </div>
-          <div class="kpis row g-2 mb-3">
-            <div class="col-6 col-md-4 col-lg-2">
-              <div class="kpi card text-center p-2">
-                <span class="text-muted">Nuevas</span>
-                <b id="kNew">0</b>
-              </div>
+          <div class="kpis mb-3">
+            <div class="kpi">
+              <span>Nuevas</span>
+              <b id="kNew">0</b>
             </div>
-            <div class="col-6 col-md-4 col-lg-2">
-              <div class="kpi card text-center p-2">
-                <span class="text-muted">En Proceso</span>
-                <b id="kProg">0</b>
-              </div>
+            <div class="kpi">
+              <span>En Proceso</span>
+              <b id="kProg">0</b>
             </div>
-            <div class="col-6 col-md-4 col-lg-2">
-              <div class="kpi card text-center p-2">
-                <span class="text-muted">Finalizadas</span>
-                <b id="kDone">0</b>
-              </div>
+            <div class="kpi">
+              <span>Finalizadas</span>
+              <b id="kDone">0</b>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-              <div class="kpi card text-center p-2">
-                <span class="text-muted">Monto Total</span>
-                <b id="kMonto">$0</b>
-              </div>
+            <div class="kpi">
+              <span>Monto Total</span>
+              <b id="kMonto">$0</b>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-              <div class="kpi card text-center p-2">
-                <span class="text-muted">Sin Costo</span>
-                <b id="kFree">0</b>
-              </div>
+            <div class="kpi">
+              <span>Sin Costo</span>
+              <b id="kFree">0</b>
             </div>
           </div>
           <div class="d-flex flex-wrap gap-2 mb-2">
@@ -1308,16 +1319,16 @@
     }
 
     function apply() {
-      const q = el.q.value.trim().toLowerCase();
-      const cat = el.cat.value;
-      const org = el.org.value;
-      const prod = el.producto ? el.producto.value : "";
-      const catGen = el.catGeneral ? el.catGeneral.value : "";
-      const est = el.estado.value;
-      const visto = el.visto.value;
-      const fechaDesde = el.fechaDesde.value;
-      const fechaHasta = el.fechaHasta.value;
-      const ordenarPor = el.ordenarPor.value;
+      const q = (el.q && el.q.value ? String(el.q.value).trim().toLowerCase() : "");
+      const cat = (el.cat && el.cat.value) ? el.cat.value : "";
+      const org = (el.org && el.org.value) ? el.org.value : "";
+      const prod = (el.producto && el.producto.value) ? el.producto.value : "";
+      const catGen = (el.catGeneral && el.catGeneral.value) ? el.catGeneral.value : "";
+      const est = (el.estado && el.estado.value) ? el.estado.value : "";
+      const visto = (el.visto && el.visto.value) ? el.visto.value : "";
+      const fechaDesde = (el.fechaDesde && el.fechaDesde.value) ? el.fechaDesde.value : "";
+      const fechaHasta = (el.fechaHasta && el.fechaHasta.value) ? el.fechaHasta.value : "";
+      const ordenarPor = (el.ordenarPor && el.ordenarPor.value) ? el.ordenarPor.value : "";
 
       st.filtered = st.rows.filter(r => {
         const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Producto, r.Descripcion, r.TipoLicitacion].join(" ").toLowerCase();
