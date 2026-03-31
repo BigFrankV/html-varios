@@ -280,24 +280,25 @@
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
     }
     .card {
-      aspect-ratio: 1/1;
       min-width: 0;
-      min-height: 220px;
+      min-height: 140px;
       max-width: 100%;
-      font-size: 1rem;
+      font-size: 0.95rem;
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 12px;
       background: linear-gradient(145deg, #fff, #fbfcff);
-      padding: 11px;
+      padding: 10px;
       display: grid;
-      gap: 8px;
-      animation: rise .24s ease;
+      gap: 6px;
+      align-content: start;
       box-sizing: border-box;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px #22335a10; }
     @media (max-width: 900px) {
       .cards {
         grid-template-columns: 1fr;
