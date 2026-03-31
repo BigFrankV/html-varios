@@ -1572,8 +1572,8 @@
     }
 
     function updatePagination() {
-      // If DataTable is active, derive pagination from its page.info(), otherwise use our custom logic
-      if (dtInstance) {
+      // Select the correct pagination source depending on view
+      if (st.view === 'list' && dtInstance) {
         try {
           const info = dtInstance.page.info();
           const current = info.page + 1;
@@ -1583,7 +1583,9 @@
           if (el.prevPage) el.prevPage.disabled = current <= 1;
           if (el.nextPage) el.nextPage.disabled = current >= totalPages;
           return;
-        } catch (e) {}
+        } catch (e) {
+          // fallback to custom pagination
+        }
       }
 
       const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
@@ -1596,17 +1598,18 @@
     }
 
     function prevPage() {
-      if (dtInstance) {
+      if (st.view === 'list' && dtInstance) {
         try { dtInstance.page('previous').draw(false); updatePagination(); return; } catch (e) {}
       }
       if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); }
     }
 
     function nextPage() {
-      if (dtInstance) {
+      if (st.view === 'list' && dtInstance) {
         try { dtInstance.page('next').draw(false); updatePagination(); return; } catch (e) {}
       }
-      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps));
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
+      const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps));
       if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); }
     }
 
@@ -1619,6 +1622,16 @@
       const pagWrap = document.getElementById('pagination');
       if (pagWrap) pagWrap.style.display = '';
       if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
+
+      if (v === 'list' && dtInstance) {
+        const len = st.pageSize === 'all' ? -1 : Number(st.pageSize || 50);
+        try {
+          dtInstance.page.len(len).draw(false);
+        } catch (err) {
+          // ignore
+        }
+      }
+
       render();
       toast(`Vista ${v} activada.`);
     }
@@ -1827,7 +1840,20 @@
     if (el.catGeneral) el.catGeneral.addEventListener("change", applyDebounced);
     if (el.fechaDesde) el.fechaDesde.addEventListener("change", applyDebounced);
     if (el.fechaHasta) el.fechaHasta.addEventListener("change", applyDebounced);
-    if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
+    if (el.pageSize) el.pageSize.addEventListener("change", e => {
+      st.pageSize = e.target.value;
+      st.currentPage = 1;
+      if (st.view === "list" && dtInstance) {
+        const len = st.pageSize === 'all' ? -1 : Number(st.pageSize || 50);
+        try {
+          dtInstance.page.len(len).draw(false);
+        } catch (err) {
+          // ignore if no table yet
+        }
+      }
+      updatePagination();
+      render();
+    });
 
     if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
     if (el.nextPage) el.nextPage.addEventListener("click", nextPage);
