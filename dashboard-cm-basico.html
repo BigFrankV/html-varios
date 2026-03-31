@@ -1299,6 +1299,39 @@
       return "st-nt";
     }
 
+    function buildPublicoUrlFromRow(row) {
+      const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID Licitación'] || row._raw['CodigoExterno']));
+      let url = String((row && (row.URLLicitacion || row.URL)) || "").trim();
+
+      if (url) {
+        if (/^\/\//.test(url)) {
+          url = 'https:' + url;
+        }
+        if (!/^https?:\/\//i.test(url)) {
+          url = 'https://' + url;
+        }
+
+        if (url.match(/Home\/BuscadorLicitaciones/i)) {
+          const q = url.match(/[?&]k=([^&]*)/i);
+          if (!q && id) {
+            url += (url.includes('?') ? '&' : '?') + 'k=' + encodeURIComponent(id);
+          }
+          return url;
+        }
+
+        // if URL is generic, return it, otherwise try fallback to MercadoPublico search
+        if (id) {
+          return 'https://www.mercadopublico.cl/Home/BuscadorLicitaciones?k=' + encodeURIComponent(id);
+        }
+        return url;
+      }
+
+      if (id) {
+        return 'https://www.mercadopublico.cl/Home/BuscadorLicitaciones?k=' + encodeURIComponent(id);
+      }
+      return '';
+    }
+
     function flagByDays(dias) {
       const n = Number(dias);
       if (!Number.isFinite(n)) return "f-nv";
@@ -1770,11 +1803,11 @@
       el.edEstado.value = r.EstadoTrabajo || "No Tomada";
       el.edOwner.value = r.Responsable || "";
       el.edCom.value = r.Comentario || "";
-      el.openDoc.dataset.url = r.URLLicitacion || "";
+      el.openDoc.dataset.url = buildPublicoUrlFromRow(r);
       el.modal.classList.add("open");
       el.modal.setAttribute("aria-hidden", "false");
 
-      if (!r.URLLicitacion) return;
+      // no break: we already construimos la URL de forma segura desde el ID o URL disponible    
 
       try {
         const response = await fetch(r.URLLicitacion);
@@ -1827,14 +1860,17 @@
           visto: nuevoVisto,
           estado_trabajo: nuevoEstado,
           responsable: nuevoResponsable,
-          comentario: nuevoComentario
+          comentario: nuevoComentario,
+          version: new Date().toISOString(),
+          modificado_en: new Date().toLocaleString('es-CL')
         };
-        
+
         const response = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        
+
         const result = await response.json();
         if (result.success) {
           toast("Cambios guardados en el Sheet ✓");
@@ -1845,7 +1881,7 @@
         console.error("Error sincronizando:", err);
         toast("Cambios guardados localmente (sin conexión a Sheet)");
       }
-      
+
       apply();
       closeModal();
     }
@@ -1982,8 +2018,9 @@
       if (btn.dataset.a === "view") openModal(btn.dataset.c);
       if (btn.dataset.a === "open") {
         const row = st.rows.find(x => x.CodigoExterno === btn.dataset.c);
-        if (row && row.URLLicitacion) {
-          window.open(row.URLLicitacion, "_blank", "noopener,noreferrer");
+        const url = row ? buildPublicoUrlFromRow(row) : "";
+        if (url) {
+          window.open(url, "_blank", "noopener,noreferrer");
         } else {
           toast("No hay URL disponible para este registro.");
         }
@@ -1992,7 +2029,7 @@
 
     el.openDoc.addEventListener("click", () => {
       const row = st.rows.find(x => x.CodigoExterno === st.selected);
-      const url = el.openDoc.dataset.url || (row ? row.URLLicitacion : "");
+      const url = buildPublicoUrlFromRow(row || { URLLicitacion: el.openDoc.dataset.url });
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       } else {
