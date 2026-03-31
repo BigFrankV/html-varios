@@ -8,11 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <!-- Bootstrap + DataTables + iconos + animaciones -->
+  <!-- Bootstrap + DataTables (estilos) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-f0dTJEW54V5tqF8KbX0FfYj62PuiqK+wr5ij0da9VUf9Ej14u8KXOYx+4H2nhQRDb5xE4NBN0D3aS1pX/6rWQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <style>
     :root {
       --bg: #f6f7fb;
@@ -739,137 +739,136 @@
   </style>
 </head>
 <body>
-  <div class="container-fluid py-3">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-      <div>
-        <h1 class="h4 mb-1">Dashboard Licitaciones</h1>
-        <p class="mb-0 text-muted">Datos Mercado Público + filtros dinámicos + gestión local</p>
-      </div>
-      <div class="btn-group mb-2">
-        <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button"><i class="fa fa-moon me-1"></i>Modo oscuro</button>
-        <button id="reload" class="btn btn-primary btn-sm" type="button"><i class="fa fa-sync-alt me-1"></i>Recargar CSV</button>
-      </div>
-    </div>
 
-    <div class="row g-3">
-      <aside class="col-12 col-xl-3">
-        <div class="card mb-3 shadow-sm">
-          <div class="card-body p-3">
-            <h6 class="card-title">Resumen KPIs</h6>
-            <div class="row g-2 text-center">
-              <div class="col-6 col-xxl-12">
-                <div class="p-2 rounded bg-light">
-                  <small class="text-muted">Total</small>
-                  <h5 id="kNew" class="mb-0">0</h5>
-                </div>
-              </div>
-              <div class="col-6 col-xxl-12">
-                <div class="p-2 rounded bg-light">
-                  <small class="text-muted">En Proceso</small>
-                  <h5 id="kProg" class="mb-0">0</h5>
-                </div>
-              </div>
-              <div class="col-6 col-xxl-12">
-                <div class="p-2 rounded bg-light">
-                  <small class="text-muted">Trabajadas</small>
-                  <h5 id="kDone" class="mb-0">0</h5>
-                </div>
-              </div>
-              <div class="col-6 col-xxl-12">
-                <div class="p-2 rounded bg-light">
-                  <small class="text-muted">Sin tomar</small>
-                  <h5 id="kFree" class="mb-0">0</h5>
-                </div>
-              </div>
+  <main class="container-fluid py-3">
+    <div class="row g-4">
+      <!-- Sidebar -->
+      <aside class="col-lg-3 d-none d-lg-block">
+        <div class="side h-100 d-flex flex-column justify-content-between">
+          <div>
+            <div class="logo mb-4 d-flex align-items-center gap-2">
+              <span class="logo-mark"></span>
+              <b>CM Dashboard</b>
+              <span class="ms-2 small">Inspired</span>
+            </div>
+            <nav class="nav-list mb-4">
+              <a class="nav-item active" href="#"><i class="bi bi-house-door me-2"></i>Inicio</a>
+              <a class="nav-item" href="#"><i class="bi bi-bar-chart-line me-2"></i>KPIs</a>
+              <a class="nav-item" href="#"><i class="bi bi-table me-2"></i>Tabla</a>
+              <a class="nav-item" href="#"><i class="bi bi-kanban me-2"></i>Kanban</a>
+            </nav>
+            <div class="small-card mb-4">
+              <b><i class="bi bi-info-circle me-1"></i>Ayuda</b>
+              <span>Utiliza los filtros y vistas para explorar los datos.</span>
             </div>
           </div>
-        </div>
-
-        <div class="card shadow-sm">
-          <div class="card-body p-3">
-            <h6 class="card-title">Filtros</h6>
-            <div class="mb-2">
-              <label for="q" class="form-label small">Busqueda</label>
-              <input id="q" type="text" class="form-control form-control-sm" placeholder="nombre, ID, organismo..." />
-            </div>
-            <div class="mb-2">
-              <label for="cat" class="form-label small">Tipo Licitación</label>
-              <select id="cat" class="form-select form-select-sm"><option value="">Todas</option></select>
-            </div>
-            <div class="mb-2">
-              <label for="org" class="form-label small">Organismo</label>
-              <select id="org" class="form-select form-select-sm"><option value="">Todos</option></select>
-            </div>
-            <div class="mb-2">
-              <label for="producto" class="form-label small">Producto</label>
-              <select id="producto" class="form-select form-select-sm"><option value="">Todos</option></select>
-            </div>
-            <div class="mb-2">
-              <label for="estado" class="form-label small">Estado</label>
-              <select id="estado" class="form-select form-select-sm">
-                <option value="">Todos</option><option value="No Tomada">No Tomada</option><option value="En Proceso">En Proceso</option><option value="Trabajada">Trabajada</option>
-              </select>
-            </div>
-            <div class="mb-2">
-              <label for="visto" class="form-label small">Visto</label>
-              <select id="visto" class="form-select form-select-sm">
-                <option value="">Todos</option><option value="FALSE">No visto</option><option value="TRUE">Visto</option><option value="NUEVO">Solo nuevos</option>
-              </select>
-            </div>
-            <div class="d-grid gap-2">
-              <button id="reset" class="btn btn-sm btn-outline-secondary" type="button"><i class="fa fa-rotate-left me-1"></i>Reset filtros</button>
-              <button id="quickNew" class="btn btn-sm btn-outline-primary" type="button"><i class="fa fa-star me-1"></i>Nuevos</button>
-              <button id="quickUrg" class="btn btn-sm btn-outline-warning" type="button"><i class="fa fa-bolt me-1"></i>Urgentes</button>
-              <button id="quickFree" class="btn btn-sm btn-outline-info" type="button"><i class="fa fa-user-clock me-1"></i>Sin tomar</button>
-            </div>
+          <div class="mt-auto">
+            <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-2"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
           </div>
         </div>
       </aside>
 
-      <section class="col-12 col-xl-9">
-        <div class="card shadow-sm">
-          <div class="card-body p-3">
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-              <div class="d-flex gap-2">
-                <button id="viewCards" class="btn btn-sm btn-outline-primary active">Cards</button>
-                <button id="viewList" class="btn btn-sm btn-outline-primary">Lista</button>
-                <button id="viewBoard" class="btn btn-sm btn-outline-primary">Tablero</button>
-              </div>
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-secondary"><i class="fa fa-table me-1"></i> <span id="mTotal">Total: 0</span></span>
-                <span class="badge bg-secondary"><i class="fa fa-filter me-1"></i> <span id="mShow">Mostrando: 0</span></span>
-                <span class="badge bg-secondary"><i class="fa fa-clock me-1"></i> <span id="mUpd">Actualizado: cargando datos...</span></span>
-                <button id="viewFields" class="btn btn-sm btn-outline-dark"><i class="fa fa-eye me-1"></i>Ver campos</button>
+      <!-- Main Content -->
+      <section class="col-lg-9">
+        <div class="top card shadow-sm p-4 mb-4">
+          <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div class="title">
+              <h1 class="mb-1">Dashboard CM</h1>
+              <p class="mb-0">Panel de control de licitaciones y KPIs</p>
+            </div>
+            <div class="chips d-flex flex-wrap gap-2">
+              <span class="chip"><i class="bi bi-lightning-charge text-warning me-1"></i>Rápido</span>
+              <span class="chip"><i class="bi bi-shield-check text-success me-1"></i>Seguro</span>
+              <span class="chip"><i class="bi bi-cloud-arrow-down text-primary me-1"></i>Actualizable</span>
+            </div>
+          </div>
+          <div class="kpis row g-2 mb-3">
+            <div class="col-6 col-md-4 col-lg-2">
+              <div class="kpi card text-center p-2">
+                <span class="text-muted">Nuevas</span>
+                <b id="kNew">0</b>
               </div>
             </div>
-
-            <div id="cards" class="cards"></div>
-            <div id="list" class="list" style="display:none;"></div>
-            <div id="kanban" class="kanban" style="display:none;"></div>
-            <div id="empty" class="alert alert-warning mt-3" style="display:none;">No hay resultados para esos filtros.</div>
-
-            <div class="mt-3 d-flex justify-content-between align-items-center">
-              <div class="small text-muted">Página <span id="pageInfo">1 / 1</span></div>
-              <div class="btn-group btn-group-sm" role="group">
-                <button id="prevPage" class="btn btn-outline-secondary">Anterior</button>
-                <button id="nextPage" class="btn btn-outline-secondary">Siguiente</button>
+            <div class="col-6 col-md-4 col-lg-2">
+              <div class="kpi card text-center p-2">
+                <span class="text-muted">En Proceso</span>
+                <b id="kProg">0</b>
               </div>
-              <div class="input-group input-group-sm" style="width: 155px;">
-                <span class="input-group-text">Mostrar</span>
-                <select id="pageSize" class="form-select">
-                  <option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option>
-                </select>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+              <div class="kpi card text-center p-2">
+                <span class="text-muted">Finalizadas</span>
+                <b id="kDone">0</b>
+              </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="kpi card text-center p-2">
+                <span class="text-muted">Monto Total</span>
+                <b id="kMonto">$0</b>
+              </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="kpi card text-center p-2">
+                <span class="text-muted">Sin Costo</span>
+                <b id="kFree">0</b>
               </div>
             </div>
           </div>
+          <div class="toolbar row g-2 align-items-end mb-2">
+            <div class="col-12 col-md-4">
+              <div class="field">
+                <label for="q">Buscar</label>
+                <div class="input-group">
+                  <input id="q" type="text" class="form-control" placeholder="Buscar..." />
+                  <button class="btn btn-outline-secondary" id="reset" title="Limpiar"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="field">
+                <label for="cat">Categoría</label>
+                <select id="cat" class="form-select"></select>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="field">
+                <label for="org">Organismo</label>
+                <select id="org" class="form-select"></select>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="field">
+                <label for="estado">Estado</label>
+                <select id="estado" class="form-select"></select>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="field">
+                <label for="visto">Visto</label>
+                <select id="visto" class="form-select"></select>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <button id="quickUrg" class="btn btn-warning btn-sm"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
+            <button id="quickNew" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
+            <button id="quickFree" class="btn btn-success btn-sm"><i class="bi bi-cash-coin me-1"></i>Sin Costo</button>
+            <button id="reload" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
+            <button id="viewCards" class="btn btn-outline-primary btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i>Tarjetas</button>
+            <button id="viewList" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-ul me-1"></i>Lista</button>
+            <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i class="bi bi-kanban me-1"></i>Kanban</button>
+          </div>
+        </div>
+        <div class="section card shadow-sm p-3 mb-4">
+          <!-- Aquí se renderizan las tarjetas/lista/kanban -->
+          <div id="cards"></div>
+          <div id="list"></div>
+          <div id="kanban"></div>
+          <div id="empty" class="text-center text-muted"></div>
         </div>
       </section>
     </div>
-  </div>
-
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
-    <div id="toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;"><div class="d-flex"><div class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" onclick="document.getElementById('toast').style.display='none'"></button></div></div>
-  </div>
+  </main>
 
   <section id="modal" class="modal" aria-hidden="true">
     <article class="modal-card">
@@ -943,41 +942,780 @@
         </div>
         <button id="fieldsClose" class="close" type="button">Cerrar</button>
       </header>
-      <div id="fieldsList" class="full" style="white-space:pre-wrap; max-height:60vh; overflow:auto;"></div>
+      <div id="fieldsList" class="full" style="white-space:pre-wrap; max-height:60vh; overflow:auto;">
+        <!-- Lista de campos se llenará dinámicamente -->
+      </div>
     </article>
   </section>
 
+  <div id="toast" class="toast">Accion simulada</div>
+
+  <!-- Dependencias JS: jQuery, DataTables y Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-/xUj+3OJ+Y3o7y2X6a2a2Q5p2s6b1pXQ5K5m8q0i3Dk=" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    const THEME_KEY = 'dashboard-cm-theme';
-    const themeToggleBtn = document.getElementById('themeToggle');
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
+
+    const st = { rows: [], filtered: [], view: "cards", selected: null };
+
+    const el = {
+      q: document.getElementById("q"),
+      cat: document.getElementById("cat"),
+      org: document.getElementById("org"),
+      producto: document.getElementById("producto"),
+      estado: document.getElementById("estado"),
+      visto: document.getElementById("visto"),
+      quickUrg: document.getElementById("quickUrg"),
+      quickNew: document.getElementById("quickNew"),
+      quickFree: document.getElementById("quickFree"),
+      reset: document.getElementById("reset"),
+      pageSize: document.getElementById("pageSize"),
+      prevPage: document.getElementById("prevPage"),
+      nextPage: document.getElementById("nextPage"),
+      pageInfo: document.getElementById("pageInfo"),
+      viewCards: document.getElementById("viewCards"),
+      viewList: document.getElementById("viewList"),
+      viewBoard: document.getElementById("viewBoard"),
+      reload: document.getElementById("reload"),
+      cards: document.getElementById("cards"),
+      list: document.getElementById("list"),
+      kanban: document.getElementById("kanban"),
+      empty: document.getElementById("empty"),
+      kNew: document.getElementById("kNew"),
+      kProg: document.getElementById("kProg"),
+      kDone: document.getElementById("kDone"),
+      kMonto: document.getElementById("kMonto"),
+      kFree: document.getElementById("kFree"),
+      mTotal: document.getElementById("mTotal"),
+      mShow: document.getElementById("mShow"),
+      mUpd: document.getElementById("mUpd"),
+      themeToggle: document.getElementById("themeToggle"),
+      modal: document.getElementById("modal"),
+      mdClose: document.getElementById("mdClose"),
+      mdCode: document.getElementById("mdCode"),
+      mdTitle: document.getElementById("mdTitle"),
+      mdOrg: document.getElementById("mdOrg"),
+      mdProv: document.getElementById("mdProv"),
+      mdMonto: document.getElementById("mdMonto"),
+      mdPub: document.getElementById("mdPub"),
+      mdCloseDate: document.getElementById("mdCloseDate"),
+      mdDias: document.getElementById("mdDias"),
+      mdCat: document.getElementById("mdCat"),
+      mdEstado: document.getElementById("mdEstado"),
+      mdPrio: document.getElementById("mdPrio"),
+      mdDesc: document.getElementById("mdDesc"),
+      edVisto: document.getElementById("edVisto"),
+      edEstado: document.getElementById("edEstado"),
+      edOwner: document.getElementById("edOwner"),
+      edCom: document.getElementById("edCom"),
+      openDoc: document.getElementById("openDoc"),
+      save: document.getElementById("save"),
+      toast: document.getElementById("toast")
+    };
+
+    function toNumber(value) {
+      if (value == null || value === "") return 0;
+      const clean = String(value).replace(/[.$\s]/g, "").replace(/,/g, ".");
+      const n = Number(clean);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function normalizeRow(r) {
+      // Preserve the original CSV row keys exactly under _raw
+      const raw = {};
+      for (const k in r) {
+        // keep original header keys as-is (trim whitespace)
+        const key = String(k || "").trim();
+        raw[key] = r[k];
+      }
+
+      // Start output with all original keys intact
+      const out = Object.assign({}, raw);
+      out._raw = Object.assign({}, raw);
+
+      // Provide convenient aliases only if they are missing, do NOT remove or rename original headers
+      if (!out.CodigoExterno) out.CodigoExterno = raw['ID Licitacion'] || raw['ID Licitación'] || raw.CodigoExterno || raw['Codigo Externo'] || "";
+      if (!out.Nombre) out.Nombre = raw.Nombre || raw['Nombre'] || "";
+      out.Monto = toNumber(raw['Monto Estimado'] || raw.Monto || raw['Monto'] || 0);
+      if (!out.FechaCierre) out.FechaCierre = raw['Fecha Cierre'] || raw.FechaCierre || "";
+      if (!out.Descripcion) out.Descripcion = raw.Descripcion || raw['Descripcion'] || raw['Descripción'] || "";
+      if (!out.TipoLicitacion) out.TipoLicitacion = raw['Tipo Licitacion'] || raw.Categoria || raw['Codigo Tipo'] || "Sin tipo";
+      if (!out.Organismo) out.Organismo = raw['Nombre Organismo'] || raw.Organismo || "";
+      if (!out.EstadoAPI) out.EstadoAPI = raw.Estado || raw['Estado'] || "";
+      if (!out.CodigoEstadoAPI) out.CodigoEstadoAPI = raw['Codigo Estado'] || raw['CodigoEstado'] || "";
+      if (!out.FechaPublicacion) out.FechaPublicacion = raw['Fecha Publicacion'] || raw.FechaPublicacion || "";
+      if (!out.DiasRestantes) out.DiasRestantes = raw['Dias Disponibles'] || raw.DiasRestantes || raw['Dias Cierre Licitacion'] || "";
+      if (!out.URLLicitacion) out.URLLicitacion = raw.URL || raw.URLLicitacion || raw['URL'] || "";
+      out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
+      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "No Tomada";
+      if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
+      if (!out.Responsable) out.Responsable = raw.Responsable || raw['Nombre Usuario'] || "";
+      if (!out.Comentario) out.Comentario = raw.Comentario || "";
+      if (!out.Prioridad) out.Prioridad = raw.Prioridad || "Media";
+
+      return out;
+    }
+
+    const fmt = n => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(Number(n) || 0);
+    const dateOnly = value => {
+      if (!value) return "-";
+      const s = String(value).trim();
+      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (isoMatch) return isoMatch[1];
+      const d = new Date(s);
+      if (Number.isNaN(d.getTime())) return s;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
+    const isNew = r => {
+      const d = new Date(r.FechaPublicacion);
+      if (Number.isNaN(d.getTime())) return false;
+      return (Date.now() - d.getTime()) <= 72 * 60 * 60 * 1000;
+    };
+    const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
+
+    function toast(msg) {
+      el.toast.textContent = msg;
+      el.toast.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => el.toast.classList.remove("show"), 1800);
+    }
 
     function applyTheme(theme) {
-      const next = theme === 'dark' ? 'dark' : 'light';
-      document.body.setAttribute('data-theme', next);
-      document.body.setAttribute('data-bs-theme', next);
-      if (themeToggleBtn) {
-        themeToggleBtn.innerHTML = next === 'dark'
-          ? '<i class="fa fa-sun me-1"></i>Modo claro'
-          : '<i class="fa fa-moon me-1"></i>Modo oscuro';
-      }
-      localStorage.setItem(THEME_KEY, next);
+      const next = theme === "dark" ? "dark" : "light";
+      document.body.setAttribute("data-theme", next);
+      // also set Bootstrap theme attribute so Bootstrap components follow dark mode
+      document.body.setAttribute("data-bs-theme", next);
+      if (el.themeToggle) el.themeToggle.textContent = next === "dark" ? "Modo claro" : "Modo oscuro";
+      localStorage.setItem("cm-theme", next);
     }
 
     function toggleTheme() {
-      const current = document.body.getAttribute('data-theme') || 'light';
-      applyTheme(current === 'dark' ? 'light' : 'dark');
+      const current = document.body.getAttribute("data-theme") || "light";
+      const next = current === "dark" ? "light" : "dark";
+      applyTheme(next);
+      toast(`Tema ${next === "dark" ? "oscuro" : "claro"} activado.`);
     }
 
-    if (themeToggleBtn) {
-      themeToggleBtn.addEventListener('click', toggleTheme);
+    function statusClass(s) {
+      if (s === "Trabajada") return "st-tr";
+      if (s === "En Proceso") return "st-ep";
+      return "st-nt";
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem(THEME_KEY);
-      const matchesDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(saved || (matchesDark ? 'dark' : 'light'));
+    function flagByDays(dias) {
+      const n = Number(dias);
+      if (!Number.isFinite(n)) return "f-nv";
+      if (n <= 2) return "f-u";
+      if (n <= 7) return "f-new";
+      return "f-v";
+    }
+
+    function fillFilters() {
+      const orgs = [...new Set(st.rows.map(r => r.Organismo).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+      el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
+      if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
+    }
+
+    function apply() {
+      const q = el.q.value.trim().toLowerCase();
+      const cat = el.cat.value;
+      const org = el.org.value;
+      const prod = el.producto ? el.producto.value : "";
+      const est = el.estado.value;
+      const visto = el.visto.value;
+
+      st.filtered = st.rows.filter(r => {
+        const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Producto, r.Descripcion, r.TipoLicitacion].join(" ").toLowerCase();
+        const mQ = !q || text.includes(q);
+        const mCat = !cat || r.TipoLicitacion === cat;
+        const mOrg = !org || r.Organismo === org;
+        const mProd = !prod || (r.Producto === prod);
+        const mEst = !est || r.EstadoTrabajo === est;
+        let mV = true;
+        if (visto === "TRUE") mV = r.Visto === "TRUE";
+        if (visto === "FALSE") mV = r.Visto !== "TRUE";
+        if (visto === "NUEVO") mV = isNew(r);
+        return mQ && mCat && mOrg && mProd && mEst && mV;
+      });
+
+      // reset to first page on filter change
+      st.currentPage = 1;
+      updatePagination();
+      render();
+      kpis();
+    }
+
+    function kpis() {
+      const total = st.rows.length;
+      const prog = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
+      const done = st.rows.filter(r => r.EstadoTrabajo === "Trabajada").length;
+      const free = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada").length;
+      const m = st.filtered.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
+
+      if (el.kNew) el.kNew.textContent = total;
+      if (el.kProg) el.kProg.textContent = prog;
+      if (el.kDone) el.kDone.textContent = done;
+      if (el.kMonto) el.kMonto.textContent = fmt(m);
+      if (el.kFree) el.kFree.textContent = free;
+      if (el.mTotal) el.mTotal.textContent = `Total: ${total}`;
+      if (el.mShow) el.mShow.textContent = `Mostrando: ${st.filtered.length}`;
+      if (el.mUpd) el.mUpd.textContent = `Actualizado: ${new Date().toLocaleString("es-CL")}`;
+    }
+
+    function renderCards(rows) {
+      el.cards.innerHTML = rows.map(r => {
+        const visto = r.Visto === "TRUE";
+        return `
+          <article class="card">
+            <div class="head-row">
+              <span class="code">${esc(r.CodigoExterno)}</span>
+              <div class="flags">
+                <span class="flag ${flagByDays(r.DiasRestantes)}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "sin cierre"}</span>
+                ${isNew(r) ? '<span class="flag f-new">NUEVO</span>' : ""}
+                <span class="flag ${visto ? "f-v" : "f-nv"}">${visto ? "VISTO" : "NO VISTO"}</span>
+              </div>
+            </div>
+            <h3 class="name">${esc(r.Nombre)}</h3>
+            <p class="desc">${esc(r.Descripcion || "Sin descripcion")}</p>
+            <div class="kv">
+              <b>Tipo</b><span>${esc(r.TipoLicitacion)}</span>
+              <b>Organismo</b><span>${esc(r.Organismo)}</span>
+              <b>Producto</b><span>${esc(r.Producto || "-")}</span>
+            </div>
+            <div class="foot">
+              <div>
+                <div class="money">${fmt(r.Monto)}</div>
+                <span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span>
+              </div>
+              <div class="actions">
+                <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
+                <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderList(rows) {
+      el.list.innerHTML = `
+        <header class="list-head">
+          <span>Nombre</span><span>Tipo</span><span>Monto</span><span>Dias</span><span>Estado</span><span>Acciones</span>
+        </header>
+        ${rows.map(r => `
+          <article class="list-row">
+            <div class="name-cell">
+              <strong>${esc(r.Nombre)}</strong>
+              <span>${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</span>
+            </div>
+            <span>${esc(r.TipoLicitacion)}</span>
+            <span>${fmt(r.Monto)}</span>
+            <span>${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</span>
+            <span><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></span>
+            <div class="actions">
+              <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
+              <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
+            </div>
+          </article>
+        `).join("")}
+      `;
+    }
+
+    // DataTables integration
+    let dtInstance = null;
+
+    function buildTableRowsHtml(rows) {
+      return rows.map(r => `
+        <tr>
+          <td>
+            <strong>${esc(r.Nombre)}</strong><br/>
+            <small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>
+          </td>
+          <td>${esc(r.TipoLicitacion)}</td>
+          <td data-order="${Number(r.Monto) || 0}">${fmt(r.Monto)}</td>
+          <td data-order="${Number(r.DiasRestantes) || 0}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
+          <td><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></td>
+          <td>
+            <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
+            <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function initDataTable() {
+      if (!window.jQuery || !$.fn.DataTable) return;
+      const $tbl = $('#dtTable');
+      $tbl.show();
+      // destroy previous instance if any
+      if (dtInstance) {
+        try { dtInstance.destroy(); } catch (e) {}
+        dtInstance = null;
+      }
+      const rowsHtml = buildTableRowsHtml(st.filtered);
+      $tbl.find('tbody').html(rowsHtml);
+      const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
+      // hide custom pagination controls in toolbar
+      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = 'none';
+      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
+
+      // bind external search box to DataTable search
+      if (el.q) {
+        $(el.q).off('input.dtsearch').on('input.dtsearch', function() {
+          if (dtInstance) dtInstance.search(this.value).draw();
+        });
+      }
+
+      dtInstance = $tbl.DataTable({
+        order: [[0, 'asc']],
+        ordering: true,
+        pageLength: pageLen,
+        lengthChange: false,
+        searching: true,
+        responsive: true,
+        // place only table then pagination+info at bottom
+        dom: 't<"d-flex justify-content-between mt-2"ip>'
+      });
+    }
+
+    function refreshDataTable() {
+      if (!window.jQuery || !$.fn.DataTable) return initDataTable();
+      const $tbl = $('#dtTable');
+      if (dtInstance) {
+        try { dtInstance.destroy(); } catch (e) {}
+        dtInstance = null;
+      }
+      $tbl.find('tbody').html(buildTableRowsHtml(st.filtered));
+      initDataTable();
+    }
+
+    function renderBoard(rows) {
+      const lanes = ["No Tomada", "En Proceso", "Trabajada"];
+      el.kanban.innerHTML = lanes.map(l => {
+        const rs = rows.filter(r => (r.EstadoTrabajo || "No Tomada") === l);
+        return `
+          <article class="lane">
+            <header class="lane-head"><span>${l}</span><span class="count">${rs.length}</span></header>
+            ${rs.map(r => `
+              <div class="mini">
+                <span class="code">${esc(r.CodigoExterno)}</span>
+                <h4>${esc(r.Nombre)}</h4>
+                <div class="mini-foot">
+                  <span>${fmt(r.Monto)}</span>
+                  <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
+                </div>
+              </div>
+            `).join("")}
+          </article>
+        `;
+      }).join("");
+    }
+
+    function render() {
+      const rows = getCurrentPageRows();
+      const empty = rows.length === 0;
+      el.empty.style.display = empty ? "block" : "none";
+
+      el.cards.style.display = st.view === "cards" ? "grid" : "none";
+      el.list.style.display = st.view === "list" ? "block" : "none";
+      el.kanban.style.display = st.view === "board" ? "grid" : "none";
+
+      if (empty) {
+        el.cards.innerHTML = "";
+        // if DataTables is present we keep the table DOM but hide it, otherwise clear the fallback list HTML
+        if (!(window.jQuery && $.fn.DataTable)) el.list.innerHTML = "";
+        el.kanban.innerHTML = "";
+        if (window.jQuery && $.fn.DataTable) {
+          const tbl = document.getElementById('dtTable'); if (tbl) tbl.style.display = 'none';
+        }
+        return;
+      }
+
+      if (st.view === "cards") renderCards(rows);
+      if (st.view === "list") {
+        // If DataTables is available, use it (table is inside #dtTable). Otherwise fallback to renderList.
+        if (window.jQuery && $.fn.DataTable) {
+          // ensure cards/kanban hidden and show table
+          el.cards.style.display = "none";
+          el.kanban.style.display = "none";
+          // show table and populate
+          const tbl = document.getElementById('dtTable');
+          if (tbl) tbl.style.display = '';
+          refreshDataTable();
+        } else {
+          renderList(rows);
+        }
+      }
+      if (st.view === "board") renderBoard(rows);
+    }
+
+    function getCurrentPageRows() {
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
+      if (ps === 'all' || st.pageSize === 'all') return st.filtered;
+      const start = (st.currentPage - 1) * ps;
+      return st.filtered.slice(start, start + ps);
+    }
+
+    function updatePagination() {
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
+      const total = st.filtered.length;
+      const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(total / ps));
+      if (st.currentPage > totalPages) st.currentPage = totalPages;
+      if (el.pageInfo) el.pageInfo.textContent = `${st.currentPage} / ${totalPages}`;
+      if (el.prevPage) el.prevPage.disabled = st.currentPage <= 1;
+      if (el.nextPage) el.nextPage.disabled = st.currentPage >= totalPages;
+    }
+
+    function prevPage() { if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); } }
+    function nextPage() { const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps)); if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); } }
+
+    function setView(v) {
+      st.view = v;
+      el.viewCards.classList.toggle("active", v === "cards");
+      el.viewList.classList.toggle("active", v === "list");
+      el.viewBoard.classList.toggle("active", v === "board");
+      // show/hide custom pagination/pageSize when not using DataTables
+      const pagWrap = document.getElementById('pagination');
+      if (v === 'list' && window.jQuery && $.fn.DataTable) {
+        if (pagWrap) pagWrap.style.display = 'none';
+        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
+      } else {
+        if (pagWrap) pagWrap.style.display = '';
+        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
+      }
+      render();
+      toast(`Vista ${v} activada.`);
+    }
+
+    async function openModal(code) {
+      const r = st.rows.find(x => x.CodigoExterno === code);
+      if (!r) return;
+      st.selected = code;
+      el.mdCode.textContent = r.CodigoExterno;
+      el.mdTitle.textContent = r.Nombre;
+      el.mdOrg.textContent = r.Organismo || "-";
+      el.mdProv.textContent = r.Producto || "-";
+      el.mdMonto.textContent = fmt(r.Monto);
+      el.mdPub.textContent = dateOnly(r.FechaPublicacion);
+      el.mdCloseDate.textContent = dateOnly(r.FechaCierre);
+      el.mdDias.textContent = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
+      el.mdCat.textContent = r.TipoLicitacion || "-";
+      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "No Tomada";
+      el.mdPrio.textContent = r.Prioridad || "Media";
+      el.mdDesc.textContent = r.Descripcion || "Sin descripcion";
+      el.edVisto.value = r.Visto === "TRUE" ? "TRUE" : "FALSE";
+      el.edEstado.value = r.EstadoTrabajo || "No Tomada";
+      el.edOwner.value = r.Responsable || "";
+      el.edCom.value = r.Comentario || "";
+      el.openDoc.dataset.url = r.URLLicitacion || "";
+      el.modal.classList.add("open");
+      el.modal.setAttribute("aria-hidden", "false");
+
+      if (!r.URLLicitacion) return;
+
+      try {
+        const response = await fetch(r.URLLicitacion);
+        const json = await response.json();
+        const rel = Array.isArray(json.releases) && json.releases.length ? json.releases[0] : {};
+        const award = Array.isArray(rel.awards) && rel.awards.length ? rel.awards[0] : {};
+        const suppliers = Array.isArray(award.suppliers) ? award.suppliers : [];
+        const supplierText = suppliers.length ? suppliers.map(s => s.name).filter(Boolean).join(" | ") : (r.Producto || "No informado");
+        const amount = award.value && award.value.amount ? award.value.amount : r.Monto;
+        const status = award.statusDetails || award.status || r.EstadoTrabajo || "No informado";
+        const doc = Array.isArray(award.documents) && award.documents.length ? award.documents[0].url : "";
+
+        el.mdProv.textContent = supplierText;
+        el.mdMonto.textContent = fmt(amount);
+        el.mdEstado.textContent = status;
+        el.mdDesc.textContent = award.description || r.Descripcion || "Sin descripcion";
+        el.mdPub.textContent = dateOnly(rel.date || json.publishedDate || r.FechaPublicacion);
+        el.openDoc.dataset.url = doc || r.URLLicitacion;
+      } catch (error) {
+        el.openDoc.dataset.url = r.URLLicitacion || "";
+      }
+    }
+
+    function closeModal() {
+      el.modal.classList.remove("open");
+      el.modal.setAttribute("aria-hidden", "true");
+      st.selected = null;
+    }
+
+    async function saveLocal() {
+      if (!st.selected) return;
+      const r = st.rows.find(x => x.CodigoExterno === st.selected);
+      if (!r) return;
+      
+      const nuevoVisto = el.edVisto.value;
+      const nuevoEstado = el.edEstado.value;
+      const nuevoResponsable = el.edOwner.value.trim();
+      const nuevoComentario = el.edCom.value.trim();
+      
+      // Actualizar datos locales
+      r.Visto = nuevoVisto;
+      r.EstadoTrabajo = nuevoEstado;
+      r.Responsable = nuevoResponsable;
+      r.Comentario = nuevoComentario;
+      
+      // Intenta sincronizar con Sheet
+      try {
+        const payload = {
+          codigo_externo: st.selected,
+          visto: nuevoVisto,
+          estado_trabajo: nuevoEstado,
+          responsable: nuevoResponsable,
+          comentario: nuevoComentario
+        };
+        
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          toast("Cambios guardados en el Sheet ✓");
+        } else {
+          toast("Cambios locales (sincronización con Sheet falló)");
+        }
+      } catch (err) {
+        console.error("Error sincronizando:", err);
+        toast("Cambios guardados localmente (sin conexión a Sheet)");
+      }
+      
+      apply();
+      closeModal();
+    }
+
+    function resetFilters() {
+      el.q.value = "";
+      el.cat.value = "";
+      el.org.value = "";
+      el.estado.value = "";
+      el.visto.value = "";
+      if (el.producto) el.producto.value = "";
+      if (el.pageSize) el.pageSize.value = "50";
+      st.currentPage = 1;
+      apply();
+    }
+
+    function quick(type) {
+      if (type === "urg") {
+        el.visto.value = "";
+        st.filtered = st.rows.filter(r => Number(r.DiasRestantes) <= 2);
+        render();
+        kpis();
+        return;
+      }
+      if (type === "new") el.visto.value = "NUEVO";
+      if (type === "free") el.estado.value = "No Tomada";
+      apply();
+    }
+
+    async function triggerAPISync() {
+      try {
+        el.mUpd.textContent = "Actualizado: consultando API...";
+        toast("Buscando nuevas licitaciones en la API...");
+        
+        const response = await fetch(APPS_SCRIPT_URL + "?action=updateLicitaciones", {
+          method: "GET"
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          el.mUpd.textContent = `Actualizado: ${result.count} nuevas licitaciones`;
+          toast(`API sincronizada: +${result.count} nuevos registros`);
+          // Espera un segundo antes de recargar el CSV
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+          toast("API: No hay nuevas licitaciones");
+        }
+      } catch (err) {
+        console.error("Error sincronizando API:", err);
+        toast("Error al consultar API (continuando con recarga local)");
+      }
+      
+      // Luego recarga el CSV actualizado
+      loadCsv();
+    }
+
+    function loadCsv() {
+      el.mUpd.textContent = "Actualizado: cargando datos...";
+
+      if (typeof Papa === "undefined") {
+        toast("No se pudo cargar PapaParse.");
+        el.mUpd.textContent = "Actualizado: error";
+        return;
+      }
+
+      Papa.parse(CSV_URL, {
+        download: true,
+        header: true,
+        transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim(),
+        skipEmptyLines: true,
+        complete: result => {
+          const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
+          st.rows = parsed;
+          st.filtered = [...parsed];
+          fillFilters();
+          apply();
+          toast(`CSV cargado: ${parsed.length} registros.`);
+        },
+        error: () => {
+          st.rows = [];
+          st.filtered = [];
+          render();
+          kpis();
+          el.mUpd.textContent = "Actualizado: error al cargar";
+          toast("No se pudo cargar el CSV.");
+        }
+      });
+    }
+
+    function init() {
+      const savedTheme = localStorage.getItem("cm-theme");
+      const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(savedTheme || (systemDark ? "dark" : "light"));
+      loadCsv();
+    }
+    // pagination state defaults
+    st.currentPage = 1;
+    st.pageSize = '50';
+
+    el.q.addEventListener("input", apply);
+    el.cat.addEventListener("change", apply);
+    el.org.addEventListener("change", apply);
+    el.estado.addEventListener("change", apply);
+    el.visto.addEventListener("change", apply);
+    if (el.producto) el.producto.addEventListener("change", apply);
+    if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
+
+    if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
+    if (el.nextPage) el.nextPage.addEventListener("click", nextPage);
+
+    el.quickUrg.addEventListener("click", () => quick("urg"));
+    el.quickNew.addEventListener("click", () => quick("new"));
+    el.quickFree.addEventListener("click", () => quick("free"));
+    el.reset.addEventListener("click", resetFilters);
+
+    el.viewCards.addEventListener("click", () => setView("cards"));
+    el.viewList.addEventListener("click", () => setView("list"));
+    el.viewBoard.addEventListener("click", () => setView("board"));
+    el.reload.addEventListener("click", triggerAPISync);
+    el.themeToggle.addEventListener("click", toggleTheme);
+
+    document.addEventListener("click", e => {
+      const btn = e.target.closest("[data-a]");
+      if (!btn) return;
+      if (btn.dataset.a === "view") openModal(btn.dataset.c);
+      if (btn.dataset.a === "open") {
+        const row = st.rows.find(x => x.CodigoExterno === btn.dataset.c);
+        if (row && row.URLLicitacion) {
+          window.open(row.URLLicitacion, "_blank", "noopener,noreferrer");
+        } else {
+          toast("No hay URL disponible para este registro.");
+        }
+      }
     });
+
+    el.openDoc.addEventListener("click", () => {
+      const row = st.rows.find(x => x.CodigoExterno === st.selected);
+      const url = el.openDoc.dataset.url || (row ? row.URLLicitacion : "");
+      if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } else {
+        toast("No hay documento disponible.");
+      }
+    });
+
+    el.save.addEventListener("click", saveLocal);
+    el.mdClose.addEventListener("click", closeModal);
+    el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(); });
+
+    // Ver campos CSV -> hace fetch al CSV (simula un curl), verifica status y muestra headers
+    (function setupFieldsViewer(){
+      const fieldsModal = document.getElementById('fieldsModal');
+      const fieldsList = document.getElementById('fieldsList');
+      const viewFieldsBtn = document.getElementById('viewFields');
+      const fieldsCloseBtn = document.getElementById('fieldsClose');
+
+      async function fetchAndShowHeaders(){
+        fieldsList.textContent = 'Verificando conexión al CSV...';
+        try {
+          // Intenta obtener el CSV (evita cache)
+          const res = await fetch(CSV_URL, { method: 'GET', cache: 'no-store' });
+          if (!res.ok) {
+            fieldsList.textContent = `Error HTTP: ${res.status} ${res.statusText}`;
+            fieldsModal.classList.add('open');
+            fieldsModal.setAttribute('aria-hidden','false');
+            return;
+          }
+          const text = await res.text();
+
+          // Usa PapaParse para extraer los headers (meta.fields)
+          const parsed = Papa.parse(text, {
+            header: true,
+            preview: 1,
+            transformHeader: header => String(header || '').replace(/^\uFEFF/, '').trim()
+          });
+
+          const fields = (parsed && parsed.meta && parsed.meta.fields) ? parsed.meta.fields : [];
+          if (fields.length === 0) {
+            // fallback: intenta leer la primera fila sin header
+            const alt = Papa.parse(text, { preview: 1, header: false });
+            const firstRow = Array.isArray(alt.data) && alt.data.length ? alt.data[0] : null;
+            if (firstRow) {
+              fieldsList.textContent = firstRow.join('\n');
+            } else {
+              fieldsList.textContent = 'No se pudieron determinar los headers.';
+            }
+          } else {
+            fieldsList.textContent = `Conexión OK (HTTP ${res.status}).\n\n` + fields.join('\n');
+          }
+
+          // Comparar con lo que ya está cargado en memoria (st.rows) y avisar si difiere
+          if (st.rows && st.rows.length) {
+            const loaded = Object.keys(st.rows[0]._raw || {});
+            const onlyInFetched = fields.filter(f => !loaded.includes(f));
+            const onlyInLoaded = loaded.filter(f => !fields.includes(f));
+            const diffs = onlyInFetched.length + onlyInLoaded.length;
+            if (diffs) {
+              fieldsList.textContent += `\n\nAdvertencia: los headers en tiempo de carga difieren (${diffs} diferencias).`;
+            }
+          }
+
+          fieldsModal.classList.add('open');
+          fieldsModal.setAttribute('aria-hidden','false');
+        } catch (err) {
+          // CORS o network errores quedarán aquí
+          fieldsList.textContent = 'Error conectando al CSV: ' + (err && err.message ? err.message : String(err));
+          fieldsModal.classList.add('open');
+          fieldsModal.setAttribute('aria-hidden','false');
+        }
+      }
+
+      if (viewFieldsBtn) viewFieldsBtn.addEventListener('click', fetchAndShowHeaders);
+
+      if (fieldsCloseBtn) fieldsCloseBtn.addEventListener('click', () => {
+        fieldsModal.classList.remove('open');
+        fieldsModal.setAttribute('aria-hidden', 'true');
+      });
+
+      if (fieldsModal) fieldsModal.addEventListener('click', e => { if (e.target === fieldsModal) { fieldsModal.classList.remove('open'); fieldsModal.setAttribute('aria-hidden','true'); } });
+    })();
+
+    init();
   </script>
 </body>
 </html>
-
