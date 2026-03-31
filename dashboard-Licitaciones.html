@@ -255,6 +255,8 @@
 
     .field { display: grid; gap: 4px; }
     .field label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .date-range-inputs { display: grid; gap: 6px; grid-template-columns: 1fr; }
+
 
     input, select, button, textarea {
       width: 100%;
@@ -886,9 +888,9 @@
                   <label for="producto">Producto</label>
                   <select id="producto" class="form-select"></select>
                 </div>
-                <div class="field mb-2">
+                <div class="field mb-2 date-range">
                   <label>Fechas</label>
-                  <div class="d-flex gap-2">
+                  <div class="date-range-inputs">
                     <input id="fechaDesde" type="date" class="form-control" />
                     <input id="fechaHasta" type="date" class="form-control" />
                   </div>
@@ -896,7 +898,6 @@
                 <div class="d-flex flex-wrap gap-2 mb-2">
                   <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
                   <button id="quickNew" class="btn btn-primary btn-sm" type="button"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
-                  <button id="quickFree" class="btn btn-success btn-sm" type="button"><i class="bi bi-cash-coin me-1"></i>Sin Costo</button>
                   <button id="reload" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
                 </div>
                 <div class="field mb-2">
@@ -954,10 +955,6 @@
             <div class="kpi">
               <span>Monto Total</span>
               <b id="kMonto">$0</b>
-            </div>
-            <div class="kpi">
-              <span>Sin Costo</span>
-              <b id="kFree">0</b>
             </div>
           </div>
           <div class="d-flex flex-wrap gap-2 mb-2">
