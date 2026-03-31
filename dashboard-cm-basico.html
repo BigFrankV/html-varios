@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard CM Inspired</title>
+  <title>Dashboard Licitaciones Mercado Publico</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -11,6 +11,8 @@
   <!-- Bootstrap + DataTables (estilos) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <style>
     :root {
       --bg: #f6f7fb;
@@ -50,7 +52,8 @@
       margin: 14px auto;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 8px !important;
       justify-items: center;
     }
 
@@ -192,21 +195,62 @@
 
     .kpis {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .kpi:nth-child(4) {
+      grid-column: span 2;
+      aspect-ratio: auto;
+      min-height: 130px;
     }
 
     .kpi {
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 14px;
       background: linear-gradient(145deg, #fff, #fbfcff);
-      display: grid;
-      gap: 3px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      aspect-ratio: 1 / 1;
+      min-width: 0;
+      min-height: 150px;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: visible;
+      font-size: 1.1rem;
     }
 
-    .kpi span { color: var(--muted); font-size: .75rem; font-weight: 700; }
-    .kpi b { font-size: 1.2rem; }
+    .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
+      grid-column: span 1;
+    }
+
+    .kpi span { color: var(--muted); font-size: .78rem; font-weight: 700; white-space: normal; text-align: center; }
+    .kpi b { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-word; text-align: center; }
+
+    @media (max-width: 900px) {
+      .kpis {
+        grid-template-columns: 1fr 1fr;
+      }
+      .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
+        grid-column: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+      .kpi {
+        aspect-ratio: unset;
+        min-height: 80px;
+      }
+    }
 
     .toolbar {
       display: grid;
@@ -217,6 +261,8 @@
 
     .field { display: grid; gap: 4px; }
     .field label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .date-range-inputs { display: grid; gap: 6px; grid-template-columns: 1fr; }
+
 
     input, select, button, textarea {
       width: 100%;
@@ -278,19 +324,51 @@
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
       gap: 10px;
+      align-items: start;
+      align-content: start;
     }
-
     .card {
+      min-width: 0;
+      max-width: 100%;
+      font-size: 0.92rem;
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 12px;
       background: linear-gradient(145deg, #fff, #fbfcff);
-      padding: 11px;
+      padding: 8px 10px;
       display: grid;
-      gap: 8px;
-      animation: rise .24s ease;
+      gap: 6px;
+      align-content: start;
+      box-sizing: border-box;
+      overflow: hidden;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px #22335a10; }
+
+    .card .desc {
+      /* Fallback for non-webkit browsers: limit height by lines */
+      line-height: 1.45;
+      max-height: calc(1.45em * 4);
+      overflow: hidden;
+      display: block; /* fallback */
+      white-space: normal;
+
+      /* Better truncation in WebKit/Blink using line-clamp */
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        min-height: 120px;
+      }
+    }
+    /* Mejorar el contenido interno para que no se desborde */
+    /* (card .desc consolidated above with fallback + webkit clamp) */
 
     @keyframes rise {
       from { opacity: 0; transform: translateY(6px); }
@@ -495,18 +573,19 @@
       position: fixed;
       inset: 0;
       display: none;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 14px;
-      z-index: 40;
+      z-index: 9999 !important;
       background: #111a2c73;
     }
 
     .modal.open { display: flex; }
 
     .modal-card {
-      width: min(900px, 100%);
-      max-height: 90vh;
+      margin-top: 24px;
+      width: min(900px, 98vw);
+      max-height: 92vh;
       overflow: auto;
       border-radius: 16px;
       border: 1px solid var(--line);
@@ -734,111 +813,175 @@
       .switch-left, .switch-right { width: 100%; justify-content: space-between; }
       .chips { justify-content: flex-start; gap: 6px; }
     }
+
+    /* DataTable palette: use existing CSS variables for consistent look */
+    #dtTable {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    #dtTable thead th {
+      background: linear-gradient(120deg, var(--navy), var(--navy-2));
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    #dtTable tbody tr { border-bottom: 1px solid var(--line); }
+    #dtTable tbody td { vertical-align: middle; color: var(--ink); }
+    .table-striped tbody tr:nth-of-type(odd) { background: var(--bg-soft); }
+    .table-striped tbody tr:hover { background: #f3f6ff; }
+
+    /* Dark theme overrides */
+    body[data-theme="dark"] #dtTable {
+      background: #0f1724;
+      color: var(--ink);
+      border-color: #24304a;
+    }
+    body[data-theme="dark"] #dtTable thead th {
+      background: linear-gradient(120deg, #223268, #1c2a59);
+      color: #e8eefc;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    body[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) { background: #0b1526; }
+    body[data-theme="dark"] .table-striped tbody tr:hover { background: #122033; }
   </style>
 </head>
 <body>
-  <main class="app">
 
-    <section class="main">
-      <section class="top">
-        <header class="top-head">
-          <div class="title">
-            <h1>Dashboard Comercial Convenio Marco</h1>
-            <p>Prototipo visual con estructura completa: filtros, cards, lista, tablero y modal de gestion.</p>
+  <main class="container-fluid py-3">
+    <div class="row g-4">
+      <!-- Sidebar -->
+      <aside class="col-lg-3 d-none d-lg-block">
+          <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
+            <div>
+              <div class="logo mb-2 d-flex align-items-center gap-2">
+                <span class="logo-mark"></span>
+                <b>ESPEX</b>
+              </div>
+              <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-3"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
+              <form id="sidebar-filtros" class="mb-4">
+                <div class="field mb-2">
+                  <label for="q">Buscar</label>
+                  <div class="input-group">
+                    <input id="q" type="text" class="form-control" placeholder="Buscar..." />
+                    <button class="btn btn-outline-secondary" id="reset" title="Limpiar" type="button"><i class="bi bi-x-lg"></i></button>
+                  </div>
+                </div>
+                <div class="field mb-2">
+                  <label for="cat">Categoría</label>
+                  <select id="cat" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="org">Organismo</label>
+                  <select id="org" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="estado">Estado</label>
+                  <select id="estado" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="visto">Visto</label>
+                  <select id="visto" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="catGeneral">Clasificación</label>
+                  <select id="catGeneral" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="producto">Producto</label>
+                  <select id="producto" class="form-select"></select>
+                </div>
+                <div class="field mb-2 date-range">
+                  <label>Fechas</label>
+                  <div class="date-range-inputs">
+                    <input id="fechaDesde" type="date" class="form-control" />
+                    <input id="fechaHasta" type="date" class="form-control" />
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
+                  <button id="quickNew" class="btn btn-primary btn-sm" type="button"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
+                  <button id="reload" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
+                </div>
+                <div class="field mb-2">
+                  <label for="pageSize">Ver</label>
+                  <select id="pageSize" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
+                </div>
+                <div class="field mb-2">
+                  <div id="pagination" class="d-flex gap-2 align-items-center">
+                    <button id="prevPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-left"></i></button>
+                    <span id="pageInfo">1 / 1</span>
+                    <button id="nextPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-right"></i></button>
+                  </div>
+                </div>
+              </form>
+              <div class="small-card mb-4">
+                <b><i class="bi bi-info-circle me-1"></i>Ayuda</b>
+                <span>Utiliza los filtros y vistas para explorar los datos.</span>
+              </div>
+            </div>
           </div>
-          <div class="chips">
+      </aside>
+
+      <!-- Main Content -->
+      <section class="col-lg-9">
+        <div class="top card shadow-sm p-4 mb-4">
+          <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div class="title">
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
+              <p class="mb-0">Panel de control de licitaciones y KPIs</p>
+            </div>
+            <div class="chips d-flex flex-wrap gap-2">
+              <span class="chip"><i class="bi bi-lightning-charge text-warning me-1"></i>Rápido</span>
+              <span class="chip"><i class="bi bi-shield-check text-success me-1"></i>Seguro</span>
+              <span class="chip"><i class="bi bi-cloud-arrow-down text-primary me-1"></i>Actualizable</span>
+            </div>
+          </div>
+          <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
             <span id="mTotal" class="chip">Total: 0</span>
             <span id="mShow" class="chip">Mostrando: 0</span>
             <span id="mUpd" class="chip">Actualizado: cargando datos...</span>
-            <button id="viewFields" class="btn-lite" type="button">Ver campos</button>
-            <button id="themeToggle" class="btn-lite theme-toggle" type="button">Modo oscuro</button>
           </div>
-        </header>
-
-        <section class="kpis">
-          <article class="kpi"><span>Total</span><b id="kNew">0</b></article>
-          <article class="kpi"><span>En Proceso</span><b id="kProg">0</b></article>
-          <article class="kpi"><span>Trabajadas</span><b id="kDone">0</b></article>
-          <article class="kpi"><span>Monto visible</span><b id="kMonto">$0</b></article>
-          <article class="kpi"><span>Sin Tomar</span><b id="kFree">0</b></article>
-        </section>
-
-        <section class="toolbar">
-          <div class="field">
-            <label for="q">Busqueda general</label>
-            <input id="q" type="text" placeholder="nombre, ID, organismo, producto, tipo..." />
-          </div>
-          <div class="field">
-            <label for="cat">Tipo Licitacion</label>
-            <select id="cat"><option value="">Todas</option></select>
-          </div>
-          <div class="field">
-            <label for="org">Organismo</label>
-            <select id="org"><option value="">Todos</option></select>
-          </div>
-          <div class="field">
-            <label for="producto">Producto</label>
-            <select id="producto"><option value="">Todos</option></select>
-          </div>
-          <div class="field">
-            <label for="estado">Estado</label>
-            <select id="estado">
-              <option value="">Todos</option>
-              <option value="No Tomada">No Tomada</option>
-              <option value="En Proceso">En Proceso</option>
-              <option value="Trabajada">Trabajada</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="visto">Visto</label>
-            <select id="visto">
-              <option value="">Todos</option>
-              <option value="FALSE">No visto</option>
-              <option value="TRUE">Visto</option>
-              <option value="NUEVO">Solo nuevos</option>
-            </select>
-          </div>
-          <button id="reset" class="btn" type="button">Reset filtros</button>
-          <div class="field">
-            <label for="pageSize">Ver</label>
-            <select id="pageSize"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
-          </div>
-          <div class="field" style="align-self:center;">
-            <div id="pagination" style="display:flex;gap:8px;align-items:center;">
-              <button id="prevPage" class="btn-lite" type="button">Prev</button>
-              <span id="pageInfo">1 / 1</span>
-              <button id="nextPage" class="btn-lite" type="button">Next</button>
+          <div class="kpis mb-3">
+            <div class="kpi">
+              <span>Nuevas</span>
+              <b id="kNew">0</b>
+            </div>
+            <div class="kpi">
+              <span>En Proceso</span>
+              <b id="kProg">0</b>
+            </div>
+            <div class="kpi">
+              <span>Finalizadas</span>
+              <b id="kDone">0</b>
+            </div>
+            <div class="kpi">
+              <span>Monto Total</span>
+              <b id="kMonto">$0</b>
             </div>
           </div>
-        </section>
-
-        <section class="switch">
-          <div class="switch-left">
-            <button id="viewCards" class="btn-lite active" type="button">Cards</button>
-            <button id="viewList" class="btn-lite" type="button">Lista</button>
-            <button id="viewBoard" class="btn-lite" type="button">Tablero</button>
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <button id="viewCards" class="btn btn-outline-primary btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i>Tarjetas</button>
+            <button id="viewList" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-ul me-1"></i>Lista</button>
+            <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i class="bi bi-kanban me-1"></i>Kanban</button>
+            <button id="exportarExcel" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Exportar Excel</button>
           </div>
-          <div class="switch-right">
-            <button id="quickUrg" class="btn-lite" type="button">Urgentes</button>
-            <button id="quickNew" class="btn-lite" type="button">Nuevos</button>
-            <button id="quickFree" class="btn-lite" type="button">Sin tomar</button>
-            <button id="reload" class="btn-lite" type="button">Recargar CSV</button>
-          </div>
-        </section>
-      </section>
-
-      <section class="section">
-        <section id="cards" class="cards"></section>
-        <section id="list" class="list">
-          <!-- DataTable (se inicializa dinámicamente). Se mantiene el fallback de lista para dispositivos sin JS o si DataTables falla -->
-          <div class="table-responsive" style="padding:12px;">
-            <table id="dtTable" class="table table-hover align-middle" style="width:100%; display:none;">
+        </div>
+        <div class="section card shadow-sm p-3 mb-4">
+          <!-- Tarjetas (Cards) -->
+          <div id="cards" class="cards"></div>
+          <!-- Lista (DataTable) -->
+          <div id="list" class="table-responsive">
+            <table id="dtTable" class="table table-striped table-bordered" style="width:100%; display:none;">
               <thead>
                 <tr>
                   <th>Nombre</th>
                   <th>Tipo</th>
                   <th>Monto</th>
-                  <th>Dias</th>
+                  <th>Días</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -846,72 +989,77 @@
               <tbody></tbody>
             </table>
           </div>
-        </section>
-        <section id="kanban" class="kanban"></section>
-        <div id="empty" class="chip" style="display:none; text-align:center; padding:16px;">No hay resultados para esos filtros.</div>
+          <!-- Kanban -->
+          <div id="kanban" class="row g-3"></div>
+          <div id="empty" class="alert alert-warning text-center d-none"></div>
+        </div>
       </section>
-    </section>
+    </div>
   </main>
 
   <section id="modal" class="modal" aria-hidden="true">
     <article class="modal-card">
-      <header class="modal-head">
-        <div>
-          <span id="mdCode" class="code">-</span>
-          <h3 id="mdTitle" class="modal-title">Detalle</h3>
+      <header class="modal-head d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <span id="mdCode" class="badge bg-primary fs-6">-</span>
+          <h3 id="mdTitle" class="modal-title mb-0">Detalle</h3>
         </div>
-        <button id="mdClose" class="close" type="button">Cerrar</button>
+        <button id="mdClose" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-x-lg"></i> Cerrar</button>
       </header>
 
-      <div class="grid3">
-        <div class="box"><b>Organismo</b><span id="mdOrg">-</span></div>
-        <div class="box"><b>Producto</b><span id="mdProv">-</span></div>
-        <div class="box"><b>Monto</b><span id="mdMonto">-</span></div>
-        <div class="box"><b>Publicacion</b><span id="mdPub">-</span></div>
-        <div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div>
-        <div class="box"><b>Dias</b><span id="mdDias">-</span></div>
-        <div class="box"><b>Tipo Licitacion</b><span id="mdCat">-</span></div>
-        <div class="box"><b>Estado</b><span id="mdEstado">-</span></div>
-        <div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div>
+      <div class="row g-2 mb-2">
+        <div class="col-md-4"><div class="box"><b>Organismo</b><span id="mdOrg">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Producto</b><span id="mdProv">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Monto</b><span id="mdMonto">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Publicación</b><span id="mdPub">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Días</b><span id="mdDias">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Tipo Licitación</b><span id="mdCat">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Estado</b><span id="mdEstado">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div></div>
       </div>
 
-      <div>
-        <b style="font-size:.75rem; color:#415b8a;">Descripcion</b>
+      <div class="mb-3">
+        <b class="text-secondary small">Descripción</b>
         <div id="mdDesc" class="full"></div>
       </div>
 
       <section class="edit">
-        <strong style="font-size:.9rem; color:#324f84;">Gestion (simulada)</strong>
-        <div class="edit-grid">
-          <div class="field">
-            <label for="edVisto">Visto</label>
-            <select id="edVisto">
-              <option value="FALSE">No visto</option>
-              <option value="TRUE">Visto</option>
-            </select>
+        <strong class="text-primary mb-2">Gestión (simulada)</strong>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <div class="field">
+              <label for="edVisto">Visto</label>
+              <select id="edVisto" class="form-select">
+                <option value="FALSE">No visto</option>
+                <option value="TRUE">Visto</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label for="edEstado">Estado</label>
-            <select id="edEstado">
-              <option value="No Tomada">No Tomada</option>
-              <option value="En Proceso">En Proceso</option>
-              <option value="Trabajada">Trabajada</option>
-            </select>
+          <div class="col-md-4">
+            <div class="field">
+              <label for="edEstado">Estado</label>
+              <select id="edEstado" class="form-select">
+                <option value="No Tomada">No Tomada</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Trabajada">Trabajada</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label for="edOwner">Responsable</label>
-            <input id="edOwner" type="text" placeholder="Ej: Camila P." />
+          <div class="col-md-4">
+            <div class="field">
+              <label for="edOwner">Responsable</label>
+              <input id="edOwner" type="text" class="form-control" placeholder="Ej: Camila P." />
+            </div>
           </div>
         </div>
-
-        <div class="field">
+        <div class="field mt-2">
           <label for="edCom">Comentario</label>
-          <textarea id="edCom" rows="3" placeholder="Notas de seguimiento comercial..."></textarea>
+          <textarea id="edCom" rows="3" class="form-control" placeholder="Notas de seguimiento comercial..."></textarea>
         </div>
-
-        <div class="save">
-          <button id="openDoc" class="btn-lite" type="button">Abrir documento</button>
-          <button id="save" class="btn" type="button">Guardar cambios (local)</button>
+        <div class="save d-flex justify-content-end gap-2 mt-3">
+          <button id="openDoc" class="btn btn-outline-info btn-sm" type="button"><i class="bi bi-box-arrow-up-right"></i> Abrir documento</button>
+          <button id="save" class="btn btn-success btn-sm" type="button"><i class="bi bi-save"></i> Guardar cambios</button>
         </div>
       </section>
     </article>
@@ -934,16 +1082,20 @@
   <div id="toast" class="toast">Accion simulada</div>
 
   <!-- Dependencias JS: jQuery, DataTables y Bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-/xUj+3OJ+Y3o7y2X6a2a2Q5p2s6b1pXQ5K5m8q0i3Dk=" crossorigin="anonymous"></script>
+  <!-- jQuery debe ir primero y sin integrity para evitar bloqueos -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+  <!-- DataTables depende de jQuery -->
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+  <!-- Bootstrap debe ir después de jQuery si usas plugins que dependen de él -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
-    const st = { rows: [], filtered: [], view: "cards", selected: null };
+    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50' };
 
     const el = {
       q: document.getElementById("q"),
@@ -972,7 +1124,6 @@
       kProg: document.getElementById("kProg"),
       kDone: document.getElementById("kDone"),
       kMonto: document.getElementById("kMonto"),
-      kFree: document.getElementById("kFree"),
       mTotal: document.getElementById("mTotal"),
       mShow: document.getElementById("mShow"),
       mUpd: document.getElementById("mUpd"),
@@ -997,7 +1148,12 @@
       edCom: document.getElementById("edCom"),
       openDoc: document.getElementById("openDoc"),
       save: document.getElementById("save"),
-      toast: document.getElementById("toast")
+      toast: document.getElementById("toast"),
+      fechaDesde: document.getElementById("fechaDesde"),
+      fechaHasta: document.getElementById("fechaHasta"),
+      catGeneral: document.getElementById("catGeneral"),
+      ordenarPor: document.getElementById("ordenarPor"),
+      exportarExcel: document.getElementById("exportarExcel")
     };
 
     function toNumber(value) {
@@ -1036,6 +1192,10 @@
       out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
       if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "No Tomada";
       if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
+      // compute general classification and subcategory
+      const cls = classifyProduct(out.Producto || out.TipoLicitacion || out.Organismo || "");
+      out.CategoriaGeneral = cls.general;
+      out.Subcategoria = cls.sub;
       if (!out.Responsable) out.Responsable = raw.Responsable || raw['Nombre Usuario'] || "";
       if (!out.Comentario) out.Comentario = raw.Comentario || "";
       if (!out.Prioridad) out.Prioridad = raw.Prioridad || "Media";
@@ -1062,6 +1222,53 @@
       return (Date.now() - d.getTime()) <= 72 * 60 * 60 * 1000;
     };
     const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
+
+    // Debounce helper to reduce frequent re-renders when user types/changes filters
+    function debounce(fn, wait) {
+      let t;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // Debounced version of apply() (apply is hoisted, so safe to reference here)
+    const applyDebounced = debounce(() => apply(), 180);
+
+    // Centralized data update to avoid duplicated sequences of fillFilters/apply/render
+    function updateData(rows) {
+      st.rows = rows;
+      st.filtered = Array.isArray(rows) ? [...rows] : [];
+      fillFilters();
+      st.currentPage = 1;
+      updatePagination();
+      render();
+      kpis();
+    }
+
+    function classifyProduct(text) {
+      const s = String(text || "").toLowerCase();
+      const mapping = [
+        { general: 'Salud', subs: [['Medic', /medic|hospital|salud|clínic|enfermer/], ['Servicios médicos', /servicio.*médic|prestaciones médicas/]] },
+        { general: 'Construcción', subs: [['Obras', /obra|construcc|pavi|obra/], ['Materiales', /material|grava|cemento|hormigón|moldaje/]] },
+        { general: 'Educación', subs: [['Capacitación', /capacitaci|escuela|docent/]] },
+        { general: 'Servicios', subs: [['Limpieza', /aseo|limpiez/], ['Seguridad', /guardia|segurid/], ['Transporte', /transporte|autobús|moviliz/]] },
+        { general: 'Tecnología', subs: [['Software', /soft|software|sistema|plataforma/], ['Equipamiento', /equipo|servidor|hosting/]] },
+        { general: 'Suministros', subs: [['Insumos', /insumo|insumos|suministr|reactiv|material auxiliar/]] },
+        { general: 'Alimentos', subs: [['Catering', /catering|desayun|banquet/]] }
+      ];
+
+      for (const m of mapping) {
+        for (const sub of m.subs) {
+          if (sub[1].test(s)) return { general: m.general, sub: sub[0] };
+        }
+      }
+      // fallback heuristics
+      if (/servicio|contratación|contrato/.test(s)) return { general: 'Servicios', sub: 'General' };
+      if (/mantenimiento|mantención|mantenim/.test(s)) return { general: 'Servicios', sub: 'Mantenimiento' };
+      if (/pieza|pieza|repuesto|insumo|material/.test(s)) return { general: 'Suministros', sub: 'General' };
+      return { general: 'Otros', sub: 'Otros' };
+    }
 
     function toast(msg) {
       el.toast.textContent = msg;
@@ -1104,18 +1311,24 @@
       const orgs = [...new Set(st.rows.map(r => r.Organismo).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const generales = [...new Set(st.rows.map(r => r.CategoriaGeneral).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
+      if (el.catGeneral) el.catGeneral.innerHTML = '<option value="">Todas</option>' + generales.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
     }
 
     function apply() {
-      const q = el.q.value.trim().toLowerCase();
-      const cat = el.cat.value;
-      const org = el.org.value;
-      const prod = el.producto ? el.producto.value : "";
-      const est = el.estado.value;
-      const visto = el.visto.value;
+      const q = (el.q && el.q.value ? String(el.q.value).trim().toLowerCase() : "");
+      const cat = (el.cat && el.cat.value) ? el.cat.value : "";
+      const org = (el.org && el.org.value) ? el.org.value : "";
+      const prod = (el.producto && el.producto.value) ? el.producto.value : "";
+      const catGen = (el.catGeneral && el.catGeneral.value) ? el.catGeneral.value : "";
+      const est = (el.estado && el.estado.value) ? el.estado.value : "";
+      const visto = (el.visto && el.visto.value) ? el.visto.value : "";
+      const fechaDesde = (el.fechaDesde && el.fechaDesde.value) ? el.fechaDesde.value : "";
+      const fechaHasta = (el.fechaHasta && el.fechaHasta.value) ? el.fechaHasta.value : "";
+      const ordenarPor = (el.ordenarPor && el.ordenarPor.value) ? el.ordenarPor.value : "";
 
       st.filtered = st.rows.filter(r => {
         const text = [r.Nombre, r.CodigoExterno, r.Organismo, r.Producto, r.Descripcion, r.TipoLicitacion].join(" ").toLowerCase();
@@ -1123,13 +1336,33 @@
         const mCat = !cat || r.TipoLicitacion === cat;
         const mOrg = !org || r.Organismo === org;
         const mProd = !prod || (r.Producto === prod);
+        const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
         const mEst = !est || r.EstadoTrabajo === est;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
         if (visto === "NUEVO") mV = isNew(r);
-        return mQ && mCat && mOrg && mProd && mEst && mV;
+        // Filtro de fechas
+        let mFecha = true;
+        if (fechaDesde) {
+          const fc = dateOnly(r.FechaCierre);
+          mFecha = mFecha && (!fc || fc >= fechaDesde);
+        }
+        if (fechaHasta) {
+          const fc = dateOnly(r.FechaCierre);
+          mFecha = mFecha && (!fc || fc <= fechaHasta);
+        }
+        return mQ && mCat && mOrg && mProd && mCatGen && mEst && mV && mFecha;
       });
+
+      // Ordenar
+      if (ordenarPor === "dias") {
+        st.filtered.sort((a, b) => (Number(a.DiasRestantes) || 9999) - (Number(b.DiasRestantes) || 9999));
+      } else if (ordenarPor === "monto") {
+        st.filtered.sort((a, b) => (Number(b.Monto) || 0) - (Number(a.Monto) || 0));
+      } else if (ordenarPor === "nombre") {
+        st.filtered.sort((a, b) => String(a.Nombre || "").localeCompare(String(b.Nombre || ""), "es"));
+      }
 
       // reset to first page on filter change
       st.currentPage = 1;
@@ -1140,19 +1373,119 @@
 
     function kpis() {
       const total = st.rows.length;
+      const nwe = st.rows.filter(r => isNew(r)).length;
       const prog = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
       const done = st.rows.filter(r => r.EstadoTrabajo === "Trabajada").length;
       const free = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada").length;
-      const m = st.filtered.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
+      const m = st.rows.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
 
-      if (el.kNew) el.kNew.textContent = total;
+      if (el.kNew) el.kNew.textContent = nwe;
       if (el.kProg) el.kProg.textContent = prog;
       if (el.kDone) el.kDone.textContent = done;
       if (el.kMonto) el.kMonto.textContent = fmt(m);
-      if (el.kFree) el.kFree.textContent = free;
       if (el.mTotal) el.mTotal.textContent = `Total: ${total}`;
       if (el.mShow) el.mShow.textContent = `Mostrando: ${st.filtered.length}`;
       if (el.mUpd) el.mUpd.textContent = `Actualizado: ${new Date().toLocaleString("es-CL")}`;
+    }
+
+    function loadExcelJSScript() {
+      return new Promise((resolve, reject) => {
+        if (typeof ExcelJS !== 'undefined') return resolve(window.ExcelJS);
+        const existing = document.querySelector('script[src*="exceljs"]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(window.ExcelJS));
+          existing.addEventListener('error', () => reject(new Error('Error al cargar ExcelJS')));
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js';
+        script.onload = () => resolve(window.ExcelJS);
+        script.onerror = () => reject(new Error('Error al cargar ExcelJS'));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function exportToExcel() {
+      try {
+        await loadExcelJSScript();
+      } catch (err) {
+        console.error(err);
+        toast('No se pudo cargar ExcelJS. Reintenta con conexión estable.');
+        return;
+      }
+
+      if (typeof ExcelJS === 'undefined') {
+        toast('No se pudo cargar ExcelJS.');
+        return;
+      }
+
+      const data = st.filtered.slice();
+      if (!data.length) {
+        toast('No hay licitaciones para exportar.');
+        return;
+      }
+
+      const book = new ExcelJS.Workbook();
+      const sheet = book.addWorksheet('Licitaciones');
+
+      const columns = [
+        { header: 'Código', key: 'CodigoExterno', width: 20 },
+        { header: 'Nombre', key: 'Nombre', width: 45 },
+        { header: 'Organismo', key: 'Organismo', width: 30 },
+        { header: 'Producto', key: 'Producto', width: 30 },
+        { header: 'Tipo', key: 'TipoLicitacion', width: 25 },
+        { header: 'Monto', key: 'Monto', width: 15 },
+        { header: 'Fecha Publicación', key: 'FechaPublicacion', width: 18 },
+        { header: 'Fecha Cierre', key: 'FechaCierre', width: 18 },
+        { header: 'Días Restantes', key: 'DiasRestantes', width: 15 },
+        { header: 'Estado', key: 'EstadoTrabajo', width: 18 },
+        { header: 'Visto', key: 'Visto', width: 10 },
+        { header: 'Prioridad', key: 'Prioridad', width: 12 }
+      ];
+
+      sheet.columns = columns;
+
+      sheet.getRow(1).eachCell(cell => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2747C7' } };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+
+      for (const row of data) {
+        sheet.addRow({
+          CodigoExterno: row.CodigoExterno || '',
+          Nombre: row.Nombre || '',
+          Organismo: row.Organismo || '',
+          Producto: row.Producto || '',
+          TipoLicitacion: row.TipoLicitacion || '',
+          Monto: row.Monto != null ? Number(row.Monto) : '',
+          FechaPublicacion: dateOnly(row.FechaPublicacion),
+          FechaCierre: dateOnly(row.FechaCierre),
+          DiasRestantes: row.DiasRestantes || '',
+          EstadoTrabajo: row.EstadoTrabajo || '',
+          Visto: row.Visto || '',
+          Prioridad: row.Prioridad || ''
+        });
+      }
+
+      sheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+      const buffer = await book.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `licitaciones-${new Date().toISOString().slice(0,10)}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      toast(`Exportadas ${data.length} licitaciones a Excel.`);
     }
 
     function renderCards(rows) {
@@ -1217,68 +1550,63 @@
     // DataTables integration
     let dtInstance = null;
 
-    function buildTableRowsHtml(rows) {
-      return rows.map(r => `
-        <tr>
-          <td>
-            <strong>${esc(r.Nombre)}</strong><br/>
-            <small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>
-          </td>
-          <td>${esc(r.TipoLicitacion)}</td>
-          <td data-order="${Number(r.Monto) || 0}">${fmt(r.Monto)}</td>
-          <td data-order="${Number(r.DiasRestantes) || 0}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
-          <td><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></td>
-          <td>
-            <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
-            <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
-          </td>
-        </tr>
-      `).join('');
+    function buildTableData(rows) {
+      return rows.map(r => {
+        const name = `<strong>${esc(r.Nombre)}</strong><br/><small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>`;
+        const tipo = esc(r.TipoLicitacion);
+        const monto = fmt(r.Monto);
+        const dias = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
+        const estado = `<span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span>`;
+        const actions = `<button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button> <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>`;
+        return [name, tipo, monto, dias, estado, actions];
+      });
     }
 
     function initDataTable() {
       if (!window.jQuery || !$.fn.DataTable) return;
       const $tbl = $('#dtTable');
       $tbl.show();
-      // destroy previous instance if any
-      if (dtInstance) {
-        try { dtInstance.destroy(); } catch (e) {}
-        dtInstance = null;
-      }
-      const rowsHtml = buildTableRowsHtml(st.filtered);
-      $tbl.find('tbody').html(rowsHtml);
-      const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
-      // hide custom pagination controls in toolbar
-      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = 'none';
-      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
+      const data = buildTableData(st.filtered);
+      const pagingEnabled = st.pageSize !== 'all';
 
-      // bind external search box to DataTable search
-      if (el.q) {
-        $(el.q).off('input.dtsearch').on('input.dtsearch', function() {
-          if (dtInstance) dtInstance.search(this.value).draw();
-        });
+      // If dtInstance exists, update data in place (faster)
+      if (dtInstance) {
+        try {
+          dtInstance.clear();
+          dtInstance.rows.add(data);
+          dtInstance.draw(false);
+          return;
+        } catch (e) { dtInstance = null; }
       }
 
       dtInstance = $tbl.DataTable({
-        order: [[0, 'asc']],
+        data: data,
+        columns: [
+          { title: 'Nombre' },
+          { title: 'Tipo' },
+          { title: 'Monto' },
+          { title: 'Días' },
+          { title: 'Estado' },
+          { title: 'Acciones', orderable: false }
+        ],
+        deferRender: true,
         ordering: true,
-        pageLength: pageLen,
+        order: [[0, 'asc']],
+        pageLength: st.pageSize === 'all' ? -1 : Number(st.pageSize || 50),
         lengthChange: false,
         searching: true,
         responsive: true,
-        // place only table then pagination+info at bottom
-        dom: 't<"d-flex justify-content-between mt-2"ip>'
+        dom: 't'
       });
+
+      // bind external search box to DataTable search
+      if (el.q) {
+        $(el.q).off('input.dtsearch').on('input.dtsearch', function() { if (dtInstance) dtInstance.search(this.value).draw(); });
+      }
     }
 
     function refreshDataTable() {
       if (!window.jQuery || !$.fn.DataTable) return initDataTable();
-      const $tbl = $('#dtTable');
-      if (dtInstance) {
-        try { dtInstance.destroy(); } catch (e) {}
-        dtInstance = null;
-      }
-      $tbl.find('tbody').html(buildTableRowsHtml(st.filtered));
       initDataTable();
     }
 
@@ -1304,14 +1632,27 @@
       }).join("");
     }
 
+    function syncDataTablePageSize() {
+      if (st.view === 'list' && dtInstance) {
+        const len = st.pageSize === 'all' ? -1 : Number(st.pageSize || 50);
+        try {
+          dtInstance.page.len(len).draw(false);
+        } catch (err) {
+          // fallback a reinicializar si page.len falla
+          try { dtInstance.page(0).draw(false); } catch (_) {}
+        }
+      }
+    }
+
     function render() {
+      syncDataTablePageSize();
       const rows = getCurrentPageRows();
       const empty = rows.length === 0;
       el.empty.style.display = empty ? "block" : "none";
 
-      el.cards.style.display = st.view === "cards" ? "grid" : "none";
-      el.list.style.display = st.view === "list" ? "block" : "none";
-      el.kanban.style.display = st.view === "board" ? "grid" : "none";
+      el.cards.style.display = st.view === "cards" ? "" : "none";
+      el.list.style.display = st.view === "list" ? "" : "none";
+      el.kanban.style.display = st.view === "board" ? "" : "none";
 
       if (empty) {
         el.cards.innerHTML = "";
@@ -1350,6 +1691,22 @@
     }
 
     function updatePagination() {
+      // Select the correct pagination source depending on view
+      if (st.view === 'list' && dtInstance) {
+        try {
+          const info = dtInstance.page.info();
+          const current = info.page + 1;
+          const totalPages = Math.max(1, info.pages);
+          st.currentPage = current;
+          if (el.pageInfo) el.pageInfo.textContent = `${current} / ${totalPages}`;
+          if (el.prevPage) el.prevPage.disabled = current <= 1;
+          if (el.nextPage) el.nextPage.disabled = current >= totalPages;
+          return;
+        } catch (e) {
+          // fallback to custom pagination
+        }
+      }
+
       const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
       const total = st.filtered.length;
       const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(total / ps));
@@ -1359,23 +1716,36 @@
       if (el.nextPage) el.nextPage.disabled = st.currentPage >= totalPages;
     }
 
-    function prevPage() { if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); } }
-    function nextPage() { const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps)); if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); } }
+    function prevPage() {
+      if (st.view === 'list' && dtInstance) {
+        try { dtInstance.page('previous').draw(false); updatePagination(); return; } catch (e) {}
+      }
+      if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); }
+    }
+
+    function nextPage() {
+      if (st.view === 'list' && dtInstance) {
+        try { dtInstance.page('next').draw(false); updatePagination(); return; } catch (e) {}
+      }
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
+      const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps));
+      if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); }
+    }
 
     function setView(v) {
       st.view = v;
       el.viewCards.classList.toggle("active", v === "cards");
       el.viewList.classList.toggle("active", v === "list");
       el.viewBoard.classList.toggle("active", v === "board");
-      // show/hide custom pagination/pageSize when not using DataTables
+      // Always show the sidebar pagination/pageSize — we'll use it for both list and cards
       const pagWrap = document.getElementById('pagination');
-      if (v === 'list' && window.jQuery && $.fn.DataTable) {
-        if (pagWrap) pagWrap.style.display = 'none';
-        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
-      } else {
-        if (pagWrap) pagWrap.style.display = '';
-        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
+      if (pagWrap) pagWrap.style.display = '';
+      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
+
+      if (v === 'list' && dtInstance) {
+        syncDataTablePageSize();
       }
+
       render();
       toast(`Vista ${v} activada.`);
     }
@@ -1496,6 +1866,8 @@
       if (type === "urg") {
         el.visto.value = "";
         st.filtered = st.rows.filter(r => Number(r.DiasRestantes) <= 2);
+        st.currentPage = 1;
+        updatePagination();
         render();
         kpis();
         return;
@@ -1547,14 +1919,11 @@
         header: true,
         transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim(),
         skipEmptyLines: true,
-        complete: result => {
-          const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
-          st.rows = parsed;
-          st.filtered = [...parsed];
-          fillFilters();
-          apply();
-          toast(`CSV cargado: ${parsed.length} registros.`);
-        },
+          complete: result => {
+            const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
+            updateData(parsed);
+            toast(`CSV cargado: ${parsed.length} registros.`);
+          },
         error: () => {
           st.rows = [];
           st.filtered = [];
@@ -1576,27 +1945,36 @@
     st.currentPage = 1;
     st.pageSize = '50';
 
-    el.q.addEventListener("input", apply);
-    el.cat.addEventListener("change", apply);
-    el.org.addEventListener("change", apply);
-    el.estado.addEventListener("change", apply);
-    el.visto.addEventListener("change", apply);
-    if (el.producto) el.producto.addEventListener("change", apply);
-    if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
+    el.q.addEventListener("input", applyDebounced);
+    el.cat.addEventListener("change", applyDebounced);
+    el.org.addEventListener("change", applyDebounced);
+    el.estado.addEventListener("change", applyDebounced);
+    el.visto.addEventListener("change", applyDebounced);
+    if (el.producto) el.producto.addEventListener("change", applyDebounced);
+    if (el.catGeneral) el.catGeneral.addEventListener("change", applyDebounced);
+    if (el.fechaDesde) el.fechaDesde.addEventListener("change", applyDebounced);
+    if (el.fechaHasta) el.fechaHasta.addEventListener("change", applyDebounced);
+    if (el.pageSize) el.pageSize.addEventListener("change", e => {
+      st.pageSize = e.target.value;
+      st.currentPage = 1;
+      updatePagination();
+      render();
+    });
 
     if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
     if (el.nextPage) el.nextPage.addEventListener("click", nextPage);
 
-    el.quickUrg.addEventListener("click", () => quick("urg"));
-    el.quickNew.addEventListener("click", () => quick("new"));
-    el.quickFree.addEventListener("click", () => quick("free"));
-    el.reset.addEventListener("click", resetFilters);
+    if (el.quickUrg) el.quickUrg.addEventListener("click", () => quick("urg"));
+    if (el.quickNew) el.quickNew.addEventListener("click", () => quick("new"));
+    if (el.quickFree) el.quickFree.addEventListener("click", () => quick("free"));
+    if (el.reset) el.reset.addEventListener("click", resetFilters);
 
-    el.viewCards.addEventListener("click", () => setView("cards"));
-    el.viewList.addEventListener("click", () => setView("list"));
-    el.viewBoard.addEventListener("click", () => setView("board"));
-    el.reload.addEventListener("click", triggerAPISync);
-    el.themeToggle.addEventListener("click", toggleTheme);
+    if (el.viewCards) el.viewCards.addEventListener("click", () => setView("cards"));
+    if (el.viewList) el.viewList.addEventListener("click", () => setView("list"));
+    if (el.viewBoard) el.viewBoard.addEventListener("click", () => setView("board"));
+    if (el.exportarExcel) el.exportarExcel.addEventListener("click", exportToExcel);
+    if (el.reload) el.reload.addEventListener("click", triggerAPISync);
+    if (el.themeToggle) el.themeToggle.addEventListener("click", toggleTheme);
 
     document.addEventListener("click", e => {
       const btn = e.target.closest("[data-a]");
