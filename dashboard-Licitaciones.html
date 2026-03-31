@@ -756,6 +756,40 @@
       .switch-left, .switch-right { width: 100%; justify-content: space-between; }
       .chips { justify-content: flex-start; gap: 6px; }
     }
+
+    /* DataTable palette: use existing CSS variables for consistent look */
+    #dtTable {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    #dtTable thead th {
+      background: linear-gradient(120deg, var(--navy), var(--navy-2));
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    #dtTable tbody tr { border-bottom: 1px solid var(--line); }
+    #dtTable tbody td { vertical-align: middle; color: var(--ink); }
+    .table-striped tbody tr:nth-of-type(odd) { background: var(--bg-soft); }
+    .table-striped tbody tr:hover { background: #f3f6ff; }
+
+    /* Dark theme overrides */
+    body[data-theme="dark"] #dtTable {
+      background: #0f1724;
+      color: var(--ink);
+      border-color: #24304a;
+    }
+    body[data-theme="dark"] #dtTable thead th {
+      background: linear-gradient(120deg, #223268, #1c2a59);
+      color: #e8eefc;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    body[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) { background: #0b1526; }
+    body[data-theme="dark"] .table-striped tbody tr:hover { background: #122033; }
   </style>
 </head>
 <body>
@@ -1333,10 +1367,11 @@
       }
       const rowsHtml = buildTableRowsHtml(st.filtered);
       $tbl.find('tbody').html(rowsHtml);
-      const pageLen = st.pageSize === 'all' ? 10 : Number(st.pageSize || 50);
-      // hide custom pagination controls in toolbar
-      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = 'none';
-      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
+      const pageLen = st.pageSize === 'all' ? (st.filtered.length || 10) : Number(st.pageSize || 50);
+      const pagingEnabled = st.pageSize !== 'all';
+      // keep our sidebar pagination visible — we'll control DataTable with it
+      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = '';
+      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
 
       // bind external search box to DataTable search
       if (el.q) {
@@ -1352,9 +1387,18 @@
         lengthChange: false,
         searching: true,
         responsive: true,
-        // place only table then pagination+info at bottom
-        dom: 't<"d-flex justify-content-between mt-2"ip>'
+        paging: pagingEnabled,
+        // hide DataTables own pagination UI (we use sidebar controls)
+        dom: 't'
       });
+
+      // restore current page if necessary
+      try {
+        if (pagingEnabled && dtInstance && st.currentPage && st.currentPage > 1) {
+          const target = Math.max(0, st.currentPage - 1);
+          dtInstance.page(target).draw(false);
+        }
+      } catch (e) {}
     }
 
     function refreshDataTable() {
@@ -1436,6 +1480,20 @@
     }
 
     function updatePagination() {
+      // If DataTable is active, derive pagination from its page.info(), otherwise use our custom logic
+      if (dtInstance) {
+        try {
+          const info = dtInstance.page.info();
+          const current = info.page + 1;
+          const totalPages = Math.max(1, info.pages);
+          st.currentPage = current;
+          if (el.pageInfo) el.pageInfo.textContent = `${current} / ${totalPages}`;
+          if (el.prevPage) el.prevPage.disabled = current <= 1;
+          if (el.nextPage) el.nextPage.disabled = current >= totalPages;
+          return;
+        } catch (e) {}
+      }
+
       const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
       const total = st.filtered.length;
       const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(total / ps));
@@ -1445,24 +1503,30 @@
       if (el.nextPage) el.nextPage.disabled = st.currentPage >= totalPages;
     }
 
-    function prevPage() { if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); } }
-    function nextPage() { const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps));
-      if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); } }
+    function prevPage() {
+      if (dtInstance) {
+        try { dtInstance.page('previous').draw(false); updatePagination(); return; } catch (e) {}
+      }
+      if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); }
+    }
+
+    function nextPage() {
+      if (dtInstance) {
+        try { dtInstance.page('next').draw(false); updatePagination(); return; } catch (e) {}
+      }
+      const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50); const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps));
+      if (st.currentPage < totalPages) { st.currentPage++; updatePagination(); render(); }
+    }
 
     function setView(v) {
       st.view = v;
       el.viewCards.classList.toggle("active", v === "cards");
       el.viewList.classList.toggle("active", v === "list");
       el.viewBoard.classList.toggle("active", v === "board");
-      // show/hide custom pagination/pageSize when not using DataTables
+      // Always show the sidebar pagination/pageSize — we'll use it for both list and cards
       const pagWrap = document.getElementById('pagination');
-      if (v === 'list' && window.jQuery && $.fn.DataTable) {
-        if (pagWrap) pagWrap.style.display = 'none';
-        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = 'none';
-      } else {
-        if (pagWrap) pagWrap.style.display = '';
-        if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
-      }
+      if (pagWrap) pagWrap.style.display = '';
+      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
       render();
       toast(`Vista ${v} activada.`);
     }
