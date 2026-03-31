@@ -1526,7 +1526,20 @@
       }).join("");
     }
 
+    function syncDataTablePageSize() {
+      if (st.view === 'list' && dtInstance) {
+        const len = st.pageSize === 'all' ? -1 : Number(st.pageSize || 50);
+        try {
+          dtInstance.page.len(len).draw(false);
+        } catch (err) {
+          // fallback a reinicializar si page.len falla
+          try { dtInstance.page(0).draw(false); } catch (_) {}
+        }
+      }
+    }
+
     function render() {
+      syncDataTablePageSize();
       const rows = getCurrentPageRows();
       const empty = rows.length === 0;
       el.empty.style.display = empty ? "block" : "none";
@@ -1624,12 +1637,7 @@
       if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
 
       if (v === 'list' && dtInstance) {
-        const len = st.pageSize === 'all' ? -1 : Number(st.pageSize || 50);
-        try {
-          dtInstance.page.len(len).draw(false);
-        } catch (err) {
-          // ignore
-        }
+        syncDataTablePageSize();
       }
 
       render();
@@ -1843,14 +1851,6 @@
     if (el.pageSize) el.pageSize.addEventListener("change", e => {
       st.pageSize = e.target.value;
       st.currentPage = 1;
-      if (st.view === "list" && dtInstance) {
-        const len = st.pageSize === 'all' ? -1 : Number(st.pageSize || 50);
-        try {
-          dtInstance.page.len(len).draw(false);
-        } catch (err) {
-          // ignore if no table yet
-        }
-      }
       updatePagination();
       render();
     });
