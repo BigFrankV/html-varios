@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard CM Inspired</title>
+  <title>Dashboard Licitaciones Mercado Publico</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -744,28 +744,69 @@
     <div class="row g-4">
       <!-- Sidebar -->
       <aside class="col-lg-3 d-none d-lg-block">
-        <div class="side h-100 d-flex flex-column justify-content-between">
-          <div>
-            <div class="logo mb-4 d-flex align-items-center gap-2">
-              <span class="logo-mark"></span>
-              <b>CM Dashboard</b>
-              <span class="ms-2 small">Inspired</span>
+          <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
+            <div>
+              <div class="logo mb-4 d-flex align-items-center gap-2">
+                <span class="logo-mark"></span>
+                <b>ESPEX</b>
+              </div>
+              <nav class="nav-list mb-4">
+                <a class="nav-item active" href="#"><i class="bi bi-house-door me-2"></i>Inicio</a>
+                <a class="nav-item" href="#"><i class="bi bi-bar-chart-line me-2"></i>KPIs</a>
+                <a class="nav-item" href="#"><i class="bi bi-table me-2"></i>Tabla</a>
+                <a class="nav-item" href="#"><i class="bi bi-kanban me-2"></i>Kanban</a>
+              </nav>
+              <form id="sidebar-filtros" class="mb-4">
+                <div class="field mb-2">
+                  <label for="q">Buscar</label>
+                  <div class="input-group">
+                    <input id="q" type="text" class="form-control" placeholder="Buscar..." />
+                    <button class="btn btn-outline-secondary" id="reset" title="Limpiar" type="button"><i class="bi bi-x-lg"></i></button>
+                  </div>
+                </div>
+                <div class="field mb-2">
+                  <label for="cat">Categoría</label>
+                  <select id="cat" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="org">Organismo</label>
+                  <select id="org" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="estado">Estado</label>
+                  <select id="estado" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="visto">Visto</label>
+                  <select id="visto" class="form-select"></select>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
+                  <button id="quickNew" class="btn btn-primary btn-sm" type="button"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
+                  <button id="quickFree" class="btn btn-success btn-sm" type="button"><i class="bi bi-cash-coin me-1"></i>Sin Costo</button>
+                  <button id="reload" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
+                </div>
+                <div class="field mb-2">
+                  <label for="pageSize">Ver</label>
+                  <select id="pageSize" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
+                </div>
+                <div class="field mb-2">
+                  <div id="pagination" class="d-flex gap-2 align-items-center">
+                    <button id="prevPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-left"></i></button>
+                    <span id="pageInfo">1 / 1</span>
+                    <button id="nextPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-right"></i></button>
+                  </div>
+                </div>
+              </form>
+              <div class="small-card mb-4">
+                <b><i class="bi bi-info-circle me-1"></i>Ayuda</b>
+                <span>Utiliza los filtros y vistas para explorar los datos.</span>
+              </div>
             </div>
-            <nav class="nav-list mb-4">
-              <a class="nav-item active" href="#"><i class="bi bi-house-door me-2"></i>Inicio</a>
-              <a class="nav-item" href="#"><i class="bi bi-bar-chart-line me-2"></i>KPIs</a>
-              <a class="nav-item" href="#"><i class="bi bi-table me-2"></i>Tabla</a>
-              <a class="nav-item" href="#"><i class="bi bi-kanban me-2"></i>Kanban</a>
-            </nav>
-            <div class="small-card mb-4">
-              <b><i class="bi bi-info-circle me-1"></i>Ayuda</b>
-              <span>Utiliza los filtros y vistas para explorar los datos.</span>
+            <div class="mt-auto">
+              <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-2"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
             </div>
           </div>
-          <div class="mt-auto">
-            <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-2"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
-          </div>
-        </div>
       </aside>
 
       <!-- Main Content -->
@@ -773,7 +814,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard CM</h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -781,6 +822,11 @@
               <span class="chip"><i class="bi bi-shield-check text-success me-1"></i>Seguro</span>
               <span class="chip"><i class="bi bi-cloud-arrow-down text-primary me-1"></i>Actualizable</span>
             </div>
+          </div>
+          <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
+            <span id="mTotal" class="chip">Total: 0</span>
+            <span id="mShow" class="chip">Mostrando: 0</span>
+            <span id="mUpd" class="chip">Actualizado: cargando datos...</span>
           </div>
           <div class="kpis row g-2 mb-3">
             <div class="col-6 col-md-4 col-lg-2">
@@ -814,46 +860,7 @@
               </div>
             </div>
           </div>
-          <div class="toolbar row g-2 align-items-end mb-2">
-            <div class="col-12 col-md-4">
-              <div class="field">
-                <label for="q">Buscar</label>
-                <div class="input-group">
-                  <input id="q" type="text" class="form-control" placeholder="Buscar..." />
-                  <button class="btn btn-outline-secondary" id="reset" title="Limpiar"><i class="bi bi-x-lg"></i></button>
-                </div>
-              </div>
-            </div>
-            <div class="col-6 col-md-2">
-              <div class="field">
-                <label for="cat">Categoría</label>
-                <select id="cat" class="form-select"></select>
-              </div>
-            </div>
-            <div class="col-6 col-md-2">
-              <div class="field">
-                <label for="org">Organismo</label>
-                <select id="org" class="form-select"></select>
-              </div>
-            </div>
-            <div class="col-6 col-md-2">
-              <div class="field">
-                <label for="estado">Estado</label>
-                <select id="estado" class="form-select"></select>
-              </div>
-            </div>
-            <div class="col-6 col-md-2">
-              <div class="field">
-                <label for="visto">Visto</label>
-                <select id="visto" class="form-select"></select>
-              </div>
-            </div>
-          </div>
           <div class="d-flex flex-wrap gap-2 mb-2">
-            <button id="quickUrg" class="btn btn-warning btn-sm"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
-            <button id="quickNew" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
-            <button id="quickFree" class="btn btn-success btn-sm"><i class="bi bi-cash-coin me-1"></i>Sin Costo</button>
-            <button id="reload" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
             <button id="viewCards" class="btn btn-outline-primary btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i>Tarjetas</button>
             <button id="viewList" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-ul me-1"></i>Lista</button>
             <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i class="bi bi-kanban me-1"></i>Kanban</button>
