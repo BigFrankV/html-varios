@@ -1192,6 +1192,29 @@
     };
     const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 
+    // Debounce helper to reduce frequent re-renders when user types/changes filters
+    function debounce(fn, wait) {
+      let t;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // Debounced version of apply() (apply is hoisted, so safe to reference here)
+    const applyDebounced = debounce(() => apply(), 180);
+
+    // Centralized data update to avoid duplicated sequences of fillFilters/apply/render
+    function updateData(rows) {
+      st.rows = rows;
+      st.filtered = Array.isArray(rows) ? [...rows] : [];
+      fillFilters();
+      st.currentPage = 1;
+      updatePagination();
+      render();
+      kpis();
+    }
+
     function classifyProduct(text) {
       const s = String(text || "").toLowerCase();
       const mapping = [
@@ -1745,14 +1768,11 @@
         header: true,
         transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim(),
         skipEmptyLines: true,
-        complete: result => {
-          const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
-          st.rows = parsed;
-          st.filtered = [...parsed];
-          fillFilters();
-          apply();
-          toast(`CSV cargado: ${parsed.length} registros.`);
-        },
+          complete: result => {
+            const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
+            updateData(parsed);
+            toast(`CSV cargado: ${parsed.length} registros.`);
+          },
         error: () => {
           st.rows = [];
           st.filtered = [];
@@ -1774,15 +1794,15 @@
     st.currentPage = 1;
     st.pageSize = '50';
 
-    el.q.addEventListener("input", apply);
-    el.cat.addEventListener("change", apply);
-    el.org.addEventListener("change", apply);
-    el.estado.addEventListener("change", apply);
-    el.visto.addEventListener("change", apply);
-    if (el.producto) el.producto.addEventListener("change", apply);
-    if (el.catGeneral) el.catGeneral.addEventListener("change", apply);
-    if (el.fechaDesde) el.fechaDesde.addEventListener("change", apply);
-    if (el.fechaHasta) el.fechaHasta.addEventListener("change", apply);
+    el.q.addEventListener("input", applyDebounced);
+    el.cat.addEventListener("change", applyDebounced);
+    el.org.addEventListener("change", applyDebounced);
+    el.estado.addEventListener("change", applyDebounced);
+    el.visto.addEventListener("change", applyDebounced);
+    if (el.producto) el.producto.addEventListener("change", applyDebounced);
+    if (el.catGeneral) el.catGeneral.addEventListener("change", applyDebounced);
+    if (el.fechaDesde) el.fechaDesde.addEventListener("change", applyDebounced);
+    if (el.fechaHasta) el.fechaHasta.addEventListener("change", applyDebounced);
     if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
 
     if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
