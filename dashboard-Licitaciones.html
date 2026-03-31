@@ -280,14 +280,14 @@
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 14px;
     }
     .card {
       min-width: 0;
-      min-height: 140px;
+      aspect-ratio: 1/1;
       max-width: 100%;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: linear-gradient(145deg, #fff, #fbfcff);
@@ -296,9 +296,12 @@
       gap: 6px;
       align-content: start;
       box-sizing: border-box;
+      overflow: hidden;
       transition: transform .12s ease, box-shadow .12s ease;
     }
     .card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px #22335a10; }
+
+    .card .desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     @media (max-width: 900px) {
       .cards {
         grid-template-columns: 1fr;
@@ -829,6 +832,21 @@
                   <label for="visto">Visto</label>
                   <select id="visto" class="form-select"></select>
                 </div>
+                <div class="field mb-2">
+                  <label for="catGeneral">Clasificación</label>
+                  <select id="catGeneral" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="producto">Producto</label>
+                  <select id="producto" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label>Fechas</label>
+                  <div class="d-flex gap-2">
+                    <input id="fechaDesde" type="date" class="form-control" />
+                    <input id="fechaHasta" type="date" class="form-control" />
+                  </div>
+                </div>
                 <div class="d-flex flex-wrap gap-2 mb-2">
                   <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
                   <button id="quickNew" class="btn btn-primary btn-sm" type="button"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
@@ -1036,7 +1054,7 @@
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
-    const st = { rows: [], filtered: [], view: "cards", selected: null };
+    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50' };
 
     const el = {
       q: document.getElementById("q"),
@@ -1093,6 +1111,7 @@
       toast: document.getElementById("toast"),
       fechaDesde: document.getElementById("fechaDesde"),
       fechaHasta: document.getElementById("fechaHasta"),
+      catGeneral: document.getElementById("catGeneral"),
       ordenarPor: document.getElementById("ordenarPor"),
       exportarExcel: document.getElementById("exportarExcel")
     };
@@ -1133,6 +1152,10 @@
       out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
       if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "No Tomada";
       if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
+      // compute general classification and subcategory
+      const cls = classifyProduct(out.Producto || out.TipoLicitacion || out.Organismo || "");
+      out.CategoriaGeneral = cls.general;
+      out.Subcategoria = cls.sub;
       if (!out.Responsable) out.Responsable = raw.Responsable || raw['Nombre Usuario'] || "";
       if (!out.Comentario) out.Comentario = raw.Comentario || "";
       if (!out.Prioridad) out.Prioridad = raw.Prioridad || "Media";
@@ -1159,6 +1182,30 @@
       return (Date.now() - d.getTime()) <= 72 * 60 * 60 * 1000;
     };
     const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
+
+    function classifyProduct(text) {
+      const s = String(text || "").toLowerCase();
+      const mapping = [
+        { general: 'Salud', subs: [['Medic', /medic|hospital|salud|clínic|enfermer/], ['Servicios médicos', /servicio.*médic|prestaciones médicas/]] },
+        { general: 'Construcción', subs: [['Obras', /obra|construcc|pavi|obra/], ['Materiales', /material|grava|cemento|hormigón|moldaje/]] },
+        { general: 'Educación', subs: [['Capacitación', /capacitaci|escuela|docent/]] },
+        { general: 'Servicios', subs: [['Limpieza', /aseo|limpiez/], ['Seguridad', /guardia|segurid/], ['Transporte', /transporte|autobús|moviliz/]] },
+        { general: 'Tecnología', subs: [['Software', /soft|software|sistema|plataforma/], ['Equipamiento', /equipo|servidor|hosting/]] },
+        { general: 'Suministros', subs: [['Insumos', /insumo|insumos|suministr|reactiv|material auxiliar/]] },
+        { general: 'Alimentos', subs: [['Catering', /catering|desayun|banquet/]] }
+      ];
+
+      for (const m of mapping) {
+        for (const sub of m.subs) {
+          if (sub[1].test(s)) return { general: m.general, sub: sub[0] };
+        }
+      }
+      // fallback heuristics
+      if (/servicio|contratación|contrato/.test(s)) return { general: 'Servicios', sub: 'General' };
+      if (/mantenimiento|mantención|mantenim/.test(s)) return { general: 'Servicios', sub: 'Mantenimiento' };
+      if (/pieza|pieza|repuesto|insumo|material/.test(s)) return { general: 'Suministros', sub: 'General' };
+      return { general: 'Otros', sub: 'Otros' };
+    }
 
     function toast(msg) {
       el.toast.textContent = msg;
@@ -1201,8 +1248,10 @@
       const orgs = [...new Set(st.rows.map(r => r.Organismo).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const generales = [...new Set(st.rows.map(r => r.CategoriaGeneral).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
+      if (el.catGeneral) el.catGeneral.innerHTML = '<option value="">Todas</option>' + generales.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
     }
 
@@ -1211,6 +1260,7 @@
       const cat = el.cat.value;
       const org = el.org.value;
       const prod = el.producto ? el.producto.value : "";
+      const catGen = el.catGeneral ? el.catGeneral.value : "";
       const est = el.estado.value;
       const visto = el.visto.value;
       const fechaDesde = el.fechaDesde.value;
@@ -1223,6 +1273,7 @@
         const mCat = !cat || r.TipoLicitacion === cat;
         const mOrg = !org || r.Organismo === org;
         const mProd = !prod || (r.Producto === prod);
+        const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
         const mEst = !est || r.EstadoTrabajo === est;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
@@ -1238,7 +1289,7 @@
           const fc = dateOnly(r.FechaCierre);
           mFecha = mFecha && (!fc || fc <= fechaHasta);
         }
-        return mQ && mCat && mOrg && mProd && mEst && mV && mFecha;
+        return mQ && mCat && mOrg && mProd && mCatGen && mEst && mV && mFecha;
       });
 
       // Ordenar
@@ -1337,78 +1388,63 @@
     // DataTables integration
     let dtInstance = null;
 
-    function buildTableRowsHtml(rows) {
-      return rows.map(r => `
-        <tr>
-          <td>
-            <strong>${esc(r.Nombre)}</strong><br/>
-            <small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>
-          </td>
-          <td>${esc(r.TipoLicitacion)}</td>
-          <td data-order="${Number(r.Monto) || 0}">${fmt(r.Monto)}</td>
-          <td data-order="${Number(r.DiasRestantes) || 0}">${Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-"}</td>
-          <td><span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span></td>
-          <td>
-            <button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button>
-            <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>
-          </td>
-        </tr>
-      `).join('');
+    function buildTableData(rows) {
+      return rows.map(r => {
+        const name = `<strong>${esc(r.Nombre)}</strong><br/><small style="color:var(--muted);">${esc(r.CodigoExterno)} - ${esc(r.Organismo)}</small>`;
+        const tipo = esc(r.TipoLicitacion);
+        const monto = fmt(r.Monto);
+        const dias = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
+        const estado = `<span class="status ${statusClass(r.EstadoTrabajo)}">${esc(r.EstadoTrabajo)}</span>`;
+        const actions = `<button class="link-btn" type="button" data-a="view" data-c="${esc(r.CodigoExterno)}">Ver</button> <button class="link-btn" type="button" data-a="open" data-c="${esc(r.CodigoExterno)}">Abrir</button>`;
+        return [name, tipo, monto, dias, estado, actions];
+      });
     }
 
     function initDataTable() {
       if (!window.jQuery || !$.fn.DataTable) return;
       const $tbl = $('#dtTable');
       $tbl.show();
-      // destroy previous instance if any
-      if (dtInstance) {
-        try { dtInstance.destroy(); } catch (e) {}
-        dtInstance = null;
-      }
-      const rowsHtml = buildTableRowsHtml(st.filtered);
-      $tbl.find('tbody').html(rowsHtml);
-      const pageLen = st.pageSize === 'all' ? (st.filtered.length || 10) : Number(st.pageSize || 50);
+      const data = buildTableData(st.filtered);
       const pagingEnabled = st.pageSize !== 'all';
-      // keep our sidebar pagination visible — we'll control DataTable with it
-      const pagWrap = document.getElementById('pagination'); if (pagWrap) pagWrap.style.display = '';
-      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
 
-      // bind external search box to DataTable search
-      if (el.q) {
-        $(el.q).off('input.dtsearch').on('input.dtsearch', function() {
-          if (dtInstance) dtInstance.search(this.value).draw();
-        });
+      // If dtInstance exists, update data in place (faster)
+      if (dtInstance) {
+        try {
+          dtInstance.clear();
+          dtInstance.rows.add(data);
+          dtInstance.draw(false);
+          return;
+        } catch (e) { dtInstance = null; }
       }
 
       dtInstance = $tbl.DataTable({
-        order: [[0, 'asc']],
+        data: data,
+        columns: [
+          { title: 'Nombre' },
+          { title: 'Tipo' },
+          { title: 'Monto' },
+          { title: 'Días' },
+          { title: 'Estado' },
+          { title: 'Acciones', orderable: false }
+        ],
+        deferRender: true,
         ordering: true,
-        pageLength: pageLen,
+        order: [[0, 'asc']],
+        pageLength: st.pageSize === 'all' ? -1 : Number(st.pageSize || 50),
         lengthChange: false,
         searching: true,
         responsive: true,
-        paging: pagingEnabled,
-        // hide DataTables own pagination UI (we use sidebar controls)
         dom: 't'
       });
 
-      // restore current page if necessary
-      try {
-        if (pagingEnabled && dtInstance && st.currentPage && st.currentPage > 1) {
-          const target = Math.max(0, st.currentPage - 1);
-          dtInstance.page(target).draw(false);
-        }
-      } catch (e) {}
+      // bind external search box to DataTable search
+      if (el.q) {
+        $(el.q).off('input.dtsearch').on('input.dtsearch', function() { if (dtInstance) dtInstance.search(this.value).draw(); });
+      }
     }
 
     function refreshDataTable() {
       if (!window.jQuery || !$.fn.DataTable) return initDataTable();
-      const $tbl = $('#dtTable');
-      if (dtInstance) {
-        try { dtInstance.destroy(); } catch (e) {}
-        dtInstance = null;
-      }
-      $tbl.find('tbody').html(buildTableRowsHtml(st.filtered));
       initDataTable();
     }
 
@@ -1647,6 +1683,8 @@
       if (type === "urg") {
         el.visto.value = "";
         st.filtered = st.rows.filter(r => Number(r.DiasRestantes) <= 2);
+        st.currentPage = 1;
+        updatePagination();
         render();
         kpis();
         return;
@@ -1733,6 +1771,9 @@
     el.estado.addEventListener("change", apply);
     el.visto.addEventListener("change", apply);
     if (el.producto) el.producto.addEventListener("change", apply);
+    if (el.catGeneral) el.catGeneral.addEventListener("change", apply);
+    if (el.fechaDesde) el.fechaDesde.addEventListener("change", apply);
+    if (el.fechaHasta) el.fechaHasta.addEventListener("change", apply);
     if (el.pageSize) el.pageSize.addEventListener("change", e => { st.pageSize = e.target.value; st.currentPage = 1; updatePagination(); render(); });
 
     if (el.prevPage) el.prevPage.addEventListener("click", prevPage);
