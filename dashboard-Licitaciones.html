@@ -941,7 +941,7 @@
         </div>
         <div class="section card shadow-sm p-3 mb-4">
           <!-- Tarjetas (Cards) -->
-          <div id="cards" class="row g-3"></div>
+          <div id="cards" class="cards"></div>
           <!-- Lista (DataTable) -->
           <div id="list" class="table-responsive">
             <table id="dtTable" class="table table-striped table-bordered" style="width:100%; display:none;">
@@ -1507,7 +1507,7 @@
       const empty = rows.length === 0;
       el.empty.style.display = empty ? "block" : "none";
 
-      el.cards.style.display = st.view === "cards" ? "grid" : "none";
+      el.cards.style.display = st.view === "cards" ? "" : "none";
       el.list.style.display = st.view === "list" ? "block" : "none";
       el.kanban.style.display = st.view === "board" ? "grid" : "none";
 
