@@ -860,11 +860,13 @@
           </div>
         </div>
         <div class="section card shadow-sm p-3 mb-4">
-          <!-- Aquí se renderizan las tarjetas/lista/kanban -->
-          <div id="cards"></div>
-          <div id="list"></div>
-          <div id="kanban"></div>
-          <div id="empty" class="text-center text-muted"></div>
+          <!-- Tarjetas (Cards) -->
+          <div id="cards" class="row g-3"></div>
+          <!-- Lista (DataTable) -->
+          <div id="list" class="table-responsive"></div>
+          <!-- Kanban -->
+          <div id="kanban" class="row g-3"></div>
+          <div id="empty" class="alert alert-warning text-center d-none"></div>
         </div>
       </section>
     </div>
@@ -872,63 +874,67 @@
 
   <section id="modal" class="modal" aria-hidden="true">
     <article class="modal-card">
-      <header class="modal-head">
-        <div>
-          <span id="mdCode" class="code">-</span>
-          <h3 id="mdTitle" class="modal-title">Detalle</h3>
+      <header class="modal-head d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <span id="mdCode" class="badge bg-primary fs-6">-</span>
+          <h3 id="mdTitle" class="modal-title mb-0">Detalle</h3>
         </div>
-        <button id="mdClose" class="close" type="button">Cerrar</button>
+        <button id="mdClose" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-x-lg"></i> Cerrar</button>
       </header>
 
-      <div class="grid3">
-        <div class="box"><b>Organismo</b><span id="mdOrg">-</span></div>
-        <div class="box"><b>Producto</b><span id="mdProv">-</span></div>
-        <div class="box"><b>Monto</b><span id="mdMonto">-</span></div>
-        <div class="box"><b>Publicacion</b><span id="mdPub">-</span></div>
-        <div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div>
-        <div class="box"><b>Dias</b><span id="mdDias">-</span></div>
-        <div class="box"><b>Tipo Licitacion</b><span id="mdCat">-</span></div>
-        <div class="box"><b>Estado</b><span id="mdEstado">-</span></div>
-        <div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div>
+      <div class="row g-2 mb-2">
+        <div class="col-md-4"><div class="box"><b>Organismo</b><span id="mdOrg">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Producto</b><span id="mdProv">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Monto</b><span id="mdMonto">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Publicación</b><span id="mdPub">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Días</b><span id="mdDias">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Tipo Licitación</b><span id="mdCat">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Estado</b><span id="mdEstado">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div></div>
       </div>
 
-      <div>
-        <b style="font-size:.75rem; color:#415b8a;">Descripcion</b>
+      <div class="mb-3">
+        <b class="text-secondary small">Descripción</b>
         <div id="mdDesc" class="full"></div>
       </div>
 
       <section class="edit">
-        <strong style="font-size:.9rem; color:#324f84;">Gestion (simulada)</strong>
-        <div class="edit-grid">
-          <div class="field">
-            <label for="edVisto">Visto</label>
-            <select id="edVisto">
-              <option value="FALSE">No visto</option>
-              <option value="TRUE">Visto</option>
-            </select>
+        <strong class="text-primary mb-2">Gestión (simulada)</strong>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <div class="field">
+              <label for="edVisto">Visto</label>
+              <select id="edVisto" class="form-select">
+                <option value="FALSE">No visto</option>
+                <option value="TRUE">Visto</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label for="edEstado">Estado</label>
-            <select id="edEstado">
-              <option value="No Tomada">No Tomada</option>
-              <option value="En Proceso">En Proceso</option>
-              <option value="Trabajada">Trabajada</option>
-            </select>
+          <div class="col-md-4">
+            <div class="field">
+              <label for="edEstado">Estado</label>
+              <select id="edEstado" class="form-select">
+                <option value="No Tomada">No Tomada</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Trabajada">Trabajada</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label for="edOwner">Responsable</label>
-            <input id="edOwner" type="text" placeholder="Ej: Camila P." />
+          <div class="col-md-4">
+            <div class="field">
+              <label for="edOwner">Responsable</label>
+              <input id="edOwner" type="text" class="form-control" placeholder="Ej: Camila P." />
+            </div>
           </div>
         </div>
-
-        <div class="field">
+        <div class="field mt-2">
           <label for="edCom">Comentario</label>
-          <textarea id="edCom" rows="3" placeholder="Notas de seguimiento comercial..."></textarea>
+          <textarea id="edCom" rows="3" class="form-control" placeholder="Notas de seguimiento comercial..."></textarea>
         </div>
-
-        <div class="save">
-          <button id="openDoc" class="btn-lite" type="button">Abrir documento</button>
-          <button id="save" class="btn" type="button">Guardar cambios (local)</button>
+        <div class="save d-flex justify-content-end gap-2 mt-3">
+          <button id="openDoc" class="btn btn-outline-info btn-sm" type="button"><i class="bi bi-box-arrow-up-right"></i> Abrir documento</button>
+          <button id="save" class="btn btn-success btn-sm" type="button"><i class="bi bi-save"></i> Guardar cambios</button>
         </div>
       </section>
     </article>
@@ -951,9 +957,12 @@
   <div id="toast" class="toast">Accion simulada</div>
 
   <!-- Dependencias JS: jQuery, DataTables y Bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-/xUj+3OJ+Y3o7y2X6a2a2Q5p2s6b1pXQ5K5m8q0i3Dk=" crossorigin="anonymous"></script>
+  <!-- jQuery debe ir primero y sin integrity para evitar bloqueos -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+  <!-- DataTables depende de jQuery -->
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Bootstrap debe ir después de jQuery si usas plugins que dependen de él -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
