@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Licitaciones Mercado Publico</title>
+  <title>Dashboard Licitaciones Mercado </title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -854,7 +854,7 @@
   <main class="container-fluid py-3">
     <div class="row g-4">
       <!-- Sidebar -->
-      <aside class="col-lg-3 d-none d-lg-block">
+      <aside class="col-12 col-lg-3">
           <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
             <div>
               <div class="logo mb-2 d-flex align-items-center gap-2">
@@ -1821,28 +1821,8 @@
       el.modal.classList.add("open");
       el.modal.setAttribute("aria-hidden", "false");
 
-      // no break: we already construimos la URL de forma segura desde el ID o URL disponible    
-
-      try {
-        const response = await fetch(r.URLLicitacion);
-        const json = await response.json();
-        const rel = Array.isArray(json.releases) && json.releases.length ? json.releases[0] : {};
-        const award = Array.isArray(rel.awards) && rel.awards.length ? rel.awards[0] : {};
-        const suppliers = Array.isArray(award.suppliers) ? award.suppliers : [];
-        const supplierText = suppliers.length ? suppliers.map(s => s.name).filter(Boolean).join(" | ") : (r.Producto || "No informado");
-        const amount = award.value && award.value.amount ? award.value.amount : r.Monto;
-        const status = award.statusDetails || award.status || r.EstadoTrabajo || "No informado";
-        const doc = Array.isArray(award.documents) && award.documents.length ? award.documents[0].url : "";
-
-        el.mdProv.textContent = supplierText;
-        el.mdMonto.textContent = fmt(amount);
-        el.mdEstado.textContent = status;
-        el.mdDesc.textContent = award.description || r.Descripcion || "Sin descripcion";
-        el.mdPub.textContent = dateOnly(rel.date || json.publishedDate || r.FechaPublicacion);
-        el.openDoc.dataset.url = doc || r.URLLicitacion;
-      } catch (error) {
-        el.openDoc.dataset.url = r.URLLicitacion || "";
-      }
+      // El detalle se construye desde el CSV para evitar fallos al hacer fetch de URLs HTML.
+      // La URL para "Abrir documento" ya viene saneada por buildPublicoUrlFromRow().
     }
 
     function closeModal() {
@@ -1923,7 +1903,15 @@
         return;
       }
       if (type === "new") el.visto.value = "NUEVO";
-      if (type === "free") el.estado.value = "No Tomada";
+      if (type === "free") {
+        el.visto.value = "";
+        st.filtered = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada");
+        st.currentPage = 1;
+        updatePagination();
+        render();
+        kpis();
+        return;
+      }
       apply();
     }
 
