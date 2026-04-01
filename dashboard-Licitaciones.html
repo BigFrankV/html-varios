@@ -1,15 +1,12 @@
 <!doctype html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard Licitaciones Mercado Publico</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <!-- Bootstrap + DataTables (estilos) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -24,6 +21,63 @@
       --ink: #1f2a3d;
       --muted: #6c7892;
       --line: #e4e9f2;
+
+      --navy: #2747c7;
+      --navy-2: #3f5ad6;
+      --violet: #7f56d9;
+      --cyan: #07a0c3;
+
+      --ok: #1f9d5c;
+      --warn: #de8a00;
+      --danger: #d94242;
+      --slate: #7b879c;
+
+      --chip: #eff3ff;
+      --shadow: 0 14px 30px #22335a12;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: radial-gradient(circle at 0% 0%, #ffffff 0%, #f6f7fb 28%), var(--bg);
+      min-height: 100vh;
+    }
+
+    .app {
+      width: min(1200px, 96vw);
+      margin: 14px auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      box-shadow: var(--shadow);
+      margin-bottom: 8px !important;
+      justify-items: center;
+    }
+
+    .side {
+      background: linear-gradient(165deg, #223268, #2f4691 60%, #324db0);
+      border-radius: 22px;
+      color: #fff;
+      padding: 14px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      position: sticky;
+      top: 12px;
+      height: max-content;
+      box-shadow: var(--shadow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 6px;
+      border-radius: 12px;
+      background: #ffffff17;
     }
 
     .logo-mark {
@@ -46,17 +100,8 @@
       top: -4px;
     }
 
-    .logo b {
-      font-family: "Outfit", sans-serif;
-      letter-spacing: .25px;
-    }
-
-    .logo span {
-      font-size: .75rem;
-      opacity: .86;
-      display: block;
-      margin-top: 2px;
-    }
+    .logo b { font-family: "Outfit", sans-serif; letter-spacing: .25px; }
+    .logo span { font-size: .75rem; opacity: .86; display: block; margin-top: 2px; }
 
     .nav-list {
       display: grid;
@@ -89,9 +134,7 @@
       font-size: .8rem;
     }
 
-    .small-card b {
-      font-size: 1.05rem;
-    }
+    .small-card b { font-size: 1.05rem; }
 
     .main {
       display: grid;
@@ -184,48 +227,99 @@
       font-size: 1.1rem;
     }
 
-    .kpi:nth-child(-n+2),
-    .kpi:nth-child(n+3) {
+    .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
       grid-column: span 1;
     }
 
-    .kpi span {
-      color: var(--muted);
-      font-size: .78rem;
-      font-weight: 700;
-      white-space: normal;
-      text-align: center;
-    }
-
-    .kpi b {
-      font-size: 1.2rem;
-      max-width: 100%;
-      white-space: normal;
-      word-break: break-word;
-      text-align: center;
-    }
+    .kpi span { color: var(--muted); font-size: .78rem; font-weight: 700; white-space: normal; text-align: center; }
+    .kpi b { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-word; text-align: center; }
 
     @media (max-width: 900px) {
       .kpis {
         grid-template-columns: 1fr 1fr;
       }
-
-      .kpi:nth-child(-n+2),
-      .kpi:nth-child(n+3) {
+      .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
         grid-column: auto;
       }
     }
-
     @media (max-width: 600px) {
       .kpis {
         grid-template-columns: 1fr;
       }
-
       .kpi {
         aspect-ratio: unset;
         min-height: 80px;
       }
+    }
 
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr)) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .field { display: grid; gap: 4px; }
+    .field label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .date-range-inputs { display: grid; gap: 6px; grid-template-columns: 1fr; }
+
+
+    input, select, button, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 700;
+      background: linear-gradient(120deg, var(--navy), var(--violet));
+    }
+
+    .btn-lite {
+      width: auto;
+      border: 1px solid #d8e2f1;
+      background: #f5f8ff;
+      color: #37517d;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .switch {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .switch-left,
+    .switch-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .switch .btn-lite.active {
+      background: linear-gradient(120deg, var(--navy), var(--violet));
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 10px;
     }
 
     .cards {
@@ -235,759 +329,610 @@
       align-items: start;
       align-content: start;
     }
+    .card {
+      min-width: 0;
+      max-width: 100%;
+      font-size: 0.92rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(145deg, #fff, #fbfcff);
+      padding: 8px 10px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+      box-sizing: border-box;
+      overflow: hidden;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px #22335a10; }
 
+    .card .desc {
+      /* Fallback for non-webkit browsers: limit height by lines */
+      line-height: 1.45;
+      max-height: calc(1.45em * 4);
+      overflow: hidden;
+      display: block; /* fallback */
+      white-space: normal;
+
+      /* Better truncation in WebKit/Blink using line-clamp */
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
       .card {
-        min-width: 0;
-        max-width: 100%;
-        font-size: 0.92rem;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: linear-gradient(145deg, #fff, #fbfcff);
-        padding: 8px 10px;
-        display: grid;
-        gap: 6px;
-        align-content: start;
-        box-sizing: border-box;
-        overflow: hidden;
-        transition: transform .12s ease, box-shadow .12s ease;
-      }
-
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 22px #22335a10;
-      }
-
-      .card .desc {
-        /* Fallback for non-webkit browsers: limit height by lines */
-        line-height: 1.45;
-        max-height: calc(1.45em * 4);
-        overflow: hidden;
-        display: block;
-        /* fallback */
-        white-space: normal;
-
-        /* Better truncation in WebKit/Blink using line-clamp */
-        line-clamp: 4;
-        display: -webkit-box;
-        -webkit-line-clamp: 4;
-        -webkit-box-orient: vertical;
-      }
-
-      @media (max-width: 900px) {
-        .cards {
-          grid-template-columns: 1fr;
-        }
-
-        .card {
-          min-height: 120px;
-        }
-      }
-
-      /* Mejorar el contenido interno para que no se desborde */
-      /* (card .desc consolidated above with fallback + webkit clamp) */
-
-      @keyframes rise {
-        from {
-          opacity: 0;
-          transform: translateY(6px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .head-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        gap: 8px;
-      }
-
-      .code {
-        font-family: monospace;
-        font-size: .73rem;
-        background: #f1f5ff;
-        border-radius: 8px;
-        color: #3a5494;
-        padding: 4px 6px;
-        max-width: 66%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .flags {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-        justify-content: end;
-      }
-
-      .flag {
-        border-radius: 999px;
-        padding: 4px 7px;
-        font-size: .67rem;
-        font-weight: 800;
-        color: #fff;
-      }
-
-      .f-new {
-        background: var(--navy);
-      }
-
-      .f-v {
-        background: var(--ok);
-      }
-
-      .f-nv {
-        background: var(--slate);
-      }
-
-      .f-u {
-        background: var(--danger);
-      }
-
-      .name {
-        margin: 0;
-        font-size: .94rem;
-        line-height: 1.33;
-      }
-
-      .desc {
-        margin: 0;
-        color: var(--muted);
-        font-size: .84rem;
-        line-height: 1.45;
-        max-height: 5.2em;
-        overflow: hidden;
-      }
-
-      .kv {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 4px 7px;
-        font-size: .79rem;
-      }
-
-      .kv b {
-        color: #425782;
-      }
-
-      .foot {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .money {
-        font-weight: 800;
-        color: #263b66;
-      }
-
-      .status {
-        border-radius: 999px;
-        padding: 3px 8px;
-        font-size: .67rem;
-        font-weight: 800;
-        color: #fff;
-      }
-
-      .st-nt {
-        background: #7e8da4;
-      }
-
-      .st-ep {
-        background: var(--warn);
-      }
-
-      .st-tr {
-        background: var(--ok);
-      }
-
-      .actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .link-btn {
-        border: none;
-        width: auto;
-        background: transparent;
-        color: #2e56ad;
-        font-weight: 800;
-        padding: 0;
-        cursor: pointer;
-      }
-
-      .list,
-      .kanban {
-        display: none;
-      }
-
-      .list {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        overflow: hidden;
-      }
-
-      .list-head,
-      .list-row {
-        display: grid;
-        grid-template-columns: 1.2fr .68fr .62fr .55fr .58fr auto;
-        gap: 7px;
-        align-items: center;
-        padding: 9px;
-      }
-
-      .list-head {
-        background: #f3f6ff;
-        border-bottom: 1px solid var(--line);
-        font-size: .75rem;
-        color: #3a527f;
-        text-transform: uppercase;
-        font-weight: 800;
-      }
-
-      .list-row {
-        border-bottom: 1px solid #edf1f9;
-        font-size: .82rem;
-      }
-
-      .list-row:last-child {
-        border-bottom: none;
-      }
-
-      .name-cell {
-        display: grid;
-        gap: 2px;
-        min-width: 0;
-      }
-
-      .name-cell strong {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .name-cell span {
-        font-size: .74rem;
-        color: var(--muted);
-      }
-
-      .kanban {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .lane {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: #fbfcff;
-        padding: 8px;
-        display: grid;
-        gap: 8px;
         min-height: 120px;
       }
+    }
+    /* Mejorar el contenido interno para que no se desborde */
+    /* (card .desc consolidated above with fallback + webkit clamp) */
 
-      .lane-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 5px;
-        border-bottom: 1px dashed #d8deeb;
-        font-size: .8rem;
-        color: #3b5687;
-        font-weight: 800;
-      }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-      .count {
-        border: 1px solid #d8e1f0;
-        border-radius: 999px;
-        background: #eff3ff;
-        padding: 2px 7px;
-        font-size: .72rem;
-        font-family: monospace;
-      }
+    .head-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 8px;
+    }
 
-      .mini {
-        border: 1px solid #dde4f0;
-        border-radius: 10px;
-        background: #fff;
-        padding: 8px;
-        display: grid;
-        gap: 5px;
-      }
+    .code {
+      font-family: monospace;
+      font-size: .73rem;
+      background: #f1f5ff;
+      border-radius: 8px;
+      color: #3a5494;
+      padding: 4px 6px;
+      max-width: 66%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-      .mini h4 {
-        margin: 0;
-        font-size: .82rem;
-        line-height: 1.3;
-      }
+    .flags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: end; }
 
-      .mini-foot {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: .73rem;
-        color: #51698f;
-      }
+    .flag {
+      border-radius: 999px;
+      padding: 4px 7px;
+      font-size: .67rem;
+      font-weight: 800;
+      color: #fff;
+    }
 
-      .modal {
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 14px;
-        z-index: 9999 !important;
-        background: #111a2c73;
-      }
+    .f-new { background: var(--navy); }
+    .f-v { background: var(--ok); }
+    .f-nv { background: var(--slate); }
+    .f-u { background: var(--danger); }
 
-      .modal.open {
-        display: flex;
-      }
+    .name {
+      margin: 0;
+      font-size: .94rem;
+      line-height: 1.33;
+    }
 
-      .modal-card {
-        margin-top: 24px;
-        width: min(900px, 98vw);
-        max-height: 92vh;
-        overflow: auto;
-        border-radius: 16px;
-        border: 1px solid var(--line);
-        background: #fff;
-        padding: 12px;
-        display: grid;
-        gap: 10px;
-      }
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.45;
+      max-height: 5.2em;
+      overflow: hidden;
+    }
 
-      .modal-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        gap: 8px;
-      }
+    .kv {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 7px;
+      font-size: .79rem;
+    }
 
-      .modal-title {
-        margin: 0;
-        font-size: 1.05rem;
-        line-height: 1.35;
-      }
+    .kv b { color: #425782; }
 
-      .close {
-        width: auto;
-        border: 1px solid #d8e1f0;
-        background: #f3f6ff;
-        color: #3b5687;
-        font-weight: 700;
-        padding: 7px 10px;
-        cursor: pointer;
-      }
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
 
-      .grid3 {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-      }
+    .money { font-weight: 800; color: #263b66; }
 
-      .box {
-        border: 1px solid #dde5f1;
-        border-radius: 10px;
-        background: #fbfdff;
-        padding: 8px;
-        display: grid;
-        gap: 4px;
-        font-size: .83rem;
-      }
+    .status {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: .67rem;
+      font-weight: 800;
+      color: #fff;
+    }
 
-      .box b {
-        font-size: .75rem;
-        color: #415b8a;
-      }
+    .st-nt { background: #7e8da4; }
+    .st-ep { background: var(--warn); }
+    .st-tr { background: var(--ok); }
 
-      .full {
-        border: 1px solid #dde5f1;
-        border-radius: 10px;
-        background: #fbfdff;
-        padding: 10px;
-        white-space: pre-wrap;
-        line-height: 1.4;
-        color: #526a8f;
-        font-size: .88rem;
-      }
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
-      .edit {
-        border: 1px solid #dde5f1;
-        border-radius: 10px;
-        background: #fcfdff;
-        padding: 10px;
-        display: grid;
-        gap: 8px;
-      }
+    .link-btn {
+      border: none;
+      width: auto;
+      background: transparent;
+      color: #2e56ad;
+      font-weight: 800;
+      padding: 0;
+      cursor: pointer;
+    }
 
-      .edit-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-      }
+    .list,
+    .kanban {
+      display: none;
+    }
 
-      .save {
-        display: flex;
-        justify-content: end;
-        gap: 8px;
-        align-items: center;
-      }
+    .list {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
 
-      .toast {
-        position: fixed;
-        right: 14px;
-        bottom: 14px;
-        background: #2d4cbfcc;
-        color: #fff;
-        border: 1px solid #5570cb;
-        border-radius: 10px;
-        padding: 9px 12px;
-        font-size: .82rem;
-        display: none;
-        z-index: 60;
-      }
+    .list-head,
+    .list-row {
+      display: grid;
+      grid-template-columns: 1.2fr .68fr .62fr .55fr .58fr auto;
+      gap: 7px;
+      align-items: center;
+      padding: 9px;
+    }
 
-      .toast.show {
-        display: block;
-      }
+    .list-head {
+      background: #f3f6ff;
+      border-bottom: 1px solid var(--line);
+      font-size: .75rem;
+      color: #3a527f;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
 
-      body[data-theme="dark"],
-      body[data-bs-theme="dark"] {
-        --bg: #0f1421;
-        --bg-soft: #171f33;
-        --panel: #131b2d;
-        --ink: #e8eeff;
-        --muted: #9dadcc;
-        --line: #24304a;
-        --chip: #1a2440;
-        --shadow: 0 14px 30px #0000004d;
-      }
+    .list-row {
+      border-bottom: 1px solid #edf1f9;
+      font-size: .82rem;
+    }
 
-      body[data-theme="dark"],
-      body[data-bs-theme="dark"] {
-        background: radial-gradient(circle at 0% 0%, #1a2440 0%, #10172a 26%), var(--bg);
-      }
+    .list-row:last-child { border-bottom: none; }
 
-      body[data-theme="dark"] .side {
-        background: linear-gradient(165deg, #151f40, #1c2a59 60%, #1f2d6e);
-      }
+    .name-cell { display: grid; gap: 2px; min-width: 0; }
+    .name-cell strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .name-cell span { font-size: .74rem; color: var(--muted); }
 
-      body[data-theme="dark"] .nav-item {
-        color: #c8d6ff;
-      }
+    .kanban {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
 
-      body[data-theme="dark"] .nav-item.active {
-        background: #ffffff24;
-        border-color: #ffffff4a;
-      }
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcff;
+      padding: 8px;
+      display: grid;
+      gap: 8px;
+      min-height: 120px;
+    }
 
-      body[data-theme="dark"] .chip {
-        border-color: #2b3a5a;
-        color: #b5c6ef;
-      }
+    .lane-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 5px;
+      border-bottom: 1px dashed #d8deeb;
+      font-size: .8rem;
+      color: #3b5687;
+      font-weight: 800;
+    }
 
-      body[data-theme="dark"] .kpi,
-      body[data-theme="dark"],
-      body[data-bs-theme="dark"] .card,
-      body[data-theme="dark"] .lane,
-      body[data-theme="dark"] .mini,
-      body[data-theme="dark"] .modal-card,
-      body[data-theme="dark"] .box,
-      body[data-theme="dark"] .full,
-      body[data-theme="dark"] .edit {
-        background: #162139;
-        border-color: #273655;
-      }
+    .count {
+      border: 1px solid #d8e1f0;
+      border-radius: 999px;
+      background: #eff3ff;
+      padding: 2px 7px;
+      font-size: .72rem;
+      font-family: monospace;
+    }
 
-      body[data-theme="dark"] .btn-lite {
-        border-color: #314266;
-        background: #1a2744;
-        color: #bdd0ff;
-      }
+    .mini {
+      border: 1px solid #dde4f0;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      display: grid;
+      gap: 5px;
+    }
 
-      body[data-theme="dark"] .switch .btn-lite.active {
-        background: linear-gradient(120deg, #3656d8, #8562da);
-        color: #fff;
-      }
+    .mini h4 {
+      margin: 0;
+      font-size: .82rem;
+      line-height: 1.3;
+    }
 
-      body[data-theme="dark"] input,
-      body[data-theme="dark"] select,
-      body[data-theme="dark"] textarea {
-        background: #121d33;
-        color: #e6ecff;
-        border-color: #2a3a5e;
-      }
+    .mini-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .73rem;
+      color: #51698f;
+    }
 
-      body[data-theme="dark"] .list-head {
-        background: #1a2744;
-        color: #b9c9ec;
-      }
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 14px;
+      z-index: 9999 !important;
+      background: #111a2c73;
+    }
 
-      body[data-theme="dark"] .list-row {
-        border-bottom-color: #223252;
-      }
+    .modal.open { display: flex; }
 
-      body[data-theme="dark"] .code {
-        background: #1b294a;
-        color: #b9c8ee;
-      }
+    .modal-card {
+      margin-top: 24px;
+      width: min(900px, 98vw);
+      max-height: 92vh;
+      overflow: auto;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
 
-      body[data-theme="dark"] .kv b,
-      body[data-theme="dark"] .money,
-      body[data-theme="dark"] .lane-head,
-      body[data-theme="dark"] .box b,
-      body[data-theme="dark"] .link-btn {
-        color: #b9c8ee;
-      }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 8px;
+    }
 
-      body[data-theme="dark"] .count {
-        border-color: #33476f;
-        background: #1d2c4a;
-        color: #d6e1ff;
-      }
+    .modal-title {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.35;
+    }
 
-      body[data-theme="dark"] .modal {
-        background: #050a14bf;
-      }
+    .close {
+      width: auto;
+      border: 1px solid #d8e1f0;
+      background: #f3f6ff;
+      color: #3b5687;
+      font-weight: 700;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
 
-      body[data-theme="dark"] .close {
-        border-color: #304466;
-        background: #1a2742;
-        color: #d0dcf8;
-      }
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
 
-      body[data-theme="dark"] .toast {
-        background: #233d94e0;
-        border-color: #4664c6;
-      }
+    .box {
+      border: 1px solid #dde5f1;
+      border-radius: 10px;
+      background: #fbfdff;
+      padding: 8px;
+      display: grid;
+      gap: 4px;
+      font-size: .83rem;
+    }
 
-      @media (max-width: 1150px) {
-        .kpis {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+    .box b { font-size: .75rem; color: #415b8a; }
 
-        .toolbar {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
+    .full {
+      border: 1px solid #dde5f1;
+      border-radius: 10px;
+      background: #fbfdff;
+      padding: 10px;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      color: #526a8f;
+      font-size: .88rem;
+    }
 
-      @media (max-width: 980px) {
-        .app {
-          grid-template-columns: 1fr;
-        }
+    .edit {
+      border: 1px solid #dde5f1;
+      border-radius: 10px;
+      background: #fcfdff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
 
-        .side {
-          position: static;
-        }
-      }
+    .edit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
 
-      @media (max-width: 820px) {
-        .kpis {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+    .save {
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+      align-items: center;
+    }
 
-        .cards {
-          grid-template-columns: 1fr;
-        }
+    .toast {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      background: #2d4cbfcc;
+      color: #fff;
+      border: 1px solid #5570cb;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: .82rem;
+      display: none;
+      z-index: 60;
+    }
 
-        .kanban {
-          grid-template-columns: 1fr;
-        }
+    .toast.show { display: block; }
 
-        .list-head,
-        .list-row {
-          grid-template-columns: 1fr;
-        }
+    body[data-theme="dark"], body[data-bs-theme="dark"] {
+      --bg: #0f1421;
+      --bg-soft: #171f33;
+      --panel: #131b2d;
+      --ink: #e8eeff;
+      --muted: #9dadcc;
+      --line: #24304a;
+      --chip: #1a2440;
+      --shadow: 0 14px 30px #0000004d;
+    }
 
-        .grid3,
-        .edit-grid {
-          grid-template-columns: 1fr;
-        }
+    body[data-theme="dark"], body[data-bs-theme="dark"] {
+      background: radial-gradient(circle at 0% 0%, #1a2440 0%, #10172a 26%), var(--bg);
+    }
 
-        .toolbar {
-          grid-template-columns: 1fr;
-        }
+    body[data-theme="dark"] .side {
+      background: linear-gradient(165deg, #151f40, #1c2a59 60%, #1f2d6e);
+    }
 
-        .switch {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 10px;
-        }
+    body[data-theme="dark"] .nav-item {
+      color: #c8d6ff;
+    }
 
-        .switch-left,
-        .switch-right {
-          width: 100%;
-          justify-content: space-between;
-        }
+    body[data-theme="dark"] .nav-item.active {
+      background: #ffffff24;
+      border-color: #ffffff4a;
+    }
 
-        .chips {
-          justify-content: flex-start;
-          gap: 6px;
-        }
-      }
+    body[data-theme="dark"] .chip {
+      border-color: #2b3a5a;
+      color: #b5c6ef;
+    }
 
-      /* DataTable palette: use existing CSS variables for consistent look */
-      #dtTable {
-        width: 100%;
-        border-collapse: collapse;
-        background: var(--panel);
-        color: var(--ink);
-        border: 1px solid var(--line);
-      }
+    body[data-theme="dark"] .kpi,
+    body[data-theme="dark"], body[data-bs-theme="dark"] .card,
+    body[data-theme="dark"] .lane,
+    body[data-theme="dark"] .mini,
+    body[data-theme="dark"] .modal-card,
+    body[data-theme="dark"] .box,
+    body[data-theme="dark"] .full,
+    body[data-theme="dark"] .edit {
+      background: #162139;
+      border-color: #273655;
+    }
 
-      #dtTable thead th {
-        background: linear-gradient(120deg, var(--navy), var(--navy-2));
-        color: #fff;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        font-weight: 700;
-        vertical-align: middle;
-      }
+    body[data-theme="dark"] .btn-lite {
+      border-color: #314266;
+      background: #1a2744;
+      color: #bdd0ff;
+    }
 
-      #dtTable tbody tr {
-        border-bottom: 1px solid var(--line);
-      }
+    body[data-theme="dark"] .switch .btn-lite.active {
+      background: linear-gradient(120deg, #3656d8, #8562da);
+      color: #fff;
+    }
 
-      #dtTable tbody td {
-        vertical-align: middle;
-        color: var(--ink);
-      }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea {
+      background: #121d33;
+      color: #e6ecff;
+      border-color: #2a3a5e;
+    }
 
-      .table-striped tbody tr:nth-of-type(odd) {
-        background: var(--bg-soft);
-      }
+    body[data-theme="dark"] .list-head {
+      background: #1a2744;
+      color: #b9c9ec;
+    }
 
-      .table-striped tbody tr:hover {
-        background: #f3f6ff;
-      }
+    body[data-theme="dark"] .list-row {
+      border-bottom-color: #223252;
+    }
 
-      /* Dark theme overrides */
-      body[data-theme="dark"] #dtTable {
-        background: #0f1724;
-        color: var(--ink);
-        border-color: #24304a;
-      }
+    body[data-theme="dark"] .code {
+      background: #1b294a;
+      color: #b9c8ee;
+    }
 
-      body[data-theme="dark"] #dtTable thead th {
-        background: linear-gradient(120deg, #223268, #1c2a59);
-        color: #e8eefc;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      }
+    body[data-theme="dark"] .kv b,
+    body[data-theme="dark"] .money,
+    body[data-theme="dark"] .lane-head,
+    body[data-theme="dark"] .box b,
+    body[data-theme="dark"] .link-btn {
+      color: #b9c8ee;
+    }
 
-      body[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
-        background: #0b1526;
-      }
+    body[data-theme="dark"] .count {
+      border-color: #33476f;
+      background: #1d2c4a;
+      color: #d6e1ff;
+    }
 
-      body[data-theme="dark"] .table-striped tbody tr:hover {
-        background: #122033;
-      }
+    body[data-theme="dark"] .modal {
+      background: #050a14bf;
+    }
+
+    body[data-theme="dark"] .close {
+      border-color: #304466;
+      background: #1a2742;
+      color: #d0dcf8;
+    }
+
+    body[data-theme="dark"] .toast {
+      background: #233d94e0;
+      border-color: #4664c6;
+    }
+
+    @media (max-width: 1150px) {
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .side { position: static; }
+    }
+
+    @media (max-width: 820px) {
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards { grid-template-columns: 1fr; }
+      .kanban { grid-template-columns: 1fr; }
+      .list-head, .list-row { grid-template-columns: 1fr; }
+      .grid3, .edit-grid { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .switch { flex-direction: column; align-items: stretch; gap: 10px; }
+      .switch-left, .switch-right { width: 100%; justify-content: space-between; }
+      .chips { justify-content: flex-start; gap: 6px; }
+    }
+
+    /* DataTable palette: use existing CSS variables for consistent look */
+    #dtTable {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    #dtTable thead th {
+      background: linear-gradient(120deg, var(--navy), var(--navy-2));
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    #dtTable tbody tr { border-bottom: 1px solid var(--line); }
+    #dtTable tbody td { vertical-align: middle; color: var(--ink); }
+    .table-striped tbody tr:nth-of-type(odd) { background: var(--bg-soft); }
+    .table-striped tbody tr:hover { background: #f3f6ff; }
+
+    /* Dark theme overrides */
+    body[data-theme="dark"] #dtTable {
+      background: #0f1724;
+      color: var(--ink);
+      border-color: #24304a;
+    }
+    body[data-theme="dark"] #dtTable thead th {
+      background: linear-gradient(120deg, #223268, #1c2a59);
+      color: #e8eefc;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    body[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) { background: #0b1526; }
+    body[data-theme="dark"] .table-striped tbody tr:hover { background: #122033; }
   </style>
 </head>
-
 <body>
 
   <main class="container-fluid py-3">
     <div class="row g-4">
       <!-- Sidebar -->
       <aside class="col-12 col-lg-3">
-        <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
-          <div>
-            <div class="logo mb-2 d-flex align-items-center gap-2">
-              <span class="logo-mark"></span>
-              <b>ESPEX</b>
-            </div>
-            <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-3"><i class="bi bi-moon-stars"></i>
-              Modo Oscuro</button>
-            <form id="sidebar-filtros" class="mb-4">
-              <div class="field mb-2">
-                <label for="q">Buscar</label>
-                <div class="input-group">
-                  <input id="q" type="text" class="form-control" placeholder="Buscar..." />
-                  <button class="btn btn-outline-secondary" id="reset" title="Limpiar" type="button"><i
-                      class="bi bi-x-lg"></i></button>
+          <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
+            <div>
+              <div class="logo mb-2 d-flex align-items-center gap-2">
+                <span class="logo-mark"></span>
+                <b>ESPEX</b>
+              </div>
+              <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-3"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
+              <form id="sidebar-filtros" class="mb-4">
+                <div class="field mb-2">
+                  <label for="q">Buscar</label>
+                  <div class="input-group">
+                    <input id="q" type="text" class="form-control" placeholder="Buscar..." />
+                    <button class="btn btn-outline-secondary" id="reset" title="Limpiar" type="button"><i class="bi bi-x-lg"></i></button>
+                  </div>
                 </div>
-              </div>
-              <div class="field mb-2">
-                <label for="cat">Categoría</label>
-                <select id="cat" class="form-select"></select>
-              </div>
-              <div class="field mb-2">
-                <label for="org">Organismo</label>
-                <select id="org" class="form-select"></select>
-              </div>
-              <div class="field mb-2">
-                <label for="estado">Estado</label>
-                <select id="estado" class="form-select"></select>
-              </div>
-              <div class="field mb-2">
-                <label for="visto">Visto</label>
-                <select id="visto" class="form-select"></select>
-              </div>
-              <div class="field mb-2">
-                <label for="gestion">Gestión</label>
-                <select id="gestion" class="form-select">
-                  <option value="">Todas</option>
-                  <option value="No Tomada">No Tomada</option>
-                  <option value="En Proceso">En Proceso</option>
-                  <option value="Trabajada">Trabajada</option>
-                </select>
-              </div>
-              <div class="field mb-2">
-                <label for="catGeneral">Clasificación</label>
-                <select id="catGeneral" class="form-select"></select>
-              </div>
-              <div class="field mb-2">
-                <label for="producto">Producto</label>
-                <select id="producto" class="form-select"></select>
-              </div>
-              <div class="field mb-2 date-range">
-                <label>Fechas</label>
-                <div class="date-range-inputs">
-                  <input id="fechaDesde" type="date" class="form-control" />
-                  <input id="fechaHasta" type="date" class="form-control" />
+                <div class="field mb-2">
+                  <label for="cat">Categoría</label>
+                  <select id="cat" class="form-select"></select>
                 </div>
-              </div>
-              <div class="d-flex flex-wrap gap-2 mb-2">
-                <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i
-                    class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
-                <button id="quickNew" class="btn btn-primary btn-sm" type="button"><i
-                    class="bi bi-plus-circle me-1"></i>Nuevas</button>
-                <button id="reload" class="btn btn-outline-secondary btn-sm" type="button"><i
-                    class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
-              </div>
-              <div class="field mb-2">
-                <label for="pageSize">Ver</label>
-                <select id="pageSize" class="form-select">
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50" selected>50</option>
-                  <option value="100">100</option>
-                  <option value="all">Todo</option>
-                </select>
-              </div>
-              <div class="field mb-2">
-                <div id="pagination" class="d-flex gap-2 align-items-center">
-                  <button id="prevPage" class="btn btn-outline-primary btn-sm" type="button"><i
-                      class="bi bi-chevron-left"></i></button>
-                  <span id="pageInfo">1 / 1</span>
-                  <button id="nextPage" class="btn btn-outline-primary btn-sm" type="button"><i
-                      class="bi bi-chevron-right"></i></button>
+                <div class="field mb-2">
+                  <label for="org">Organismo</label>
+                  <select id="org" class="form-select"></select>
                 </div>
+                <div class="field mb-2">
+                  <label for="estado">Estado</label>
+                  <select id="estado" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="visto">Visto</label>
+                  <select id="visto" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="gestion">Gestión</label>
+                  <select id="gestion" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="No Tomada">No Tomada</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Trabajada">Trabajada</option>
+                  </select>
+                </div>
+                <div class="field mb-2">
+                  <label for="catGeneral">Clasificación</label>
+                  <select id="catGeneral" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="producto">Producto</label>
+                  <select id="producto" class="form-select"></select>
+                </div>
+                <div class="field mb-2 date-range">
+                  <label>Fechas</label>
+                  <div class="date-range-inputs">
+                    <input id="fechaDesde" type="date" class="form-control" />
+                    <input id="fechaHasta" type="date" class="form-control" />
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
+                  <button id="quickNew" class="btn btn-primary btn-sm" type="button"><i class="bi bi-plus-circle me-1"></i>Nuevas</button>
+                  <button id="reload" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-arrow-clockwise me-1"></i>Actualizar</button>
+                </div>
+                <div class="field mb-2">
+                  <label for="pageSize">Ver</label>
+                  <select id="pageSize" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
+                </div>
+                <div class="field mb-2">
+                  <div id="pagination" class="d-flex gap-2 align-items-center">
+                    <button id="prevPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-left"></i></button>
+                    <span id="pageInfo">1 / 1</span>
+                    <button id="nextPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-right"></i></button>
+                  </div>
+                </div>
+              </form>
+              <div class="small-card mb-4">
+                <b><i class="bi bi-info-circle me-1"></i>Ayuda</b>
+                <span>Utiliza los filtros y vistas para explorar los datos.</span>
               </div>
-            </form>
-            <div class="small-card mb-4">
-              <b><i class="bi bi-info-circle me-1"></i>Ayuda</b>
-              <span>Utiliza los filtros y vistas para explorar los datos.</span>
             </div>
           </div>
-        </div>
       </aside>
 
       <!-- Main Content -->
@@ -995,7 +940,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones </h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1028,14 +973,10 @@
             </div>
           </div>
           <div class="d-flex flex-wrap gap-2 mb-2">
-            <button id="viewCards" class="btn btn-outline-primary btn-sm"><i
-                class="bi bi-grid-3x3-gap me-1"></i>Tarjetas</button>
-            <button id="viewList" class="btn btn-outline-primary btn-sm"><i
-                class="bi bi-list-ul me-1"></i>Lista</button>
-            <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i
-                class="bi bi-kanban me-1"></i>Kanban</button>
-            <button id="exportarExcel" class="btn btn-success btn-sm"><i
-                class="bi bi-file-earmark-spreadsheet me-1"></i>Exportar Excel</button>
+            <button id="viewCards" class="btn btn-outline-primary btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i>Tarjetas</button>
+            <button id="viewList" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-ul me-1"></i>Lista</button>
+            <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i class="bi bi-kanban me-1"></i>Kanban</button>
+            <button id="exportarExcel" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Exportar Excel</button>
           </div>
         </div>
         <div class="section card shadow-sm p-3 mb-4">
@@ -1072,38 +1013,19 @@
           <span id="mdCode" class="badge bg-primary fs-6">-</span>
           <h3 id="mdTitle" class="modal-title mb-0">Detalle</h3>
         </div>
-        <button id="mdClose" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-x-lg"></i>
-          Cerrar</button>
+        <button id="mdClose" class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-x-lg"></i> Cerrar</button>
       </header>
 
       <div class="row g-2 mb-2">
-        <div class="col-md-4">
-          <div class="box"><b>Organismo</b><span id="mdOrg">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Producto</b><span id="mdProv">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Monto</b><span id="mdMonto">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Publicación</b><span id="mdPub">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Días</b><span id="mdDias">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Tipo Licitación</b><span id="mdCat">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Estado</b><span id="mdEstado">-</span></div>
-        </div>
-        <div class="col-md-4">
-          <div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div>
-        </div>
+        <div class="col-md-4"><div class="box"><b>Organismo</b><span id="mdOrg">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Producto</b><span id="mdProv">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Monto</b><span id="mdMonto">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Publicación</b><span id="mdPub">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Días</b><span id="mdDias">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Tipo Licitación</b><span id="mdCat">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Estado</b><span id="mdEstado">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div></div>
       </div>
 
       <div class="mb-3">
@@ -1145,10 +1067,8 @@
           <textarea id="edCom" rows="3" class="form-control" placeholder="Notas de seguimiento comercial..."></textarea>
         </div>
         <div class="save d-flex justify-content-end gap-2 mt-3">
-          <button id="openDoc" class="btn btn-outline-info btn-sm" type="button"><i
-              class="bi bi-box-arrow-up-right"></i> Abrir documento</button>
-          <button id="save" class="btn btn-success btn-sm" type="button"><i class="bi bi-save"></i> Guardar
-            cambios</button>
+          <button id="openDoc" class="btn btn-outline-info btn-sm" type="button"><i class="bi bi-box-arrow-up-right"></i> Abrir documento</button>
+          <button id="save" class="btn btn-success btn-sm" type="button"><i class="bi bi-save"></i> Guardar cambios</button>
         </div>
       </section>
     </article>
@@ -1344,7 +1264,7 @@
     // Debounce helper to reduce frequent re-renders when user types/changes filters
     function debounce(fn, wait) {
       let t;
-      return function (...args) {
+      return function(...args) {
         clearTimeout(t);
         t = setTimeout(() => fn.apply(this, args), wait);
       };
@@ -1456,7 +1376,7 @@
           if (wrappedMatch && wrappedMatch[1]) {
             try {
               expanded.push(ensureHttpsMercadoPublicoUrl_(decodeURIComponent(wrappedMatch[1])));
-            } catch (_) { }
+            } catch (_) {}
           }
         }
       }
@@ -1612,7 +1532,7 @@
     function saveGestionCache(map) {
       try {
         localStorage.setItem(GESTION_CACHE_KEY, JSON.stringify(map || {}));
-      } catch (_) { }
+      } catch (_) {}
     }
 
     function loadGestionDataJsonp(url) {
@@ -1920,7 +1840,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `licitaciones-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      a.download = `licitaciones-${new Date().toISOString().slice(0,10)}.xlsx`;
       a.click();
       URL.revokeObjectURL(url);
 
@@ -2040,7 +1960,7 @@
 
       // bind external search box to DataTable search
       if (el.q) {
-        $(el.q).off('input.dtsearch').on('input.dtsearch', function () { if (dtInstance) dtInstance.search(this.value).draw(); });
+        $(el.q).off('input.dtsearch').on('input.dtsearch', function() { if (dtInstance) dtInstance.search(this.value).draw(); });
       }
     }
 
@@ -2078,7 +1998,7 @@
           dtInstance.page.len(len).draw(false);
         } catch (err) {
           // fallback a reinicializar si page.len falla
-          try { dtInstance.page(0).draw(false); } catch (_) { }
+          try { dtInstance.page(0).draw(false); } catch (_) {}
         }
       }
     }
@@ -2157,14 +2077,14 @@
 
     function prevPage() {
       if (st.view === 'list' && dtInstance) {
-        try { dtInstance.page('previous').draw(false); updatePagination(); return; } catch (e) { }
+        try { dtInstance.page('previous').draw(false); updatePagination(); return; } catch (e) {}
       }
       if (st.currentPage > 1) { st.currentPage--; updatePagination(); render(); }
     }
 
     function nextPage() {
       if (st.view === 'list' && dtInstance) {
-        try { dtInstance.page('next').draw(false); updatePagination(); return; } catch (e) { }
+        try { dtInstance.page('next').draw(false); updatePagination(); return; } catch (e) {}
       }
       const ps = st.pageSize === 'all' ? 'all' : Number(st.pageSize || 50);
       const totalPages = ps === 'all' ? 1 : Math.max(1, Math.ceil(st.filtered.length / ps));
@@ -2227,18 +2147,18 @@
       if (!st.selected) return;
       const r = st.rows.find(x => x.CodigoExterno === st.selected);
       if (!r) return;
-
+      
       const nuevoVisto = el.edVisto.value;
       const nuevoEstado = el.edEstado.value;
       const nuevoResponsable = el.edOwner.value.trim();
       const nuevoComentario = el.edCom.value.trim();
-
+      
       // Actualizar datos locales
       r.Visto = nuevoVisto;
       r.EstadoTrabajo = nuevoEstado;
       r.Responsable = nuevoResponsable;
       r.Comentario = nuevoComentario;
-
+      
       // Intenta sincronizar con el Web App; si no responde, conserva el cambio local.
       try {
         const payload = {
@@ -2326,13 +2246,13 @@
       try {
         el.mUpd.textContent = "Actualizado: consultando API...";
         toast("Buscando nuevas licitaciones en la API...");
-
+        
         const response = await fetch(APPS_SCRIPT_URL + "?action=updateLicitaciones", {
           method: "GET"
         });
-
+        
         const result = await response.json();
-
+        
         if (result.success) {
           el.mUpd.textContent = `Actualizado: ${result.count} nuevas licitaciones`;
           toast(`API sincronizada: +${result.count} nuevos registros`);
@@ -2345,7 +2265,7 @@
         console.error("Error sincronizando API:", err);
         toast("Error al consultar API (continuando con recarga local)");
       }
-
+      
       // Luego recarga el CSV actualizado
       loadCsv();
     }
@@ -2442,13 +2362,13 @@
     el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(); });
 
     // Ver campos CSV -> hace fetch al CSV (simula un curl), verifica status y muestra headers
-    (function setupFieldsViewer() {
+    (function setupFieldsViewer(){
       const fieldsModal = document.getElementById('fieldsModal');
       const fieldsList = document.getElementById('fieldsList');
       const viewFieldsBtn = document.getElementById('viewFields');
       const fieldsCloseBtn = document.getElementById('fieldsClose');
 
-      async function fetchAndShowHeaders() {
+      async function fetchAndShowHeaders(){
         fieldsList.textContent = 'Verificando conexión al CSV...';
         try {
           // Intenta obtener el CSV (evita cache)
@@ -2456,7 +2376,7 @@
           if (!res.ok) {
             fieldsList.textContent = `Error HTTP: ${res.status} ${res.statusText}`;
             fieldsModal.classList.add('open');
-            fieldsModal.setAttribute('aria-hidden', 'false');
+            fieldsModal.setAttribute('aria-hidden','false');
             return;
           }
           const text = await res.text();
@@ -2494,12 +2414,12 @@
           }
 
           fieldsModal.classList.add('open');
-          fieldsModal.setAttribute('aria-hidden', 'false');
+          fieldsModal.setAttribute('aria-hidden','false');
         } catch (err) {
           // CORS o network errores quedarán aquí
           fieldsList.textContent = 'Error conectando al CSV: ' + (err && err.message ? err.message : String(err));
           fieldsModal.classList.add('open');
-          fieldsModal.setAttribute('aria-hidden', 'false');
+          fieldsModal.setAttribute('aria-hidden','false');
         }
       }
 
@@ -2510,11 +2430,10 @@
         fieldsModal.setAttribute('aria-hidden', 'true');
       });
 
-      if (fieldsModal) fieldsModal.addEventListener('click', e => { if (e.target === fieldsModal) { fieldsModal.classList.remove('open'); fieldsModal.setAttribute('aria-hidden', 'true'); } });
+      if (fieldsModal) fieldsModal.addEventListener('click', e => { if (e.target === fieldsModal) { fieldsModal.classList.remove('open'); fieldsModal.setAttribute('aria-hidden','true'); } });
     })();
 
     init();
   </script>
 </body>
-
 </html>
