@@ -1435,16 +1435,41 @@
       };
     }
 
-    function parsePublishedSheetTableHtml(html) {
+    function parsePublishedSheetTableHtml(html, preferredHeaders = []) {
       const doc = new DOMParser().parseFromString(html, "text/html");
-      const table = doc.querySelector("table");
-      if (!table) return [];
+      const tables = [...doc.querySelectorAll("table")];
+      if (!tables.length) return [];
 
-      const rows = [...table.querySelectorAll("tr")];
-      if (!rows.length) return [];
+      const norm = value => String(value || "").trim().toLowerCase();
+      const preferred = preferredHeaders.map(norm).filter(Boolean);
 
-      const headers = [...rows[0].querySelectorAll("th,td")].map(cell => String(cell.textContent || "").trim()).filter(Boolean);
-      const dataRows = rows.slice(1);
+      const scored = tables.map(table => {
+        const rows = [...table.querySelectorAll("tr")];
+        if (!rows.length) return { table, score: -1, rows: [] };
+
+        const headers = [...rows[0].querySelectorAll("th,td")]
+          .map(cell => String(cell.textContent || "").trim())
+          .filter(Boolean);
+        const headerNorms = headers.map(norm);
+
+        let score = rows.length * 10 + headers.length;
+        if (preferred.length) {
+          for (const expected of preferred) {
+            if (headerNorms.some(h => h.includes(expected) || expected.includes(h))) score += 50;
+          }
+        }
+
+        if (headerNorms.some(h => /id licit|visto|estadotrabajo|responsable|comentario/i.test(h))) score += 75;
+        if (headerNorms.some(h => /codigoexterno|nombre|organismo|fecha public|fecha cierre/i.test(h))) score += 75;
+
+        return { table, score, rows, headers };
+      });
+
+      const best = scored.sort((a, b) => b.score - a.score)[0];
+      if (!best || best.score < 0 || !best.rows.length) return [];
+
+      const headers = best.headers || [];
+      const dataRows = best.rows.slice(1);
       return dataRows.map(tr => {
         const cells = [...tr.querySelectorAll("th,td")].map(cell => String(cell.textContent || "").trim());
         const out = {};
@@ -1470,7 +1495,10 @@
             }
 
             if (trimmed.startsWith("<")) {
-              resolve(parsePublishedSheetTableHtml(trimmed));
+              const preferredHeaders = /gid=350658914/i.test(url)
+                ? ["ID Licitacion", "Visto", "EstadoTrabajo", "Responsable", "Comentario", "ActualizadoEn"]
+                : ["CodigoExterno", "Nombre", "Organismo", "Fecha Publicacion", "Fecha Cierre", "Estado"];
+              resolve(parsePublishedSheetTableHtml(trimmed, preferredHeaders));
               return;
             }
 
