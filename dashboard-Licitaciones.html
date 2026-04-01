@@ -887,6 +887,15 @@
                   <select id="visto" class="form-select"></select>
                 </div>
                 <div class="field mb-2">
+                  <label for="gestion">Gestión</label>
+                  <select id="gestion" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="No Tomada">No Tomada</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Trabajada">Trabajada</option>
+                  </select>
+                </div>
+                <div class="field mb-2">
                   <label for="catGeneral">Clasificación</label>
                   <select id="catGeneral" class="form-select"></select>
                 </div>
@@ -931,7 +940,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones </h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1106,6 +1115,7 @@
       producto: document.getElementById("producto"),
       estado: document.getElementById("estado"),
       visto: document.getElementById("visto"),
+      gestion: document.getElementById("gestion"),
       quickUrg: document.getElementById("quickUrg"),
       quickNew: document.getElementById("quickNew"),
       quickFree: document.getElementById("quickFree"),
@@ -1608,6 +1618,7 @@
       const catGen = (el.catGeneral && el.catGeneral.value) ? el.catGeneral.value : "";
       const est = (el.estado && el.estado.value) ? el.estado.value : "";
       const visto = (el.visto && el.visto.value) ? el.visto.value : "";
+      const gestion = (el.gestion && el.gestion.value) ? el.gestion.value : "";
       const fechaDesde = (el.fechaDesde && el.fechaDesde.value) ? el.fechaDesde.value : "";
       const fechaHasta = (el.fechaHasta && el.fechaHasta.value) ? el.fechaHasta.value : "";
       const ordenarPor = (el.ordenarPor && el.ordenarPor.value) ? el.ordenarPor.value : "";
@@ -1621,6 +1632,8 @@
         const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
         const estadoLicitacion = String(r.EstadoAPI || "").trim();
         const mEst = !est || estadoLicitacion === est;
+        const estadoGestion = String(r.EstadoTrabajo || "No Tomada").trim() || "No Tomada";
+        const mGestion = !gestion || estadoGestion === gestion;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
@@ -1635,7 +1648,7 @@
           const fc = dateOnly(r.FechaCierre);
           mFecha = mFecha && (!fc || fc <= fechaHasta);
         }
-        return mQ && mCat && mOrg && mProd && mCatGen && mEst && mV && mFecha;
+        return mQ && mCat && mOrg && mProd && mCatGen && mEst && mGestion && mV && mFecha;
       });
 
       // Ordenar
@@ -2136,6 +2149,7 @@
       el.org.value = "";
       el.estado.value = "";
       el.visto.value = "";
+      if (el.gestion) el.gestion.value = "";
       if (el.producto) el.producto.value = "";
       if (el.pageSize) el.pageSize.value = "50";
       st.currentPage = 1;
@@ -2239,6 +2253,7 @@
     el.org.addEventListener("change", applyDebounced);
     el.estado.addEventListener("change", applyDebounced);
     el.visto.addEventListener("change", applyDebounced);
+    if (el.gestion) el.gestion.addEventListener("change", applyDebounced);
     if (el.producto) el.producto.addEventListener("change", applyDebounced);
     if (el.catGeneral) el.catGeneral.addEventListener("change", applyDebounced);
     if (el.fechaDesde) el.fechaDesde.addEventListener("change", applyDebounced);
