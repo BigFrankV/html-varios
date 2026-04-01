@@ -1557,15 +1557,13 @@
           return;
         }
 
-        const cached = loadGestionCache();
-        if (cached && Object.keys(cached).length) {
-          st.gestionMap = cached;
-          applyGestionData(st.rows, cached);
-          applyGestionData(st.filtered, cached);
-          render();
-          if (st.view === "list") refreshDataTable();
-          toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
-        }
+        // Si la hoja responde OK pero sin filas, se considera fuente vacia y se limpia cache local.
+        st.gestionMap = {};
+        saveGestionCache({});
+        applyGestionData(st.rows, {});
+        applyGestionData(st.filtered, {});
+        render();
+        if (st.view === "list") refreshDataTable();
       } catch (err) {
         const cached = loadGestionCache();
         if (cached && Object.keys(cached).length) {
