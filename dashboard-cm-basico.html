@@ -854,7 +854,7 @@
   <main class="container-fluid py-3">
     <div class="row g-4">
       <!-- Sidebar -->
-      <aside class="col-lg-3 d-none d-lg-block">
+      <aside class="col-12 col-lg-3">
           <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
             <div>
               <div class="logo mb-2 d-flex align-items-center gap-2">
@@ -885,6 +885,15 @@
                 <div class="field mb-2">
                   <label for="visto">Visto</label>
                   <select id="visto" class="form-select"></select>
+                </div>
+                <div class="field mb-2">
+                  <label for="gestion">Gestión</label>
+                  <select id="gestion" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="No Tomada">No Tomada</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Trabajada">Trabajada</option>
+                  </select>
                 </div>
                 <div class="field mb-2">
                   <label for="catGeneral">Clasificación</label>
@@ -931,7 +940,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
+              <h1 class="mb-1">Dashboard Licitaciones </h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1093,9 +1102,11 @@
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
+    const GESTION_PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=350658914&single=true&output=csv";
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
-    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50' };
+    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50', gestionMap: {} };
+    const GESTION_CACHE_KEY = "cm-gestion-cache";
 
     const el = {
       q: document.getElementById("q"),
@@ -1104,6 +1115,7 @@
       producto: document.getElementById("producto"),
       estado: document.getElementById("estado"),
       visto: document.getElementById("visto"),
+      gestion: document.getElementById("gestion"),
       quickUrg: document.getElementById("quickUrg"),
       quickNew: document.getElementById("quickNew"),
       quickFree: document.getElementById("quickFree"),
@@ -1207,19 +1219,45 @@
     const dateOnly = value => {
       if (!value) return "-";
       const s = String(value).trim();
-      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-      if (isoMatch) return isoMatch[1];
+
+      const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+
+      const slashMatch = s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+      if (slashMatch) return `${slashMatch[3]}-${slashMatch[2]}-${slashMatch[1]}`;
+
+      const ymdMatch = s.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
+      if (ymdMatch) return `${ymdMatch[1]}-${ymdMatch[2]}-${ymdMatch[3]}`;
+
       const d = new Date(s);
       if (Number.isNaN(d.getTime())) return s;
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
+
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Santiago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(d);
+      const map = {};
+      for (const p of parts) map[p.type] = p.value;
+      return `${map.year}-${map.month}-${map.day}`;
+    };
+    const todayOnly = () => {
+      // Fuerza "hoy" en zona horaria Chile para evitar desfases del navegador del usuario.
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Santiago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+      const map = {};
+      for (const p of parts) map[p.type] = p.value;
+      return `${map.year}-${map.month}-${map.day}`;
     };
     const isNew = r => {
-      const d = new Date(r.FechaPublicacion);
-      if (Number.isNaN(d.getTime())) return false;
-      return (Date.now() - d.getTime()) <= 72 * 60 * 60 * 1000;
+      const pub = dateOnly(r.FechaPublicacion);
+      if (!pub || pub === "-" || pub.length !== 10) return false;
+      return pub === todayOnly();
     };
     const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 
@@ -1299,37 +1337,309 @@
       return "st-nt";
     }
 
+    function ensureHttpsMercadoPublicoUrl_(url) {
+      if (!url) return "";
+      let out = String(url).trim();
+      if (!out) return "";
+      if (/^\/\//.test(out)) out = "https:" + out;
+      if (!/^https?:\/\//i.test(out)) out = "https://" + out;
+      if (/^http:\/\/(www\.)?mercadopublico\.cl\//i.test(out)) {
+        out = out.replace(/^http:\/\//i, "https://");
+      }
+      return out;
+    }
+
+    function extractMercadoPublicoUrlCandidates_(row) {
+      const raw = row && row._raw ? row._raw : {};
+      const candidates = [
+        row && row.URLLicitacion,
+        row && row.URL,
+        raw.URLLicitacion,
+        raw.URL,
+        raw.url,
+        raw.Link,
+        raw.link,
+        raw['URL Licitacion'],
+        raw['URL Licitación'],
+        raw['UrlLicitacion'],
+        raw['Url Licitacion'],
+        raw['Url Licitación']
+      ].filter(Boolean).map(v => String(v).trim());
+
+      const expanded = [];
+      for (const c of candidates) {
+        const normalized = ensureHttpsMercadoPublicoUrl_(c);
+        if (!normalized) continue;
+        expanded.push(normalized);
+        if (/\/Home\/Error\/Index\//i.test(normalized)) {
+          const wrappedMatch = normalized.match(/[?&]url=([^&]+)/i);
+          if (wrappedMatch && wrappedMatch[1]) {
+            try {
+              expanded.push(ensureHttpsMercadoPublicoUrl_(decodeURIComponent(wrappedMatch[1])));
+            } catch (_) {}
+          }
+        }
+      }
+      return [...new Set(expanded.filter(Boolean))];
+    }
+
     function buildPublicoUrlFromRow(row) {
       const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID Licitación'] || row._raw['CodigoExterno']));
-      let url = String((row && (row.URLLicitacion || row.URL)) || "").trim();
-
-      if (url) {
-        if (/^\/\//.test(url)) {
-          url = 'https:' + url;
-        }
-        if (!/^https?:\/\//i.test(url)) {
-          url = 'https://' + url;
-        }
-
-        if (url.match(/Home\/BuscadorLicitaciones/i)) {
-          const q = url.match(/[?&]k=([^&]*)/i);
-          if (!q && id) {
-            url += (url.includes('?') ? '&' : '?') + 'k=' + encodeURIComponent(id);
-          }
-          return url;
-        }
-
-        // if URL is generic, return it, otherwise try fallback to MercadoPublico search
-        if (id) {
-          return 'https://www.mercadopublico.cl/Home/BuscadorLicitaciones?k=' + encodeURIComponent(id);
-        }
-        return url;
-      }
-
       if (id) {
-        return 'https://www.mercadopublico.cl/Home/BuscadorLicitaciones?k=' + encodeURIComponent(id);
+        return "https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion=" + encodeURIComponent(id);
       }
-      return '';
+
+      const candidates = extractMercadoPublicoUrlCandidates_(row);
+      const anyMercadoPublico = candidates.find(u => /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(u) && !/\/Home\/Error\/Index\//i.test(u));
+      if (anyMercadoPublico) {
+        return anyMercadoPublico;
+      }
+
+      return "";
+    }
+
+    function applyGestionData(rows, gestionMap) {
+      if (!Array.isArray(rows) || !gestionMap) return rows;
+      for (const row of rows) {
+        const id = String(row.CodigoExterno || "").trim();
+        const g = gestionMap[id];
+        if (!g) continue;
+        row.Visto = String(g.visto || row.Visto || "FALSE").toUpperCase();
+        row.EstadoTrabajo = g.estadoTrabajo || row.EstadoTrabajo || "No Tomada";
+        row.Responsable = g.responsable || row.Responsable || "";
+        row.Comentario = g.comentario || row.Comentario || "";
+        row._gestion = g;
+      }
+      return rows;
+    }
+
+    function normalizeGestionCsvRow(row) {
+      const raw = {};
+      for (const key in row || {}) {
+        raw[String(key || "").trim()] = row[key];
+      }
+
+      const id = raw.id || raw.ID || raw.codigo_externo || raw.CodigoExterno || raw['Codigo Externo'] || raw['ID Licitacion'] || raw['ID Licitación'] || "";
+      const visto = raw.visto || raw.Visto || raw['Visto'] || "FALSE";
+      const estadoTrabajo = raw.estadoTrabajo || raw.EstadoTrabajo || raw['Estado Trabajo'] || raw.Estado || "No Tomada";
+      const responsable = raw.responsable || raw.Responsable || raw['Nombre Usuario'] || raw['Usuario'] || "";
+      const comentario = raw.comentario || raw.Comentario || raw['Comentario'] || "";
+
+      return {
+        id: String(id || "").trim(),
+        visto: String(visto || "FALSE").toUpperCase(),
+        estadoTrabajo: String(estadoTrabajo || "No Tomada").trim() || "No Tomada",
+        responsable: String(responsable || "").trim(),
+        comentario: String(comentario || "").trim(),
+        actualizadoEn: raw.actualizadoEn || raw.actualizado_en || raw['Actualizado en'] || ""
+      };
+    }
+
+    function parsePublishedSheetTableHtml(html, preferredHeaders = []) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const tables = [...doc.querySelectorAll("table")];
+      if (!tables.length) return [];
+
+      const norm = value => String(value || "").trim().toLowerCase();
+      const preferred = preferredHeaders.map(norm).filter(Boolean);
+
+      const scored = tables.map(table => {
+        const rows = [...table.querySelectorAll("tr")];
+        if (!rows.length) return { table, score: -1, rows: [] };
+
+        const headers = [...rows[0].querySelectorAll("th,td")]
+          .map(cell => String(cell.textContent || "").trim())
+          .filter(Boolean);
+        const headerNorms = headers.map(norm);
+
+        let score = rows.length * 10 + headers.length;
+        if (preferred.length) {
+          for (const expected of preferred) {
+            if (headerNorms.some(h => h.includes(expected) || expected.includes(h))) score += 50;
+          }
+        }
+
+        if (headerNorms.some(h => /id licit|visto|estadotrabajo|responsable|comentario/i.test(h))) score += 75;
+        if (headerNorms.some(h => /codigoexterno|nombre|organismo|fecha public|fecha cierre/i.test(h))) score += 75;
+
+        return { table, score, rows, headers };
+      });
+
+      const best = scored.sort((a, b) => b.score - a.score)[0];
+      if (!best || best.score < 0 || !best.rows.length) return [];
+
+      const headers = best.headers || [];
+      const dataRows = best.rows.slice(1);
+      return dataRows.map(tr => {
+        const cells = [...tr.querySelectorAll("th,td")].map(cell => String(cell.textContent || "").trim());
+        const out = {};
+        headers.forEach((header, index) => {
+          out[header] = cells[index] || "";
+        });
+        return out;
+      }).filter(row => Object.values(row).some(v => String(v || "").trim() !== ""));
+    }
+
+    function loadPublishedSheetRows(url) {
+      return new Promise((resolve, reject) => {
+        fetch(url, { cache: "no-store" })
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+            return res.text();
+          })
+          .then(text => {
+            const trimmed = String(text || "").trim();
+            if (!trimmed) {
+              resolve([]);
+              return;
+            }
+
+            if (trimmed.startsWith("<")) {
+              const preferredHeaders = /gid=350658914/i.test(url)
+                ? ["ID Licitacion", "Visto", "EstadoTrabajo", "Responsable", "Comentario", "ActualizadoEn"]
+                : ["CodigoExterno", "Nombre", "Organismo", "Fecha Publicacion", "Fecha Cierre", "Estado"];
+              resolve(parsePublishedSheetTableHtml(trimmed, preferredHeaders));
+              return;
+            }
+
+            if (typeof Papa === "undefined") {
+              reject(new Error("PapaParse no está disponible"));
+              return;
+            }
+
+            const parsed = Papa.parse(trimmed, {
+              header: true,
+              skipEmptyLines: true,
+              transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim()
+            });
+            resolve((parsed.data || []).filter(row => Object.values(row || {}).some(v => String(v || "").trim() !== "")));
+          })
+          .catch(err => reject(err instanceof Error ? err : new Error(String(err || "Error al leer la hoja publicada"))));
+      });
+    }
+
+    function loadGestionCache() {
+      try {
+        const raw = localStorage.getItem(GESTION_CACHE_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function saveGestionCache(map) {
+      try {
+        localStorage.setItem(GESTION_CACHE_KEY, JSON.stringify(map || {}));
+      } catch (_) {}
+    }
+
+    function loadGestionDataJsonp(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `gestionCb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+
+        const cleanup = () => {
+          try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        window[callbackName] = data => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Error cargando gestión por JSONP"));
+        };
+
+        script.src = `${url}?action=gestionData&callback=${encodeURIComponent(callbackName)}&_=${Date.now()}`;
+        document.head.appendChild(script);
+
+        setTimeout(() => {
+          if (window[callbackName]) {
+            cleanup();
+            reject(new Error("Timeout cargando gestión por JSONP"));
+          }
+        }, 12000);
+      });
+    }
+
+    async function syncGestionData() {
+      if (!GESTION_PUBLIC_CSV_URL && !APPS_SCRIPT_URL) return;
+
+      let lastError = null;
+
+      if (GESTION_PUBLIC_CSV_URL) {
+        try {
+          const rows = await loadPublishedSheetRows(GESTION_PUBLIC_CSV_URL);
+          if (rows && rows.length) {
+            const gestionMap = {};
+            for (const item of rows) {
+              const normalized = normalizeGestionCsvRow(item);
+              if (!normalized || !normalized.id) continue;
+              gestionMap[String(normalized.id).trim()] = normalized;
+            }
+
+            st.gestionMap = gestionMap;
+            saveGestionCache(gestionMap);
+            applyGestionData(st.rows, gestionMap);
+            applyGestionData(st.filtered, gestionMap);
+            render();
+            if (st.view === "list") refreshDataTable();
+            return;
+          }
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (!APPS_SCRIPT_URL) {
+        const cached = loadGestionCache();
+        if (cached && Object.keys(cached).length) {
+          st.gestionMap = cached;
+          applyGestionData(st.rows, cached);
+          applyGestionData(st.filtered, cached);
+          render();
+          if (st.view === "list") refreshDataTable();
+          toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
+        }
+        if (lastError) console.warn("No se pudo cargar gestión publicada:", lastError);
+        return;
+      }
+
+      try {
+        const result = await loadGestionDataJsonp(APPS_SCRIPT_URL);
+        if (!result || !result.success || !Array.isArray(result.rows)) return;
+
+        const gestionMap = {};
+        for (const item of result.rows) {
+          if (!item || !item.id) continue;
+          gestionMap[String(item.id).trim()] = item;
+        }
+
+        st.gestionMap = gestionMap;
+        saveGestionCache(gestionMap);
+        applyGestionData(st.rows, gestionMap);
+        applyGestionData(st.filtered, gestionMap);
+        render();
+        if (st.view === "list") refreshDataTable();
+      } catch (err) {
+        const cached = loadGestionCache();
+        if (cached && Object.keys(cached).length) {
+          st.gestionMap = cached;
+          applyGestionData(st.rows, cached);
+          applyGestionData(st.filtered, cached);
+          render();
+          if (st.view === "list") refreshDataTable();
+          toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
+          return;
+        }
+
+        console.warn("No se pudo sincronizar gestion:", lastError || err);
+      }
     }
 
     function flagByDays(dias) {
@@ -1345,10 +1655,22 @@
       const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const generales = [...new Set(st.rows.map(r => r.CategoriaGeneral).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const estadosApi = [...new Set(st.rows.map(r => String(r.EstadoAPI || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
       if (el.catGeneral) el.catGeneral.innerHTML = '<option value="">Todas</option>' + generales.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
+      if (el.estado) {
+        el.estado.innerHTML = '<option value="">Todos</option>' + estadosApi.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+      }
+      if (el.visto) {
+        el.visto.innerHTML = [
+          '<option value="">Todos</option>',
+          '<option value="TRUE">Visto</option>',
+          '<option value="FALSE">No visto</option>',
+          '<option value="NUEVO">Nuevos (72h)</option>'
+        ].join("");
+      }
     }
 
     function apply() {
@@ -1359,6 +1681,7 @@
       const catGen = (el.catGeneral && el.catGeneral.value) ? el.catGeneral.value : "";
       const est = (el.estado && el.estado.value) ? el.estado.value : "";
       const visto = (el.visto && el.visto.value) ? el.visto.value : "";
+      const gestion = (el.gestion && el.gestion.value) ? el.gestion.value : "";
       const fechaDesde = (el.fechaDesde && el.fechaDesde.value) ? el.fechaDesde.value : "";
       const fechaHasta = (el.fechaHasta && el.fechaHasta.value) ? el.fechaHasta.value : "";
       const ordenarPor = (el.ordenarPor && el.ordenarPor.value) ? el.ordenarPor.value : "";
@@ -1370,7 +1693,10 @@
         const mOrg = !org || r.Organismo === org;
         const mProd = !prod || (r.Producto === prod);
         const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
-        const mEst = !est || r.EstadoTrabajo === est;
+        const estadoLicitacion = String(r.EstadoAPI || "").trim();
+        const mEst = !est || estadoLicitacion === est;
+        const estadoGestion = String(r.EstadoTrabajo || "No Tomada").trim() || "No Tomada";
+        const mGestion = !gestion || estadoGestion === gestion;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
@@ -1385,7 +1711,7 @@
           const fc = dateOnly(r.FechaCierre);
           mFecha = mFecha && (!fc || fc <= fechaHasta);
         }
-        return mQ && mCat && mOrg && mProd && mCatGen && mEst && mV && mFecha;
+        return mQ && mCat && mOrg && mProd && mCatGen && mEst && mGestion && mV && mFecha;
       });
 
       // Ordenar
@@ -1807,28 +2133,8 @@
       el.modal.classList.add("open");
       el.modal.setAttribute("aria-hidden", "false");
 
-      // no break: we already construimos la URL de forma segura desde el ID o URL disponible    
-
-      try {
-        const response = await fetch(r.URLLicitacion);
-        const json = await response.json();
-        const rel = Array.isArray(json.releases) && json.releases.length ? json.releases[0] : {};
-        const award = Array.isArray(rel.awards) && rel.awards.length ? rel.awards[0] : {};
-        const suppliers = Array.isArray(award.suppliers) ? award.suppliers : [];
-        const supplierText = suppliers.length ? suppliers.map(s => s.name).filter(Boolean).join(" | ") : (r.Producto || "No informado");
-        const amount = award.value && award.value.amount ? award.value.amount : r.Monto;
-        const status = award.statusDetails || award.status || r.EstadoTrabajo || "No informado";
-        const doc = Array.isArray(award.documents) && award.documents.length ? award.documents[0].url : "";
-
-        el.mdProv.textContent = supplierText;
-        el.mdMonto.textContent = fmt(amount);
-        el.mdEstado.textContent = status;
-        el.mdDesc.textContent = award.description || r.Descripcion || "Sin descripcion";
-        el.mdPub.textContent = dateOnly(rel.date || json.publishedDate || r.FechaPublicacion);
-        el.openDoc.dataset.url = doc || r.URLLicitacion;
-      } catch (error) {
-        el.openDoc.dataset.url = r.URLLicitacion || "";
-      }
+      // El detalle se construye desde el CSV para evitar fallos al hacer fetch de URLs HTML.
+      // La URL para "Abrir documento" ya viene saneada por buildPublicoUrlFromRow().
     }
 
     function closeModal() {
@@ -1853,7 +2159,7 @@
       r.Responsable = nuevoResponsable;
       r.Comentario = nuevoComentario;
       
-      // Intenta sincronizar con Sheet
+      // Intenta sincronizar con el Web App; si no responde, conserva el cambio local.
       try {
         const payload = {
           codigo_externo: st.selected,
@@ -1865,21 +2171,35 @@
           modificado_en: new Date().toLocaleString('es-CL')
         };
 
-        const response = await fetch(APPS_SCRIPT_URL, {
+        await fetch(APPS_SCRIPT_URL, {
           method: "POST",
-          headers: { 'Content-Type': 'application/json' },
+          mode: "no-cors",
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
-        if (result.success) {
-          toast("Cambios guardados en el Sheet ✓");
-        } else {
-          toast("Cambios locales (sincronización con Sheet falló)");
-        }
+        st.gestionMap[st.selected] = {
+          id: st.selected,
+          visto: nuevoVisto,
+          estadoTrabajo: nuevoEstado,
+          responsable: nuevoResponsable,
+          comentario: nuevoComentario,
+          actualizadoEn: payload.modificado_en
+        };
+        saveGestionCache(st.gestionMap);
+        toast("Cambios guardados localmente y enviados al Web App");
       } catch (err) {
         console.error("Error sincronizando:", err);
-        toast("Cambios guardados localmente (sin conexión a Sheet)");
+        st.gestionMap[st.selected] = {
+          id: st.selected,
+          visto: nuevoVisto,
+          estadoTrabajo: nuevoEstado,
+          responsable: nuevoResponsable,
+          comentario: nuevoComentario,
+          actualizadoEn: new Date().toLocaleString('es-CL')
+        };
+        saveGestionCache(st.gestionMap);
+        toast("Cambios guardados localmente. La hoja publicada es solo lectura.");
       }
 
       apply();
@@ -1892,6 +2212,7 @@
       el.org.value = "";
       el.estado.value = "";
       el.visto.value = "";
+      if (el.gestion) el.gestion.value = "";
       if (el.producto) el.producto.value = "";
       if (el.pageSize) el.pageSize.value = "50";
       st.currentPage = 1;
@@ -1909,7 +2230,15 @@
         return;
       }
       if (type === "new") el.visto.value = "NUEVO";
-      if (type === "free") el.estado.value = "No Tomada";
+      if (type === "free") {
+        el.visto.value = "";
+        st.filtered = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada");
+        st.currentPage = 1;
+        updatePagination();
+        render();
+        kpis();
+        return;
+      }
       apply();
     }
 
@@ -1944,31 +2273,21 @@
     function loadCsv() {
       el.mUpd.textContent = "Actualizado: cargando datos...";
 
-      if (typeof Papa === "undefined") {
-        toast("No se pudo cargar PapaParse.");
-        el.mUpd.textContent = "Actualizado: error";
-        return;
-      }
-
-      Papa.parse(CSV_URL, {
-        download: true,
-        header: true,
-        transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim(),
-        skipEmptyLines: true,
-          complete: result => {
-            const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
-            updateData(parsed);
-            toast(`CSV cargado: ${parsed.length} registros.`);
-          },
-        error: () => {
+      loadPublishedSheetRows(CSV_URL)
+        .then(rows => {
+          const parsed = rows.map(normalizeRow).filter(r => r.CodigoExterno);
+          updateData(parsed);
+          syncGestionData();
+          toast(`CSV cargado: ${parsed.length} registros.`);
+        })
+        .catch(() => {
           st.rows = [];
           st.filtered = [];
           render();
           kpis();
           el.mUpd.textContent = "Actualizado: error al cargar";
-          toast("No se pudo cargar el CSV.");
-        }
-      });
+          toast("No se pudo cargar la hoja publicada.");
+        });
     }
 
     function init() {
@@ -1986,6 +2305,7 @@
     el.org.addEventListener("change", applyDebounced);
     el.estado.addEventListener("change", applyDebounced);
     el.visto.addEventListener("change", applyDebounced);
+    if (el.gestion) el.gestion.addEventListener("change", applyDebounced);
     if (el.producto) el.producto.addEventListener("change", applyDebounced);
     if (el.catGeneral) el.catGeneral.addEventListener("change", applyDebounced);
     if (el.fechaDesde) el.fechaDesde.addEventListener("change", applyDebounced);
