@@ -1299,6 +1299,40 @@
       return "st-nt";
     }
 
+    function buildPublicoUrlFromRow(row) {
+      const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID Licitación'] || row._raw['CodigoExterno']));
+      let url = String((row && (row.URLLicitacion || row.URL)) || "").trim();
+
+      if (url) {
+        if (/^\/\//.test(url)) url = "https:" + url;
+        if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+
+        // Corrige enlaces que vienen envueltos en /Home/Error/Index/?url=...
+        const wrappedMatch = url.match(/[?&]url=([^&]+)/i);
+        if (/\/Home\/Error\/Index\//i.test(url) && wrappedMatch && wrappedMatch[1]) {
+          try {
+            const decoded = decodeURIComponent(wrappedMatch[1]);
+            if (/^https?:\/\//i.test(decoded)) url = decoded;
+          } catch (_) {
+            // Mantener URL original si decode falla
+          }
+        }
+
+        // Solo permitir dominio MercadoPublico para el boton "Abrir"
+        if (/^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(url)) {
+          if (/Home\/BuscadorLicitaciones/i.test(url) && id && !/[?&]k=/i.test(url)) {
+            url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(id);
+          }
+          return url;
+        }
+      }
+
+      if (id) {
+        return "https://www.mercadopublico.cl/Home/BuscadorLicitaciones?k=" + encodeURIComponent(id);
+      }
+      return "";
+    }
+
     function flagByDays(dias) {
       const n = Number(dias);
       if (!Number.isFinite(n)) return "f-nv";
@@ -1312,10 +1346,22 @@
       const cats = [...new Set(st.rows.map(r => r.TipoLicitacion).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const productos = [...new Set(st.rows.map(r => r.Producto).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       const generales = [...new Set(st.rows.map(r => r.CategoriaGeneral).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+      const estadosApi = [...new Set(st.rows.map(r => String(r.EstadoAPI || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       el.cat.innerHTML = '<option value="">Todas</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       el.org.innerHTML = '<option value="">Todos</option>' + orgs.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
       if (el.catGeneral) el.catGeneral.innerHTML = '<option value="">Todas</option>' + generales.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
       if (el.producto) el.producto.innerHTML = '<option value="">Todos</option>' + productos.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
+      if (el.estado) {
+        el.estado.innerHTML = '<option value="">Todos</option>' + estadosApi.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+      }
+      if (el.visto) {
+        el.visto.innerHTML = [
+          '<option value="">Todos</option>',
+          '<option value="TRUE">Visto</option>',
+          '<option value="FALSE">No visto</option>',
+          '<option value="NUEVO">Nuevos (72h)</option>'
+        ].join("");
+      }
     }
 
     function apply() {
@@ -1337,7 +1383,8 @@
         const mOrg = !org || r.Organismo === org;
         const mProd = !prod || (r.Producto === prod);
         const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
-        const mEst = !est || r.EstadoTrabajo === est;
+        const estadoLicitacion = String(r.EstadoAPI || "").trim();
+        const mEst = !est || estadoLicitacion === est;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
@@ -1770,11 +1817,11 @@
       el.edEstado.value = r.EstadoTrabajo || "No Tomada";
       el.edOwner.value = r.Responsable || "";
       el.edCom.value = r.Comentario || "";
-      el.openDoc.dataset.url = r.URLLicitacion || "";
+      el.openDoc.dataset.url = buildPublicoUrlFromRow(r);
       el.modal.classList.add("open");
       el.modal.setAttribute("aria-hidden", "false");
 
-      if (!r.URLLicitacion) return;
+      // no break: we already construimos la URL de forma segura desde el ID o URL disponible    
 
       try {
         const response = await fetch(r.URLLicitacion);
@@ -1827,14 +1874,17 @@
           visto: nuevoVisto,
           estado_trabajo: nuevoEstado,
           responsable: nuevoResponsable,
-          comentario: nuevoComentario
+          comentario: nuevoComentario,
+          version: new Date().toISOString(),
+          modificado_en: new Date().toLocaleString('es-CL')
         };
-        
+
         const response = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        
+
         const result = await response.json();
         if (result.success) {
           toast("Cambios guardados en el Sheet ✓");
@@ -1845,7 +1895,7 @@
         console.error("Error sincronizando:", err);
         toast("Cambios guardados localmente (sin conexión a Sheet)");
       }
-      
+
       apply();
       closeModal();
     }
@@ -1982,8 +2032,9 @@
       if (btn.dataset.a === "view") openModal(btn.dataset.c);
       if (btn.dataset.a === "open") {
         const row = st.rows.find(x => x.CodigoExterno === btn.dataset.c);
-        if (row && row.URLLicitacion) {
-          window.open(row.URLLicitacion, "_blank", "noopener,noreferrer");
+        const url = row ? buildPublicoUrlFromRow(row) : "";
+        if (url) {
+          window.open(url, "_blank", "noopener,noreferrer");
         } else {
           toast("No hay URL disponible para este registro.");
         }
@@ -1992,7 +2043,7 @@
 
     el.openDoc.addEventListener("click", () => {
       const row = st.rows.find(x => x.CodigoExterno === st.selected);
-      const url = el.openDoc.dataset.url || (row ? row.URLLicitacion : "");
+      const url = buildPublicoUrlFromRow(row || { URLLicitacion: el.openDoc.dataset.url });
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       } else {
