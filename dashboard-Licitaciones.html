@@ -931,7 +931,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
+              <h1 class="mb-1">Dashboard Licitaciones </h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1093,6 +1093,7 @@
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
+    const GESTION_PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yV/pub?output=csv&single=true";
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
     const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50', gestionMap: {} };
@@ -1402,6 +1403,49 @@
       return rows;
     }
 
+    function normalizeGestionCsvRow(row) {
+      const raw = {};
+      for (const key in row || {}) {
+        raw[String(key || "").trim()] = row[key];
+      }
+
+      const id = raw.id || raw.ID || raw.codigo_externo || raw.CodigoExterno || raw['Codigo Externo'] || raw['ID Licitacion'] || raw['ID Licitación'] || "";
+      const visto = raw.visto || raw.Visto || raw['Visto'] || "FALSE";
+      const estadoTrabajo = raw.estadoTrabajo || raw.EstadoTrabajo || raw['Estado Trabajo'] || raw.Estado || "No Tomada";
+      const responsable = raw.responsable || raw.Responsable || raw['Nombre Usuario'] || raw['Usuario'] || "";
+      const comentario = raw.comentario || raw.Comentario || raw['Comentario'] || "";
+
+      return {
+        id: String(id || "").trim(),
+        visto: String(visto || "FALSE").toUpperCase(),
+        estadoTrabajo: String(estadoTrabajo || "No Tomada").trim() || "No Tomada",
+        responsable: String(responsable || "").trim(),
+        comentario: String(comentario || "").trim(),
+        actualizadoEn: raw.actualizadoEn || raw.actualizado_en || raw['Actualizado en'] || ""
+      };
+    }
+
+    function loadGestionDataCsv(url) {
+      return new Promise((resolve, reject) => {
+        if (typeof Papa === "undefined") {
+          reject(new Error("PapaParse no está disponible"));
+          return;
+        }
+
+        Papa.parse(url, {
+          download: true,
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: header => String(header || "").replace(/^\uFEFF/, "").trim(),
+          complete: result => {
+            const rows = (result.data || []).map(normalizeGestionCsvRow).filter(r => r.id);
+            resolve(rows);
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err || "Error al leer CSV de gestión")))
+        });
+      });
+    }
+
     function loadGestionCache() {
       try {
         const raw = localStorage.getItem(GESTION_CACHE_KEY);
@@ -1452,7 +1496,47 @@
     }
 
     async function syncGestionData() {
-      if (!APPS_SCRIPT_URL) return;
+      if (!GESTION_PUBLIC_CSV_URL && !APPS_SCRIPT_URL) return;
+
+      let lastError = null;
+
+      if (GESTION_PUBLIC_CSV_URL) {
+        try {
+          const rows = await loadGestionDataCsv(GESTION_PUBLIC_CSV_URL);
+          if (rows && rows.length) {
+            const gestionMap = {};
+            for (const item of rows) {
+              if (!item || !item.id) continue;
+              gestionMap[String(item.id).trim()] = item;
+            }
+
+            st.gestionMap = gestionMap;
+            saveGestionCache(gestionMap);
+            applyGestionData(st.rows, gestionMap);
+            applyGestionData(st.filtered, gestionMap);
+            render();
+            if (st.view === "list") refreshDataTable();
+            return;
+          }
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (!APPS_SCRIPT_URL) {
+        const cached = loadGestionCache();
+        if (cached && Object.keys(cached).length) {
+          st.gestionMap = cached;
+          applyGestionData(st.rows, cached);
+          applyGestionData(st.filtered, cached);
+          render();
+          if (st.view === "list") refreshDataTable();
+          toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
+        }
+        if (lastError) console.warn("No se pudo cargar gestión publicada:", lastError);
+        return;
+      }
+
       try {
         const result = await loadGestionDataJsonp(APPS_SCRIPT_URL);
         if (!result || !result.success || !Array.isArray(result.rows)) return;
@@ -1481,7 +1565,7 @@
           return;
         }
 
-        console.warn("No se pudo sincronizar gestion:", err);
+        console.warn("No se pudo sincronizar gestion:", lastError || err);
       }
     }
 
@@ -1999,7 +2083,7 @@
       r.Responsable = nuevoResponsable;
       r.Comentario = nuevoComentario;
       
-      // Intenta sincronizar con Sheet
+      // Intenta sincronizar con el Web App; si no responde, conserva el cambio local.
       try {
         const payload = {
           codigo_externo: st.selected,
@@ -2027,10 +2111,19 @@
           actualizadoEn: payload.modificado_en
         };
         saveGestionCache(st.gestionMap);
-        toast("Cambios enviados al Sheet ✓");
+        toast("Cambios guardados localmente y enviados al Web App");
       } catch (err) {
         console.error("Error sincronizando:", err);
-        toast("Cambios guardados localmente (sin conexión a Sheet)");
+        st.gestionMap[st.selected] = {
+          id: st.selected,
+          visto: nuevoVisto,
+          estadoTrabajo: nuevoEstado,
+          responsable: nuevoResponsable,
+          comentario: nuevoComentario,
+          actualizadoEn: new Date().toLocaleString('es-CL')
+        };
+        saveGestionCache(st.gestionMap);
+        toast("Cambios guardados localmente. La hoja publicada es solo lectura.");
       }
 
       apply();
