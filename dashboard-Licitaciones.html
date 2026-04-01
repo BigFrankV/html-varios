@@ -940,7 +940,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones </h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1535,68 +1535,28 @@
       } catch (_) {}
     }
 
-    function loadGestionDataJsonp(url) {
-      return new Promise((resolve, reject) => {
-        const callbackName = `gestionCb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-        const script = document.createElement("script");
-
-        const cleanup = () => {
-          try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
-          if (script.parentNode) script.parentNode.removeChild(script);
-        };
-
-        window[callbackName] = data => {
-          cleanup();
-          resolve(data);
-        };
-
-        script.onerror = () => {
-          cleanup();
-          reject(new Error("Error cargando gestión por JSONP"));
-        };
-
-        script.src = `${url}?action=gestionData&callback=${encodeURIComponent(callbackName)}&_=${Date.now()}`;
-        document.head.appendChild(script);
-
-        setTimeout(() => {
-          if (window[callbackName]) {
-            cleanup();
-            reject(new Error("Timeout cargando gestión por JSONP"));
-          }
-        }, 12000);
-      });
-    }
-
     async function syncGestionData() {
-      if (!GESTION_PUBLIC_CSV_URL && !APPS_SCRIPT_URL) return;
+      if (!GESTION_PUBLIC_CSV_URL) return;
 
-      let lastError = null;
-
-      if (GESTION_PUBLIC_CSV_URL) {
-        try {
-          const rows = await loadPublishedSheetRows(GESTION_PUBLIC_CSV_URL);
-          if (rows && rows.length) {
-            const gestionMap = {};
-            for (const item of rows) {
-              const normalized = normalizeGestionCsvRow(item);
-              if (!normalized || !normalized.id) continue;
-              gestionMap[String(normalized.id).trim()] = normalized;
-            }
-
-            st.gestionMap = gestionMap;
-            saveGestionCache(gestionMap);
-            applyGestionData(st.rows, gestionMap);
-            applyGestionData(st.filtered, gestionMap);
-            render();
-            if (st.view === "list") refreshDataTable();
-            return;
+      try {
+        const rows = await loadPublishedSheetRows(GESTION_PUBLIC_CSV_URL);
+        if (rows && rows.length) {
+          const gestionMap = {};
+          for (const item of rows) {
+            const normalized = normalizeGestionCsvRow(item);
+            if (!normalized || !normalized.id) continue;
+            gestionMap[String(normalized.id).trim()] = normalized;
           }
-        } catch (err) {
-          lastError = err;
-        }
-      }
 
-      if (!APPS_SCRIPT_URL) {
+          st.gestionMap = gestionMap;
+          saveGestionCache(gestionMap);
+          applyGestionData(st.rows, gestionMap);
+          applyGestionData(st.filtered, gestionMap);
+          render();
+          if (st.view === "list") refreshDataTable();
+          return;
+        }
+
         const cached = loadGestionCache();
         if (cached && Object.keys(cached).length) {
           st.gestionMap = cached;
@@ -1606,26 +1566,6 @@
           if (st.view === "list") refreshDataTable();
           toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
         }
-        if (lastError) console.warn("No se pudo cargar gestión publicada:", lastError);
-        return;
-      }
-
-      try {
-        const result = await loadGestionDataJsonp(APPS_SCRIPT_URL);
-        if (!result || !result.success || !Array.isArray(result.rows)) return;
-
-        const gestionMap = {};
-        for (const item of result.rows) {
-          if (!item || !item.id) continue;
-          gestionMap[String(item.id).trim()] = item;
-        }
-
-        st.gestionMap = gestionMap;
-        saveGestionCache(gestionMap);
-        applyGestionData(st.rows, gestionMap);
-        applyGestionData(st.filtered, gestionMap);
-        render();
-        if (st.view === "list") refreshDataTable();
       } catch (err) {
         const cached = loadGestionCache();
         if (cached && Object.keys(cached).length) {
@@ -1638,7 +1578,7 @@
           return;
         }
 
-        console.warn("No se pudo sincronizar gestion:", lastError || err);
+        console.warn("No se pudo cargar gestión publicada:", err);
       }
     }
 
