@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Licitaciones  </title>
+  <title>Dashboard Licitaciones Mercado Publico</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -931,7 +931,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones </h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1095,7 +1095,7 @@
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=0&single=true&output=csv";
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
-    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50' };
+    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50', gestionMap: {} };
 
     const el = {
       q: document.getElementById("q"),
@@ -1216,10 +1216,15 @@
       const dd = String(d.getDate()).padStart(2, "0");
       return `${yyyy}-${mm}-${dd}`;
     };
+    const todayOnly = () => {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
     const isNew = r => {
-      const d = new Date(r.FechaPublicacion);
-      if (Number.isNaN(d.getTime())) return false;
-      return (Date.now() - d.getTime()) <= 72 * 60 * 60 * 1000;
+      return dateOnly(r.FechaPublicacion) === todayOnly();
     };
     const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 
@@ -1299,38 +1304,117 @@
       return "st-nt";
     }
 
+    function ensureHttpsMercadoPublicoUrl_(url) {
+      if (!url) return "";
+      let out = String(url).trim();
+      if (!out) return "";
+      if (/^\/\//.test(out)) out = "https:" + out;
+      if (!/^https?:\/\//i.test(out)) out = "https://" + out;
+      if (/^http:\/\/(www\.)?mercadopublico\.cl\//i.test(out)) {
+        out = out.replace(/^http:\/\//i, "https://");
+      }
+      return out;
+    }
+
+    function extractMercadoPublicoUrlCandidates_(row) {
+      const raw = row && row._raw ? row._raw : {};
+      const candidates = [
+        row && row.URLLicitacion,
+        row && row.URL,
+        raw.URLLicitacion,
+        raw.URL,
+        raw.url,
+        raw.Link,
+        raw.link,
+        raw['URL Licitacion'],
+        raw['URL Licitación'],
+        raw['UrlLicitacion'],
+        raw['Url Licitacion'],
+        raw['Url Licitación']
+      ].filter(Boolean).map(v => String(v).trim());
+
+      const expanded = [];
+      for (const c of candidates) {
+        const normalized = ensureHttpsMercadoPublicoUrl_(c);
+        if (!normalized) continue;
+        expanded.push(normalized);
+        if (/\/Home\/Error\/Index\//i.test(normalized)) {
+          const wrappedMatch = normalized.match(/[?&]url=([^&]+)/i);
+          if (wrappedMatch && wrappedMatch[1]) {
+            try {
+              expanded.push(ensureHttpsMercadoPublicoUrl_(decodeURIComponent(wrappedMatch[1])));
+            } catch (_) {}
+          }
+        }
+      }
+      return [...new Set(expanded.filter(Boolean))];
+    }
+
     function buildPublicoUrlFromRow(row) {
       const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID Licitación'] || row._raw['CodigoExterno']));
-      let url = String((row && (row.URLLicitacion || row.URL)) || "").trim();
+      const candidates = extractMercadoPublicoUrlCandidates_(row);
 
-      if (url) {
-        if (/^\/\//.test(url)) url = "https:" + url;
-        if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+      // Prioriza ficha directa sobre buscador/home para evitar el wrapper de error.
+      const preferred = candidates.find(u => /DetailsAcquisition\.aspx|ficha|licitacion|adquisicion/i.test(u) && !/Home\/BuscadorLicitaciones/i.test(u));
+      if (preferred && /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(preferred)) {
+        return preferred;
+      }
 
-        // Corrige enlaces que vienen envueltos en /Home/Error/Index/?url=...
-        const wrappedMatch = url.match(/[?&]url=([^&]+)/i);
-        if (/\/Home\/Error\/Index\//i.test(url) && wrappedMatch && wrappedMatch[1]) {
-          try {
-            const decoded = decodeURIComponent(wrappedMatch[1]);
-            if (/^https?:\/\//i.test(decoded)) url = decoded;
-          } catch (_) {
-            // Mantener URL original si decode falla
-          }
+      const buscador = candidates.find(u => /Home\/BuscadorLicitaciones/i.test(u));
+      if (buscador && /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(buscador)) {
+        if (id && !/[?&]k=/i.test(buscador)) {
+          return buscador + (buscador.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(id);
         }
+        return buscador;
+      }
 
-        // Solo permitir dominio MercadoPublico para el boton "Abrir"
-        if (/^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(url)) {
-          if (/Home\/BuscadorLicitaciones/i.test(url) && id && !/[?&]k=/i.test(url)) {
-            url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(id);
-          }
-          return url;
-        }
+      const anyMercadoPublico = candidates.find(u => /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(u) && !/\/Home\/Error\/Index\//i.test(u));
+      if (anyMercadoPublico) {
+        return anyMercadoPublico;
       }
 
       if (id) {
-        return "https://www.mercadopublico.cl/Home/BuscadorLicitaciones?k=" + encodeURIComponent(id);
+        return "https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion=" + encodeURIComponent(id);
       }
       return "";
+    }
+
+    function applyGestionData(rows, gestionMap) {
+      if (!Array.isArray(rows) || !gestionMap) return rows;
+      for (const row of rows) {
+        const id = String(row.CodigoExterno || "").trim();
+        const g = gestionMap[id];
+        if (!g) continue;
+        row.Visto = String(g.visto || row.Visto || "FALSE").toUpperCase();
+        row.EstadoTrabajo = g.estadoTrabajo || row.EstadoTrabajo || "No Tomada";
+        row.Responsable = g.responsable || row.Responsable || "";
+        row.Comentario = g.comentario || row.Comentario || "";
+        row._gestion = g;
+      }
+      return rows;
+    }
+
+    async function syncGestionData() {
+      if (!APPS_SCRIPT_URL) return;
+      try {
+        const response = await fetch(APPS_SCRIPT_URL + "?action=gestionData&_=" + Date.now(), { method: "GET" });
+        const result = await response.json();
+        if (!result || !result.success || !Array.isArray(result.rows)) return;
+
+        const gestionMap = {};
+        for (const item of result.rows) {
+          if (!item || !item.id) continue;
+          gestionMap[String(item.id).trim()] = item;
+        }
+
+        st.gestionMap = gestionMap;
+        applyGestionData(st.rows, gestionMap);
+        applyGestionData(st.filtered, gestionMap);
+        render();
+        if (st.view === "list") refreshDataTable();
+      } catch (err) {
+        console.warn("No se pudo sincronizar gestion:", err);
+      }
     }
 
     function flagByDays(dias) {
@@ -1867,6 +1951,14 @@
 
         const result = await response.json();
         if (result.success) {
+          st.gestionMap[st.selected] = {
+            id: st.selected,
+            visto: nuevoVisto,
+            estadoTrabajo: nuevoEstado,
+            responsable: nuevoResponsable,
+            comentario: nuevoComentario,
+            actualizadoEn: payload.modificado_en
+          };
           toast("Cambios guardados en el Sheet ✓");
         } else {
           toast("Cambios locales (sincronización con Sheet falló)");
@@ -1960,6 +2052,7 @@
           complete: result => {
             const parsed = (result.data || []).map(normalizeRow).filter(r => r.CodigoExterno);
             updateData(parsed);
+            syncGestionData();
             toast(`CSV cargado: ${parsed.length} registros.`);
           },
         error: () => {
