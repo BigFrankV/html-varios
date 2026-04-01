@@ -931,7 +931,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones Mercado </h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1096,6 +1096,7 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
     const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50', gestionMap: {} };
+    const GESTION_CACHE_KEY = "cm-gestion-cache";
 
     const el = {
       q: document.getElementById("q"),
@@ -1207,14 +1208,28 @@
     const dateOnly = value => {
       if (!value) return "-";
       const s = String(value).trim();
-      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-      if (isoMatch) return isoMatch[1];
+
+      const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+
+      const slashMatch = s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+      if (slashMatch) return `${slashMatch[3]}-${slashMatch[2]}-${slashMatch[1]}`;
+
+      const ymdMatch = s.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
+      if (ymdMatch) return `${ymdMatch[1]}-${ymdMatch[2]}-${ymdMatch[3]}`;
+
       const d = new Date(s);
       if (Number.isNaN(d.getTime())) return s;
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
+
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Santiago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(d);
+      const map = {};
+      for (const p of parts) map[p.type] = p.value;
+      return `${map.year}-${map.month}-${map.day}`;
     };
     const todayOnly = () => {
       // Fuerza "hoy" en zona horaria Chile para evitar desfases del navegador del usuario.
@@ -1230,7 +1245,7 @@
     };
     const isNew = r => {
       const pub = dateOnly(r.FechaPublicacion);
-      if (!pub || pub === "-") return false;
+      if (!pub || pub === "-" || pub.length !== 10) return false;
       return pub === todayOnly();
     };
     const esc = t => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
@@ -1387,6 +1402,23 @@
       return rows;
     }
 
+    function loadGestionCache() {
+      try {
+        const raw = localStorage.getItem(GESTION_CACHE_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function saveGestionCache(map) {
+      try {
+        localStorage.setItem(GESTION_CACHE_KEY, JSON.stringify(map || {}));
+      } catch (_) {}
+    }
+
     function loadGestionDataJsonp(url) {
       return new Promise((resolve, reject) => {
         const callbackName = `gestionCb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -1432,11 +1464,23 @@
         }
 
         st.gestionMap = gestionMap;
+        saveGestionCache(gestionMap);
         applyGestionData(st.rows, gestionMap);
         applyGestionData(st.filtered, gestionMap);
         render();
         if (st.view === "list") refreshDataTable();
       } catch (err) {
+        const cached = loadGestionCache();
+        if (cached && Object.keys(cached).length) {
+          st.gestionMap = cached;
+          applyGestionData(st.rows, cached);
+          applyGestionData(st.filtered, cached);
+          render();
+          if (st.view === "list") refreshDataTable();
+          toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
+          return;
+        }
+
         console.warn("No se pudo sincronizar gestion:", err);
       }
     }
@@ -1982,6 +2026,7 @@
           comentario: nuevoComentario,
           actualizadoEn: payload.modificado_en
         };
+        saveGestionCache(st.gestionMap);
         toast("Cambios enviados al Sheet ✓");
       } catch (err) {
         console.error("Error sincronizando:", err);
