@@ -2267,7 +2267,7 @@
     if (el.viewList) el.viewList.addEventListener("click", () => setView("list"));
     if (el.viewBoard) el.viewBoard.addEventListener("click", () => setView("board"));
     if (el.exportarExcel) el.exportarExcel.addEventListener("click", exportToExcel);
-    if (el.reload) el.reload.addEventListener("click", triggerAPISync);
+    if (el.reload) el.reload.addEventListener("click", loadCsv);
     if (el.themeToggle) el.themeToggle.addEventListener("click", toggleTheme);
 
     document.addEventListener("click", e => {
