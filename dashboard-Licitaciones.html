@@ -931,7 +931,7 @@
         <div class="top card shadow-sm p-4 mb-4">
           <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
             <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
+              <h1 class="mb-1">Dashboard Licitaciones Mercado </h1>
               <p class="mb-0">Panel de control de licitaciones y KPIs</p>
             </div>
             <div class="chips d-flex flex-wrap gap-2">
@@ -1359,30 +1359,16 @@
 
     function buildPublicoUrlFromRow(row) {
       const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID Licitación'] || row._raw['CodigoExterno']));
+      if (id) {
+        return "https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion=" + encodeURIComponent(id);
+      }
+
       const candidates = extractMercadoPublicoUrlCandidates_(row);
-
-      // Prioriza ficha directa sobre buscador/home para evitar el wrapper de error.
-      const preferred = candidates.find(u => /DetailsAcquisition\.aspx|ficha|licitacion|adquisicion/i.test(u) && !/Home\/BuscadorLicitaciones/i.test(u));
-      if (preferred && /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(preferred)) {
-        return preferred;
-      }
-
-      const buscador = candidates.find(u => /Home\/BuscadorLicitaciones/i.test(u));
-      if (buscador && /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(buscador)) {
-        if (id && !/[?&]k=/i.test(buscador)) {
-          return buscador + (buscador.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(id);
-        }
-        return buscador;
-      }
-
       const anyMercadoPublico = candidates.find(u => /^https?:\/\/(www\.)?mercadopublico\.cl\//i.test(u) && !/\/Home\/Error\/Index\//i.test(u));
       if (anyMercadoPublico) {
         return anyMercadoPublico;
       }
 
-      if (id) {
-        return "https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion=" + encodeURIComponent(id);
-      }
       return "";
     }
 
@@ -1401,11 +1387,42 @@
       return rows;
     }
 
+    function loadGestionDataJsonp(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `gestionCb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+
+        const cleanup = () => {
+          try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        window[callbackName] = data => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Error cargando gestión por JSONP"));
+        };
+
+        script.src = `${url}?action=gestionData&callback=${encodeURIComponent(callbackName)}&_=${Date.now()}`;
+        document.head.appendChild(script);
+
+        setTimeout(() => {
+          if (window[callbackName]) {
+            cleanup();
+            reject(new Error("Timeout cargando gestión por JSONP"));
+          }
+        }, 12000);
+      });
+    }
+
     async function syncGestionData() {
       if (!APPS_SCRIPT_URL) return;
       try {
-        const response = await fetch(APPS_SCRIPT_URL + "?action=gestionData&_=" + Date.now(), { method: "GET" });
-        const result = await response.json();
+        const result = await loadGestionDataJsonp(APPS_SCRIPT_URL);
         if (!result || !result.success || !Array.isArray(result.rows)) return;
 
         const gestionMap = {};
@@ -1950,26 +1967,22 @@
           modificado_en: new Date().toLocaleString('es-CL')
         };
 
-        const response = await fetch(APPS_SCRIPT_URL, {
+        await fetch(APPS_SCRIPT_URL, {
           method: "POST",
-          headers: { 'Content-Type': 'application/json' },
+          mode: "no-cors",
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
-        if (result.success) {
-          st.gestionMap[st.selected] = {
-            id: st.selected,
-            visto: nuevoVisto,
-            estadoTrabajo: nuevoEstado,
-            responsable: nuevoResponsable,
-            comentario: nuevoComentario,
-            actualizadoEn: payload.modificado_en
-          };
-          toast("Cambios guardados en el Sheet ✓");
-        } else {
-          toast("Cambios locales (sincronización con Sheet falló)");
-        }
+        st.gestionMap[st.selected] = {
+          id: st.selected,
+          visto: nuevoVisto,
+          estadoTrabajo: nuevoEstado,
+          responsable: nuevoResponsable,
+          comentario: nuevoComentario,
+          actualizadoEn: payload.modificado_en
+        };
+        toast("Cambios enviados al Sheet ✓");
       } catch (err) {
         console.error("Error sincronizando:", err);
         toast("Cambios guardados localmente (sin conexión a Sheet)");
