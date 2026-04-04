@@ -402,9 +402,21 @@
       </div>
       <div class="row g-2">
         <div class="col-12 col-md-4 col-xl-2">
+          <label class="form-label small">Tipo Item</label>
+          <select id="fTipoItem" class="form-select form-select-sm">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 col-xl-2">
           <label class="form-label small">Proveedor</label>
           <select id="fProveedor" class="form-select form-select-sm">
             <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 col-xl-2">
+          <label class="form-label small">Marca</label>
+          <select id="fMarca" class="form-select form-select-sm">
+            <option value="">Todas</option>
           </select>
         </div>
         <div class="col-12 col-md-4 col-xl-2">
@@ -479,10 +491,14 @@
                   <tr>
                     <th>Fecha</th>
                     <th>NumeroOC</th>
+                    <th>Tipo</th>
                     <th>LicitacionID</th>
                     <th>Link</th>
                     <th>Proveedor</th>
                     <th>Producto</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>VersionSW</th>
                     <th>Cantidad</th>
                     <th>Monto</th>
                     <th>Estado</th>
@@ -533,6 +549,21 @@
           </div>
         </div>
       </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-6">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-cpu-fill"></i>Top Modelos Hardware</h2>
+            <div class="chart-wrap"><canvas id="chartModelos"></canvas></div>
+          </div>
+        </div>
+        <div class="col-12 col-xl-6">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-file-earmark-code-fill"></i>Top Versiones Software</h2>
+            <div class="chart-wrap"><canvas id="chartSoftwareVersion"></canvas></div>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -545,7 +576,9 @@
       charts: {}
     };
 
+    const fTipoItem = document.getElementById("fTipoItem");
     const fProveedor = document.getElementById("fProveedor");
+    const fMarca = document.getElementById("fMarca");
     const fEstado = document.getElementById("fEstado");
     const fCategoria = document.getElementById("fCategoria");
     const fSolicitante = document.getElementById("fSolicitante");
@@ -602,9 +635,20 @@
         NumeroOC: r.NumeroOC || "",
         LicitacionID: r.LicitacionID || "",
         LicitacionURL: r.LicitacionURL || "",
+        TipoItem: r.TipoItem || "",
         Proveedor: r.Proveedor || "",
         Producto: r.Producto || "",
+        Marca: r.Marca || "",
+        Modelo: r.Modelo || "",
         SKU: r.SKU || "",
+        CPU: r.CPU || "",
+        RAMGB: toNumber(r.RAMGB),
+        StorageGB: toNumber(r.StorageGB),
+        GPU: r.GPU || "",
+        SistemaOperativo: r.SistemaOperativo || "",
+        FabricanteSoftware: r.FabricanteSoftware || "",
+        VersionSoftware: r.VersionSoftware || "",
+        TipoLicencia: r.TipoLicencia || "",
         UnidadMedida: r.UnidadMedida || "",
         Cantidad: toNumber(r.Cantidad),
         PrecioUnitario: toNumber(r.PrecioUnitario),
@@ -622,14 +666,18 @@
     }
 
     function buildFilters() {
+      fillSelect(fTipoItem, state.rows.map(r => r.TipoItem));
       fillSelect(fProveedor, state.rows.map(r => r.Proveedor));
+      fillSelect(fMarca, state.rows.map(r => r.Marca));
       fillSelect(fEstado, state.rows.map(r => r.Estado));
       fillSelect(fCategoria, state.rows.map(r => r.Categoria));
       fillSelect(fSolicitante, state.rows.map(r => r.Solicitante));
     }
 
     function applyFilters() {
+      const tipoItem = fTipoItem.value;
       const proveedor = fProveedor.value;
+      const marca = fMarca.value;
       const estado = fEstado.value;
       const categoria = fCategoria.value;
       const solicitante = fSolicitante.value;
@@ -638,7 +686,9 @@
       const q = qText.value.trim().toLowerCase();
 
       state.filtered = state.rows.filter(r => {
+        if (tipoItem && r.TipoItem !== tipoItem) return false;
         if (proveedor && r.Proveedor !== proveedor) return false;
+        if (marca && r.Marca !== marca) return false;
         if (estado && r.Estado !== estado) return false;
         if (categoria && r.Categoria !== categoria) return false;
         if (solicitante && r.Solicitante !== solicitante) return false;
@@ -647,7 +697,20 @@
         if (hasta && (!r.FechaObj || r.FechaObj > hasta)) return false;
 
         if (q) {
-          const blob = [r.NumeroOC, r.LicitacionID, r.Proveedor, r.Producto, r.Estado, r.Categoria, r.Solicitante]
+          const blob = [
+            r.NumeroOC,
+            r.LicitacionID,
+            r.TipoItem,
+            r.Proveedor,
+            r.Producto,
+            r.Marca,
+            r.Modelo,
+            r.CPU,
+            r.VersionSoftware,
+            r.Estado,
+            r.Categoria,
+            r.Solicitante
+          ]
             .join(" ")
             .toLowerCase();
           if (!blob.includes(q)) return false;
@@ -707,6 +770,8 @@
       const estado = {};
       const prodCantidad = {};
       const prodMonto = {};
+      const modeloMonto = {};
+      const softwareVersionMonto = {};
 
       rows.forEach(r => {
         const key = monthKey(r.FechaObj);
@@ -715,6 +780,16 @@
         estado[r.Estado || "Sin estado"] = (estado[r.Estado || "Sin estado"] || 0) + 1;
         prodCantidad[r.Producto || "Sin producto"] = (prodCantidad[r.Producto || "Sin producto"] || 0) + r.Cantidad;
         prodMonto[r.Producto || "Sin producto"] = (prodMonto[r.Producto || "Sin producto"] || 0) + r.Monto;
+
+		const modeloKey = r.Modelo || r.Producto || "Sin modelo";
+		if (r.TipoItem === "Servidor" || r.TipoItem === "Hardware") {
+			modeloMonto[modeloKey] = (modeloMonto[modeloKey] || 0) + r.Monto;
+		}
+
+		const versionKey = r.VersionSoftware || r.Producto || "Sin version";
+		if (r.TipoItem === "Software") {
+			softwareVersionMonto[versionKey] = (softwareVersionMonto[versionKey] || 0) + r.Monto;
+		}
       });
 
       const montoLabels = Object.keys(montoByDate).sort();
@@ -729,6 +804,14 @@
         .slice(0, 8);
 
       const topProdMonto = Object.entries(prodMonto)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      const topModelos = Object.entries(modeloMonto)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      const topSoftwareVersion = Object.entries(softwareVersionMonto)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 8);
 
@@ -922,6 +1005,56 @@
           }
         }
       });
+
+      state.charts.modelos = new Chart(document.getElementById("chartModelos"), {
+        type: "bar",
+        data: {
+          labels: topModelos.map(x => x[0]),
+          datasets: [{
+            label: "Monto CLP",
+            data: topModelos.map(x => x[1]),
+            backgroundColor: "rgba(111, 230, 173, 0.72)",
+            borderColor: "#6fe6ad",
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#dceff5" } } },
+          scales: {
+            x: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.1)" } },
+            y: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.06)" } }
+          }
+        }
+      });
+
+      state.charts.softwareVersion = new Chart(document.getElementById("chartSoftwareVersion"), {
+        type: "bar",
+        data: {
+          labels: topSoftwareVersion.map(x => x[0]),
+          datasets: [{
+            label: "Monto CLP",
+            data: topSoftwareVersion.map(x => x[1]),
+            backgroundColor: "rgba(201, 182, 255, 0.72)",
+            borderColor: "#c9b6ff",
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#dceff5" } } },
+          scales: {
+            x: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.1)" } },
+            y: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.06)" } }
+          }
+        }
+      });
     }
 
     function renderMatrix() {
@@ -997,10 +1130,14 @@
         return `<tr>
           <td>${r.Fecha || ""}</td>
           <td><span class="chip">${r.NumeroOC || ""}</span></td>
+          <td>${r.TipoItem || ""}</td>
           <td>${r.LicitacionID || ""}</td>
           <td>${link}</td>
           <td>${r.Proveedor || ""}</td>
           <td>${r.Producto || ""}</td>
+          <td>${r.Marca || ""}</td>
+          <td>${r.Modelo || ""}</td>
+          <td>${r.VersionSoftware || ""}</td>
           <td>${r.Cantidad || 0}</td>
           <td>${formatCLP(r.Monto)}</td>
           <td>${r.Estado || ""}</td>
@@ -1009,7 +1146,7 @@
         </tr>`;
       }).join("");
 
-      tbody.innerHTML = html || `<tr><td colspan="11" class="text-center py-4 text-light-emphasis">Sin resultados con los filtros actuales</td></tr>`;
+      tbody.innerHTML = html || `<tr><td colspan="14" class="text-center py-4 text-light-emphasis">Sin resultados con los filtros actuales</td></tr>`;
 
       document.getElementById("tableInfo").textContent = `Mostrando ${rows.length.toLocaleString("es-CL")} registros`;
     }
@@ -1020,9 +1157,20 @@
         NumeroOC: r.NumeroOC,
         LicitacionID: r.LicitacionID,
         LicitacionURL: r.LicitacionURL,
+        TipoItem: r.TipoItem,
         Proveedor: r.Proveedor,
         Producto: r.Producto,
+        Marca: r.Marca,
+        Modelo: r.Modelo,
         SKU: r.SKU,
+        CPU: r.CPU,
+        RAMGB: r.RAMGB,
+        StorageGB: r.StorageGB,
+        GPU: r.GPU,
+        SistemaOperativo: r.SistemaOperativo,
+        FabricanteSoftware: r.FabricanteSoftware,
+        VersionSoftware: r.VersionSoftware,
+        TipoLicencia: r.TipoLicencia,
         UnidadMedida: r.UnidadMedida,
         Cantidad: r.Cantidad,
         PrecioUnitario: r.PrecioUnitario,
@@ -1049,14 +1197,16 @@
     }
 
     function bindEvents() {
-      [fProveedor, fEstado, fCategoria, fSolicitante, fDesde, fHasta].forEach(el => {
+      [fTipoItem, fProveedor, fMarca, fEstado, fCategoria, fSolicitante, fDesde, fHasta].forEach(el => {
         el.addEventListener("change", applyFilters);
       });
 
       qText.addEventListener("input", applyFilters);
 
       document.getElementById("btnReset").addEventListener("click", () => {
+        fTipoItem.value = "";
         fProveedor.value = "";
+        fMarca.value = "";
         fEstado.value = "";
         fCategoria.value = "";
         fSolicitante.value = "";
