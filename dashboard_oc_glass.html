@@ -302,6 +302,21 @@
       transform: translateY(0);
     }
 
+    .matrix-table td,
+    .matrix-table th {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .matrix-table td:first-child,
+    .matrix-table th:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: rgba(7, 30, 38, 0.94);
+      z-index: 1;
+    }
+
     @media (max-width: 991px) {
       .app-shell {
         margin-top: 14px;
@@ -482,6 +497,42 @@
           </div>
         </div>
       </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-4">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-box-seam"></i>Top Productos por Cantidad</h2>
+            <div class="chart-wrap"><canvas id="chartProductoCantidad"></canvas></div>
+          </div>
+        </div>
+        <div class="col-12 col-xl-4">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-currency-dollar"></i>Top Productos por Monto</h2>
+            <div class="chart-wrap"><canvas id="chartProductoMonto"></canvas></div>
+          </div>
+        </div>
+        <div class="col-12 col-xl-4">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-percent"></i>Pareto Productos 80/20</h2>
+            <div class="chart-wrap"><canvas id="chartPareto"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-grid-3x3-gap-fill"></i>Matriz Proveedor x Producto (Monto)</h2>
+            <div class="table-wrap">
+              <table class="table table-sm align-middle matrix-table" id="matrixTable">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="small mt-2 text-light-emphasis" id="matrixInfo"></div>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -608,6 +659,7 @@
       renderKpis();
       renderCharts();
       renderTable();
+      renderMatrix();
     }
 
     function renderKpis() {
@@ -653,12 +705,16 @@
       const montoByDate = {};
       const prov = {};
       const estado = {};
+      const prodCantidad = {};
+      const prodMonto = {};
 
       rows.forEach(r => {
         const key = monthKey(r.FechaObj);
         montoByDate[key] = (montoByDate[key] || 0) + r.Monto;
         prov[r.Proveedor] = (prov[r.Proveedor] || 0) + r.Monto;
         estado[r.Estado || "Sin estado"] = (estado[r.Estado || "Sin estado"] || 0) + 1;
+        prodCantidad[r.Producto || "Sin producto"] = (prodCantidad[r.Producto || "Sin producto"] || 0) + r.Cantidad;
+        prodMonto[r.Producto || "Sin producto"] = (prodMonto[r.Producto || "Sin producto"] || 0) + r.Monto;
       });
 
       const montoLabels = Object.keys(montoByDate).sort();
@@ -667,6 +723,24 @@
       const topProv = Object.entries(prov)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 8);
+
+      const topProdCantidad = Object.entries(prodCantidad)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      const topProdMonto = Object.entries(prodMonto)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      const paretoEntries = Object.entries(prodMonto)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+      const paretoTotal = paretoEntries.reduce((acc, [, value]) => acc + value, 0) || 1;
+      let accum = 0;
+      const paretoCumPct = paretoEntries.map(([, value]) => {
+        accum += value;
+        return Math.round((accum / paretoTotal) * 10000) / 100;
+      });
 
       const estadoEntries = Object.entries(estado).sort((a, b) => b[1] - a[1]);
 
@@ -745,6 +819,165 @@
           }
         }
       });
+
+      state.charts.prodCantidad = new Chart(document.getElementById("chartProductoCantidad"), {
+        type: "bar",
+        data: {
+          labels: topProdCantidad.map(x => x[0]),
+          datasets: [{
+            label: "Cantidad",
+            data: topProdCantidad.map(x => x[1]),
+            backgroundColor: "rgba(50, 209, 192, 0.75)",
+            borderColor: "#32d1c0",
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#dceff5" } }
+          },
+          scales: {
+            x: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.1)" } },
+            y: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.06)" } }
+          }
+        }
+      });
+
+      state.charts.prodMonto = new Chart(document.getElementById("chartProductoMonto"), {
+        type: "bar",
+        data: {
+          labels: topProdMonto.map(x => x[0]),
+          datasets: [{
+            label: "Monto CLP",
+            data: topProdMonto.map(x => x[1]),
+            backgroundColor: "rgba(255, 179, 71, 0.75)",
+            borderColor: "#ffb347",
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#dceff5" } }
+          },
+          scales: {
+            x: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.1)" } },
+            y: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.06)" } }
+          }
+        }
+      });
+
+      state.charts.pareto = new Chart(document.getElementById("chartPareto"), {
+        data: {
+          labels: paretoEntries.map(x => x[0]),
+          datasets: [
+            {
+              type: "bar",
+              label: "Monto CLP",
+              data: paretoEntries.map(x => x[1]),
+              yAxisID: "y",
+              backgroundColor: "rgba(142, 197, 255, 0.7)",
+              borderColor: "#8ec5ff",
+              borderWidth: 1,
+              borderRadius: 8
+            },
+            {
+              type: "line",
+              label: "% Acumulado",
+              data: paretoCumPct,
+              yAxisID: "y1",
+              borderColor: "#80ed99",
+              backgroundColor: "#80ed99",
+              tension: 0.3,
+              pointRadius: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#dceff5" } }
+          },
+          scales: {
+            x: { ticks: { color: "#dceff5", maxRotation: 0, autoSkip: true }, grid: { color: "rgba(255,255,255,0.06)" } },
+            y: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.1)" } },
+            y1: {
+              position: "right",
+              min: 0,
+              max: 100,
+              ticks: {
+                color: "#dceff5",
+                callback: value => `${value}%`
+              },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    }
+
+    function renderMatrix() {
+      const rows = state.filtered;
+      const matrixTable = document.getElementById("matrixTable");
+      const matrixHead = matrixTable.querySelector("thead");
+      const matrixBody = matrixTable.querySelector("tbody");
+
+      const topProducts = Object.entries(rows.reduce((acc, r) => {
+        const key = r.Producto || "Sin producto";
+        acc[key] = (acc[key] || 0) + r.Monto;
+        return acc;
+      }, {}))
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(x => x[0]);
+
+      const topProviders = Object.entries(rows.reduce((acc, r) => {
+        const key = r.Proveedor || "Sin proveedor";
+        acc[key] = (acc[key] || 0) + r.Monto;
+        return acc;
+      }, {}))
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(x => x[0]);
+
+      if (!topProducts.length || !topProviders.length) {
+        matrixHead.innerHTML = "";
+        matrixBody.innerHTML = `<tr><td class=\"text-center py-4\">Sin datos para matriz</td></tr>`;
+        document.getElementById("matrixInfo").textContent = "";
+        return;
+      }
+
+      const productTotal = {};
+      topProducts.forEach(p => {
+        productTotal[p] = rows
+          .filter(r => (r.Producto || "Sin producto") === p)
+          .reduce((acc, r) => acc + r.Monto, 0);
+      });
+
+      matrixHead.innerHTML = `<tr><th>Proveedor</th>${topProducts.map(p => `<th>${p}</th>`).join("")}</tr>`;
+
+      matrixBody.innerHTML = topProviders.map(provider => {
+        const cells = topProducts.map(product => {
+          const value = rows
+            .filter(r => (r.Proveedor || "Sin proveedor") === provider && (r.Producto || "Sin producto") === product)
+            .reduce((acc, r) => acc + r.Monto, 0);
+          const ratio = productTotal[product] ? (value / productTotal[product]) : 0;
+          const alpha = Math.min(0.8, Math.max(0.08, ratio));
+          return `<td style=\"background: rgba(50,209,192,${alpha});\">${formatCLP(value)}</td>`;
+        }).join("");
+
+        return `<tr><td><span class=\"chip\">${provider}</span></td>${cells}</tr>`;
+      }).join("");
+
+      document.getElementById("matrixInfo").textContent = "Intensidad de color: mayor participacion del proveedor en el monto de ese producto";
     }
 
     function renderTable() {
