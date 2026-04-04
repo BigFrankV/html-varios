@@ -260,6 +260,99 @@
       background: rgba(255, 255, 255, 0.08);
     }
 
+    tbody tr.clickable-row {
+      cursor: pointer;
+    }
+
+    tbody tr.clickable-row td {
+      transition: background-color 0.2s ease;
+    }
+
+    tbody tr.clickable-row:hover td {
+      background: rgba(50, 209, 192, 0.12);
+    }
+
+    .detail-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 10, 13, 0.56);
+      z-index: 1040;
+    }
+
+    .detail-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      width: min(560px, 100vw);
+      z-index: 1050;
+      border-left: 1px solid var(--line);
+      background: linear-gradient(160deg, rgba(12, 35, 43, 0.97), rgba(10, 28, 35, 0.97));
+      box-shadow: -14px 0 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transform: translateX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .detail-panel.d-none {
+      transform: translateX(100%);
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .detail-title {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.1rem;
+    }
+
+    .detail-sub {
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      margin-top: 3px;
+    }
+
+    .detail-content {
+      padding: 14px 16px 18px;
+      overflow: auto;
+      height: calc(100vh - 78px);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-item {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      min-height: 72px;
+    }
+
+    .detail-k {
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-v {
+      margin-top: 5px;
+      font-size: 0.93rem;
+      word-break: break-word;
+    }
+
     .chip {
       padding: 2px 8px;
       border-radius: 999px;
@@ -323,6 +416,10 @@
       }
       .chart-wrap {
         min-height: 250px;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -515,6 +612,21 @@
       </div>
 
       <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-6">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-diagram-3-fill"></i>Distribucion por Categoria</h2>
+            <div class="chart-wrap"><canvas id="chartCategoria"></canvas></div>
+          </div>
+        </div>
+        <div class="col-12 col-xl-6">
+          <div class="glass panel fade-in">
+            <h2 class="panel-title mb-2"><i class="bi bi-building-gear"></i>Distribucion por Area</h2>
+            <div class="chart-wrap"><canvas id="chartArea"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
         <div class="col-12 col-xl-4">
           <div class="glass panel fade-in">
             <h2 class="panel-title mb-2"><i class="bi bi-box-seam"></i>Top Productos por Cantidad</h2>
@@ -567,12 +679,26 @@
     </section>
   </div>
 
+  <div id="detailOverlay" class="detail-overlay d-none"></div>
+  <aside id="detailPanel" class="detail-panel d-none" aria-hidden="true">
+    <div class="detail-header">
+      <div>
+        <h3 class="detail-title"><i class="bi bi-card-list me-2"></i>Detalle de OC</h3>
+        <div id="detailSubtitle" class="detail-sub">Selecciona una fila para ver informacion completa</div>
+      </div>
+      <button id="btnCloseDetail" class="btn btn-sm btn-outline-light"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div id="detailBody" class="detail-content"></div>
+  </aside>
+
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFoKAXeYQknN51e85QTs-FEZnWcQC7zHFYGZ9cbxrbF5gZwh-qBL4jP3-GhJokQZzcnBCkd7CkbYvk/pub?gid=0&single=true&output=csv";
 
     const state = {
       rows: [],
       filtered: [],
+      tableRows: [],
+      selectedRow: null,
       charts: {}
     };
 
@@ -613,6 +739,15 @@
       const clean = String(v).replace(/\./g, "").replace(/,/g, ".").replace(/[^\d.-]/g, "");
       const num = Number(clean);
       return Number.isFinite(num) ? num : 0;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     function monthKey(d) {
@@ -768,6 +903,8 @@
       const montoByDate = {};
       const prov = {};
       const estado = {};
+      const categoria = {};
+      const area = {};
       const prodCantidad = {};
       const prodMonto = {};
       const modeloMonto = {};
@@ -778,6 +915,8 @@
         montoByDate[key] = (montoByDate[key] || 0) + r.Monto;
         prov[r.Proveedor] = (prov[r.Proveedor] || 0) + r.Monto;
         estado[r.Estado || "Sin estado"] = (estado[r.Estado || "Sin estado"] || 0) + 1;
+        categoria[r.Categoria || "Sin categoria"] = (categoria[r.Categoria || "Sin categoria"] || 0) + 1;
+        area[r.Area || "Sin area"] = (area[r.Area || "Sin area"] || 0) + 1;
         prodCantidad[r.Producto || "Sin producto"] = (prodCantidad[r.Producto || "Sin producto"] || 0) + r.Cantidad;
         prodMonto[r.Producto || "Sin producto"] = (prodMonto[r.Producto || "Sin producto"] || 0) + r.Monto;
 
@@ -826,6 +965,10 @@
       });
 
       const estadoEntries = Object.entries(estado).sort((a, b) => b[1] - a[1]);
+      const categoriaEntries = Object.entries(categoria)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+      const areaEntries = Object.entries(area).sort((a, b) => b[1] - a[1]);
 
       state.charts.monto = new Chart(document.getElementById("chartMonto"), {
         type: "line",
@@ -898,6 +1041,73 @@
             legend: {
               labels: { color: "#dceff5" },
               position: "bottom"
+            }
+          }
+        }
+      });
+
+      state.charts.categoria = new Chart(document.getElementById("chartCategoria"), {
+        type: "bar",
+        data: {
+          labels: categoriaEntries.map(x => x[0]),
+          datasets: [{
+            label: "Cantidad OC",
+            data: categoriaEntries.map(x => x[1]),
+            backgroundColor: "rgba(117, 217, 255, 0.72)",
+            borderColor: "#75d9ff",
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#dceff5" } }
+          },
+          scales: {
+            x: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.1)" } },
+            y: { ticks: { color: "#dceff5" }, grid: { color: "rgba(255,255,255,0.06)" } }
+          }
+        }
+      });
+
+      state.charts.area = new Chart(document.getElementById("chartArea"), {
+        type: "polarArea",
+        data: {
+          labels: areaEntries.map(x => x[0]),
+          datasets: [{
+            data: areaEntries.map(x => x[1]),
+            backgroundColor: [
+              "rgba(50, 209, 192, 0.72)",
+              "rgba(255, 179, 71, 0.72)",
+              "rgba(142, 197, 255, 0.72)",
+              "rgba(111, 230, 173, 0.72)",
+              "rgba(201, 182, 255, 0.72)",
+              "rgba(255, 160, 160, 0.72)"
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#dceff5" },
+              position: "right"
+            }
+          },
+          scales: {
+            r: {
+              grid: { color: "rgba(255,255,255,0.12)" },
+              ticks: {
+                color: "#dceff5",
+                backdropColor: "transparent"
+              },
+              pointLabels: {
+                color: "#dceff5"
+              }
             }
           }
         }
@@ -1122,12 +1332,14 @@
         return b.FechaObj - a.FechaObj;
       });
 
-      const html = rows.map(r => {
+      state.tableRows = rows;
+
+      const html = rows.map((r, idx) => {
         const link = r.LicitacionURL
-          ? `<a href="${r.LicitacionURL}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light py-0 px-2"><i class="bi bi-box-arrow-up-right"></i></a>`
+          ? `<a href="${r.LicitacionURL}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light py-0 px-2 link-btn"><i class="bi bi-box-arrow-up-right"></i></a>`
           : "-";
 
-        return `<tr>
+        return `<tr class="clickable-row" data-row-idx="${idx}" title="Click para ver detalle tecnico y comercial">
           <td>${r.Fecha || ""}</td>
           <td><span class="chip">${r.NumeroOC || ""}</span></td>
           <td>${r.TipoItem || ""}</td>
@@ -1149,6 +1361,64 @@
       tbody.innerHTML = html || `<tr><td colspan="14" class="text-center py-4 text-light-emphasis">Sin resultados con los filtros actuales</td></tr>`;
 
       document.getElementById("tableInfo").textContent = `Mostrando ${rows.length.toLocaleString("es-CL")} registros`;
+    }
+
+    function closeDetailPanel() {
+      document.getElementById("detailOverlay").classList.add("d-none");
+      const panel = document.getElementById("detailPanel");
+      panel.classList.add("d-none");
+      panel.setAttribute("aria-hidden", "true");
+      state.selectedRow = null;
+    }
+
+    function openDetailPanel(row) {
+      if (!row) return;
+      state.selectedRow = row;
+
+      const entries = [
+        ["Numero OC", row.NumeroOC],
+        ["Fecha", row.Fecha],
+        ["Licitacion ID", row.LicitacionID],
+        ["Licitacion URL", row.LicitacionURL],
+        ["Tipo Item", row.TipoItem],
+        ["Categoria", row.Categoria],
+        ["Proveedor", row.Proveedor],
+        ["Producto", row.Producto],
+        ["Marca", row.Marca],
+        ["Modelo", row.Modelo],
+        ["SKU", row.SKU],
+        ["CPU", row.CPU],
+        ["RAM (GB)", row.RAMGB],
+        ["Storage (GB)", row.StorageGB],
+        ["GPU", row.GPU],
+        ["Sistema Operativo", row.SistemaOperativo],
+        ["Fabricante Software", row.FabricanteSoftware],
+        ["Version Software", row.VersionSoftware],
+        ["Tipo Licencia", row.TipoLicencia],
+        ["Unidad Medida", row.UnidadMedida],
+        ["Cantidad", row.Cantidad],
+        ["Precio Unitario", formatCLP(row.PrecioUnitario)],
+        ["Monto", formatCLP(row.Monto)],
+        ["Moneda", row.Moneda],
+        ["Estado", row.Estado],
+        ["Centro Costo", row.CentroCosto],
+        ["Solicitante", row.Solicitante],
+        ["Area", row.Area],
+        ["Fecha Entrega", row.FechaEntrega],
+        ["Metodo Pago", row.MetodoPago],
+        ["Observacion", row.Observacion]
+      ];
+
+      document.getElementById("detailSubtitle").textContent = `${row.NumeroOC || "Sin NumeroOC"} - ${row.Producto || "Sin producto"}`;
+      document.getElementById("detailBody").innerHTML = `<div class="detail-grid">${entries.map(([k, v]) => {
+        const displayValue = v === null || v === undefined || v === "" ? "-" : v;
+        return `<div class="detail-item"><div class="detail-k">${escapeHtml(k)}</div><div class="detail-v">${escapeHtml(displayValue)}</div></div>`;
+      }).join("")}</div>`;
+
+      document.getElementById("detailOverlay").classList.remove("d-none");
+      const panel = document.getElementById("detailPanel");
+      panel.classList.remove("d-none");
+      panel.setAttribute("aria-hidden", "false");
     }
 
     function exportFilteredCsv() {
@@ -1217,6 +1487,29 @@
       });
 
       document.getElementById("btnExport").addEventListener("click", exportFilteredCsv);
+
+      const tableBody = document.querySelector("#ocTable tbody");
+      tableBody.addEventListener("click", ev => {
+        const isLink = ev.target.closest("a.link-btn");
+        if (isLink) {
+          ev.stopPropagation();
+          return;
+        }
+
+        const rowEl = ev.target.closest("tr[data-row-idx]");
+        if (!rowEl) return;
+        const idx = Number(rowEl.getAttribute("data-row-idx"));
+        if (Number.isNaN(idx)) return;
+        openDetailPanel(state.tableRows[idx]);
+      });
+
+      document.getElementById("detailOverlay").addEventListener("click", closeDetailPanel);
+      document.getElementById("btnCloseDetail").addEventListener("click", closeDetailPanel);
+      document.addEventListener("keydown", ev => {
+        if (ev.key === "Escape") {
+          closeDetailPanel();
+        }
+      });
     }
 
     async function loadCsv() {
