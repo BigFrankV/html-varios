@@ -1639,16 +1639,25 @@
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
         if (visto === "NUEVO") mV = isNew(r);
-        // Filtro de fechas
-        let mFecha = true;
-        if (fechaDesde) {
-          const fc = dateOnly(r.FechaCierre);
-          mFecha = mFecha && (!fc || fc >= fechaDesde);
-        }
-        if (fechaHasta) {
-          const fc = dateOnly(r.FechaCierre);
-          mFecha = mFecha && (!fc || fc <= fechaHasta);
-        }
+        // Filtro de fechas (regla mixta):
+        // 1) publicadas en rango seleccionado
+        // 2) ademas incluye activas hoy / cierran hoy
+        const hasDateRange = Boolean(fechaDesde || fechaHasta);
+        const hoy = todayOnly();
+        const fp = dateOnly(r.FechaPublicacion);
+        const fc = dateOnly(r.FechaCierre);
+
+        const start = fechaDesde || "0000-01-01";
+        const end = fechaHasta || "9999-12-31";
+
+        const hasPubDate = Boolean(fp && fp !== "-");
+        const hasCloseDate = Boolean(fc && fc !== "-");
+
+        const publishedInRange = hasPubDate && fp >= start && fp <= end;
+        const activeToday = hasPubDate && hasCloseDate && fp <= hoy && fc >= hoy;
+        const closesToday = hasCloseDate && fc === hoy;
+
+        const mFecha = !hasDateRange ? true : (publishedInRange || activeToday || closesToday);
         return mQ && mCat && mOrg && mProd && mCatGen && mEst && mGestion && mV && mFecha;
       });
 
