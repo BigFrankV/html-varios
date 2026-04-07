@@ -193,10 +193,54 @@
       min-width: 128px;
     }
 
+    .side-head {
+      position: relative;
+    }
+
+    .sidebar-toggle,
+    .sidebar-close-btn {
+      width: auto;
+      min-width: 40px;
+      height: 40px;
+      padding: 0.35rem 0.55rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      flex: 0 0 auto;
+    }
+
+    .sidebar-toggle {
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .sidebar-close-btn {
+      display: none;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+    }
+
+    .view-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .view-actions .btn {
+      min-height: 38px;
+      padding: 0.45rem 0.7rem;
+      font-size: .8rem;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
     .kpis {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
       align-items: stretch;
       width: 100%;
       max-width: 100%;
@@ -205,38 +249,43 @@
     .kpi:nth-child(4) {
       grid-column: span 2;
       aspect-ratio: auto;
-      min-height: 130px;
+      min-height: 104px;
     }
 
     .kpi {
       border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 14px;
+      padding: 10px 12px;
       background: linear-gradient(145deg, #fff, #fbfcff);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       aspect-ratio: 1 / 1;
       min-width: 0;
-      min-height: 150px;
+      min-height: 92px;
       width: 100%;
       box-sizing: border-box;
       overflow: visible;
-      font-size: 1.1rem;
+      font-size: .95rem;
     }
 
     .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
       grid-column: span 1;
     }
 
-    .kpi span { color: var(--muted); font-size: .78rem; font-weight: 700; white-space: normal; text-align: center; }
-    .kpi b { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-word; text-align: center; }
+    .kpi span { color: var(--muted); font-size: .7rem; font-weight: 700; white-space: normal; text-align: center; line-height: 1.15; }
+    .kpi b { font-size: 1rem; max-width: 100%; white-space: normal; word-break: break-word; text-align: center; line-height: 1.05; }
+    .kpi-money { min-height: 112px; }
+    .kpi-money b { font-size: clamp(1.35rem, 3vw, 2.1rem); letter-spacing: -0.02em; }
 
     @media (max-width: 900px) {
       .kpis {
         grid-template-columns: 1fr 1fr;
+      }
+      .kpi-money {
+        grid-column: span 2;
       }
       .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
         grid-column: auto;
@@ -249,6 +298,12 @@
       .kpi {
         aspect-ratio: unset;
         min-height: 80px;
+      }
+      .kpi-money {
+        grid-column: auto;
+      }
+      .view-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -356,6 +411,7 @@
 
       /* Better truncation in WebKit/Blink using line-clamp */
       display: -webkit-box;
+      line-clamp: 4;
       -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
     }
@@ -704,6 +760,20 @@
       background: linear-gradient(165deg, #151f40, #1c2a59 60%, #1f2d6e);
     }
 
+    body[data-theme="dark"] .sidebar-toggle {
+      background: #0f172a;
+      color: #e8eeff;
+      border-color: #2a3a5e;
+    }
+
+    .sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 14, 27, 0.52);
+      backdrop-filter: blur(2px);
+      z-index: 1040;
+    }
+
     body[data-theme="dark"] .nav-item {
       color: #c8d6ff;
     }
@@ -792,6 +862,10 @@
       border-color: #4664c6;
     }
 
+    body[data-theme="dark"] .sidebar-backdrop {
+      background: rgba(3, 6, 16, 0.68);
+    }
+
     @media (max-width: 1150px) {
       .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .toolbar { grid-template-columns: 1fr 1fr; }
@@ -799,7 +873,48 @@
 
     @media (max-width: 980px) {
       .app { grid-template-columns: 1fr; }
-      .side { position: static; }
+      .sidebar-close-btn { display: inline-flex; }
+      .dashboard-shell > aside {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        width: min(360px, calc(100vw - 24px));
+        max-width: min(360px, calc(100vw - 24px));
+        height: calc(100vh - 24px);
+        transform: translateX(-110%);
+        opacity: 1;
+        z-index: 1050;
+      }
+      .dashboard-shell > section {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+      }
+      body.sidebar-open {
+        overflow: hidden;
+      }
+      body.sidebar-open .dashboard-shell > aside {
+        transform: translateX(0);
+        pointer-events: auto;
+      }
+      body.sidebar-collapsed .dashboard-shell > aside {
+        display: block;
+      }
+    }
+
+    body.sidebar-collapsed .dashboard-shell > aside {
+      flex: 0 0 0 !important;
+      max-width: 0 !important;
+      opacity: 0;
+      transform: translateX(-12px);
+      pointer-events: none;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    body.sidebar-collapsed .dashboard-shell > section {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
     }
 
     @media (max-width: 820px) {
@@ -852,14 +967,20 @@
 <body>
 
   <main class="container-fluid py-3">
-    <div class="row g-4">
+    <div class="row g-4 dashboard-shell">
       <!-- Sidebar -->
       <aside class="col-12 col-lg-3">
           <div class="side h-100 d-flex flex-column justify-content-between sticky-top" style="top:12px;">
             <div>
-              <div class="logo mb-2 d-flex align-items-center gap-2">
-                <span class="logo-mark"></span>
-                <b>ESPEX</b>
+              <div class="side-head mb-2 d-flex align-items-center justify-content-between gap-2">
+                <div class="logo d-flex align-items-center gap-2">
+                  <span class="logo-mark"></span>
+                  <div>
+                    <b>ESPEX</b>
+                    <span>Panel de licitaciones</span>
+                  </div>
+                </div>
+                <button id="sidebarClose" class="btn btn-sm btn-light sidebar-close-btn" type="button" aria-label="Cerrar menú"><i class="bi bi-x-lg"></i></button>
               </div>
               <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-3"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
               <form id="sidebar-filtros" class="mb-4">
@@ -867,7 +988,7 @@
                   <label for="q">Buscar</label>
                   <div class="input-group">
                     <input id="q" type="text" class="form-control" placeholder="Buscar..." />
-                    <button class="btn btn-outline-secondary" id="reset" title="Limpiar" type="button"><i class="bi bi-x-lg"></i></button>
+                    <button class="btn btn-outline-secondary" id="reset" title="Limpiar filtros" type="button"><i class="bi bi-x-lg me-1"></i>Limpiar filtros</button>
                   </div>
                 </div>
                 <div class="field mb-2">
@@ -937,13 +1058,16 @@
 
       <!-- Main Content -->
       <section class="col-lg-9">
-        <div class="top card shadow-sm p-4 mb-4">
-          <div class="top-head d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <div class="title">
-              <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
-              <p class="mb-0">Panel de control de licitaciones y KPIs</p>
+          <div class="top card shadow-sm p-4 mb-4">
+          <div class="top-head d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div class="title d-flex align-items-start gap-2">
+              <button id="sidebarToggle" class="btn btn-light btn-sm sidebar-toggle" type="button" aria-label="Abrir menú lateral"><i class="bi bi-list"></i></button>
+              <div>
+                <h1 class="mb-1">Dashboard Licitaciones Mercado Publico</h1>
+                <p class="mb-0">Panel de control de licitaciones y KPIs</p>
+              </div>
             </div>
-            <div class="chips d-flex flex-wrap gap-2">
+            <div class="chips d-flex flex-wrap gap-2 justify-content-end">
               <span class="chip"><i class="bi bi-lightning-charge text-warning me-1"></i>Rápido</span>
               <span class="chip"><i class="bi bi-shield-check text-success me-1"></i>Seguro</span>
               <span class="chip"><i class="bi bi-cloud-arrow-down text-primary me-1"></i>Actualizable</span>
@@ -967,12 +1091,12 @@
               <span>Finalizadas</span>
               <b id="kDone">0</b>
             </div>
-            <div class="kpi">
+            <div class="kpi kpi-money">
               <span>Monto Total</span>
               <b id="kMonto">$0</b>
             </div>
           </div>
-          <div class="d-flex flex-wrap gap-2 mb-2">
+          <div class="view-actions mb-2">
             <button id="viewCards" class="btn btn-outline-primary btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i>Tarjetas</button>
             <button id="viewList" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-ul me-1"></i>Lista</button>
             <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i class="bi bi-kanban me-1"></i>Kanban</button>
@@ -1005,6 +1129,8 @@
       </section>
     </div>
   </main>
+
+  <div id="sidebarBackdrop" class="sidebar-backdrop" hidden></div>
 
   <section id="modal" class="modal" aria-hidden="true">
     <article class="modal-card">
@@ -1140,6 +1266,9 @@
       mShow: document.getElementById("mShow"),
       mUpd: document.getElementById("mUpd"),
       themeToggle: document.getElementById("themeToggle"),
+      sidebarToggle: document.getElementById("sidebarToggle"),
+      sidebarClose: document.getElementById("sidebarClose"),
+      sidebarBackdrop: document.getElementById("sidebarBackdrop"),
       modal: document.getElementById("modal"),
       mdClose: document.getElementById("mdClose"),
       mdCode: document.getElementById("mdCode"),
@@ -1329,6 +1458,40 @@
       const next = current === "dark" ? "light" : "dark";
       applyTheme(next);
       toast(`Tema ${next === "dark" ? "oscuro" : "claro"} activado.`);
+    }
+
+    const isMobileLayout = () => window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
+
+    function openSidebar() {
+      document.body.classList.add("sidebar-open");
+      if (el.sidebarBackdrop) el.sidebarBackdrop.hidden = false;
+    }
+
+    function closeSidebar() {
+      document.body.classList.remove("sidebar-open");
+      if (el.sidebarBackdrop) el.sidebarBackdrop.hidden = true;
+    }
+
+    function toggleSidebar() {
+      if (isMobileLayout()) {
+        if (document.body.classList.contains("sidebar-open")) closeSidebar();
+        else openSidebar();
+        return;
+      }
+
+      document.body.classList.toggle("sidebar-collapsed");
+    }
+
+    function syncSidebarLayout() {
+      if (isMobileLayout()) {
+        document.body.classList.remove("sidebar-collapsed");
+        if (!document.body.classList.contains("sidebar-open")) {
+          closeSidebar();
+        }
+        return;
+      }
+
+      closeSidebar();
     }
 
     function statusClass(s) {
@@ -1639,25 +1802,13 @@
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
         if (visto === "NUEVO") mV = isNew(r);
-        // Filtro de fechas (regla mixta):
-        // 1) publicadas en rango seleccionado
-        // 2) ademas incluye activas hoy / cierran hoy
+        // Filtro de fechas: solo considera la fecha de emisión/publicación.
+        // Si se completa Desde/Hasta, muestra las publicadas dentro de ese rango.
         const hasDateRange = Boolean(fechaDesde || fechaHasta);
-        const hoy = todayOnly();
         const fp = dateOnly(r.FechaPublicacion);
-        const fc = dateOnly(r.FechaCierre);
-
         const start = fechaDesde || "0000-01-01";
         const end = fechaHasta || "9999-12-31";
-
-        const hasPubDate = Boolean(fp && fp !== "-");
-        const hasCloseDate = Boolean(fc && fc !== "-");
-
-        const publishedInRange = hasPubDate && fp >= start && fp <= end;
-        const activeToday = hasPubDate && hasCloseDate && fp <= hoy && fc >= hoy;
-        const closesToday = hasCloseDate && fc === hoy;
-
-        const mFecha = !hasDateRange ? true : (publishedInRange || activeToday || closesToday);
+        const mFecha = !hasDateRange ? true : (fp && fp !== "-" && fp >= start && fp <= end);
         return mQ && mCat && mOrg && mProd && mCatGen && mEst && mGestion && mV && mFecha;
       });
 
@@ -2161,7 +2312,9 @@
       el.visto.value = "";
       if (el.gestion) el.gestion.value = "";
       if (el.producto) el.producto.value = "";
-      if (el.pageSize) el.pageSize.value = "50";
+      if (el.catGeneral) el.catGeneral.value = "";
+      if (el.fechaDesde) el.fechaDesde.value = "";
+      if (el.fechaHasta) el.fechaHasta.value = "";
       st.currentPage = 1;
       apply();
     }
@@ -2271,6 +2424,11 @@
     if (el.quickNew) el.quickNew.addEventListener("click", () => quick("new"));
     if (el.quickFree) el.quickFree.addEventListener("click", () => quick("free"));
     if (el.reset) el.reset.addEventListener("click", resetFilters);
+
+    if (el.sidebarToggle) el.sidebarToggle.addEventListener("click", toggleSidebar);
+    if (el.sidebarClose) el.sidebarClose.addEventListener("click", closeSidebar);
+    if (el.sidebarBackdrop) el.sidebarBackdrop.addEventListener("click", closeSidebar);
+    window.addEventListener("resize", syncSidebarLayout);
 
     if (el.viewCards) el.viewCards.addEventListener("click", () => setView("cards"));
     if (el.viewList) el.viewList.addEventListener("click", () => setView("list"));
