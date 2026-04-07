@@ -219,6 +219,18 @@
       left: 12px;
       z-index: 1080;
       box-shadow: var(--shadow);
+      transition: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar-toggle:hover,
+    .sidebar-toggle:focus,
+    .sidebar-toggle:active {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+      opacity: 1;
     }
 
     .sidebar-close-btn {
@@ -303,17 +315,11 @@
 
     .kpis {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: 1.15fr repeat(2, minmax(0, 1fr));
       gap: 10px;
       align-items: stretch;
       width: 100%;
       max-width: 100%;
-    }
-
-    .kpi:nth-child(4) {
-      grid-column: span 2;
-      aspect-ratio: auto;
-      min-height: 104px;
     }
 
     .kpi {
@@ -341,18 +347,36 @@
 
     .kpi span { color: var(--muted); font-size: .7rem; font-weight: 700; white-space: normal; text-align: center; line-height: 1.15; }
     .kpi b { font-size: 1rem; max-width: 100%; white-space: normal; word-break: break-word; text-align: center; line-height: 1.05; }
-    .kpi-money { min-height: 112px; }
+    .kpi-money { min-height: 112px; grid-row: span 2; grid-column: 1; }
     .kpi-money b { font-size: clamp(1.35rem, 3vw, 2.1rem); letter-spacing: -0.02em; }
+    .kpi-mini { min-height: 80px; aspect-ratio: auto; }
+
+    .sort-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sort-label {
+      margin: 0;
+      font-size: .75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .sort-row .form-select {
+      width: min(320px, 95vw);
+    }
 
     @media (max-width: 900px) {
       .kpis {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
       .kpi-money {
         grid-column: span 2;
-      }
-      .kpi:nth-child(-n+2), .kpi:nth-child(n+3) {
-        grid-column: auto;
+        grid-row: auto;
       }
     }
     @media (max-width: 600px) {
@@ -365,9 +389,13 @@
       }
       .kpi-money {
         grid-column: auto;
+        grid-row: auto;
       }
       .view-actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .sort-row .form-select {
+        width: 100%;
       }
     }
 
@@ -841,6 +869,14 @@
       border-color: #2a3a5e;
     }
 
+    body[data-theme="dark"] .sidebar-toggle:hover,
+    body[data-theme="dark"] .sidebar-toggle:focus,
+    body[data-theme="dark"] .sidebar-toggle:active {
+      background: #0f172a;
+      color: #e8eeff;
+      border-color: #2a3a5e;
+    }
+
     .sidebar-backdrop {
       position: fixed;
       inset: 0;
@@ -899,6 +935,29 @@
       border-color: #314266;
       background: #1a2744;
       color: #bdd0ff;
+    }
+
+    body[data-theme="dark"] .results-toolbar {
+      background: #162139;
+      border-color: #273655;
+    }
+
+    body[data-theme="dark"] .top,
+    body[data-theme="dark"] .section {
+      background: #131b2d;
+      border-color: #24304a;
+    }
+
+    body[data-theme="dark"] .pager-size,
+    body[data-theme="dark"] .sort-label {
+      color: #b5c6ef;
+    }
+
+    body[data-theme="dark"] .btn-outline-primary,
+    body[data-theme="dark"] .btn-outline-secondary {
+      color: #d5e0ff;
+      border-color: #3a4f79;
+      background: #18233c;
     }
 
     body[data-theme="dark"] .switch .btn-lite.active {
@@ -1121,9 +1180,9 @@
                   <label for="gestion">Gestión</label>
                   <select id="gestion" class="form-select">
                     <option value="">Todas</option>
-                    <option value="No Tomada">No Tomada</option>
+                    <option value="Descartada">Descartada</option>
                     <option value="En Proceso">En Proceso</option>
-                    <option value="Trabajada">Trabajada</option>
+                    <option value="Aplicada">Aplicada</option>
                   </select>
                 </div>
                 <div class="field mb-2">
@@ -1173,21 +1232,25 @@
             <span id="mUpd" class="chip">Actualizado: cargando datos...</span>
           </div>
           <div class="kpis mb-3">
-            <div class="kpi">
-              <span>Nuevas</span>
-              <b id="kNew">0</b>
-            </div>
-            <div class="kpi">
-              <span>En Proceso</span>
-              <b id="kProg">0</b>
-            </div>
-            <div class="kpi">
-              <span>Finalizadas</span>
-              <b id="kDone">0</b>
-            </div>
             <div class="kpi kpi-money">
               <span>Monto Total</span>
               <b id="kMonto">$0</b>
+            </div>
+            <div class="kpi kpi-mini">
+              <span>Nuevas</span>
+              <b id="kNew">0</b>
+            </div>
+            <div class="kpi kpi-mini">
+              <span>En Proceso</span>
+              <b id="kProc">0</b>
+            </div>
+            <div class="kpi kpi-mini">
+              <span>Aplicadas</span>
+              <b id="kApl">0</b>
+            </div>
+            <div class="kpi kpi-mini">
+              <span>Descartadas</span>
+              <b id="kDesc">0</b>
             </div>
           </div>
           <div class="view-actions mb-2">
@@ -1195,6 +1258,15 @@
             <button id="viewList" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-ul me-1"></i>Lista</button>
             <button id="viewBoard" class="btn btn-outline-primary btn-sm"><i class="bi bi-kanban me-1"></i>Kanban</button>
             <button id="exportarExcel" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Exportar Excel</button>
+          </div>
+          <div class="sort-row mb-2">
+            <label for="ordenarPor" class="sort-label">Ordenar</label>
+            <select id="ordenarPor" class="form-select form-select-sm">
+              <option value="">Predeterminado</option>
+              <option value="dias">Días (menor a mayor)</option>
+              <option value="monto">Monto (mayor a menor)</option>
+              <option value="nombre">Nombre (A-Z)</option>
+            </select>
           </div>
           <div class="quick-actions mb-1">
             <button id="quickUrg" class="btn btn-warning btn-sm" type="button"><i class="bi bi-exclamation-triangle me-1"></i>Urgentes</button>
@@ -1206,7 +1278,7 @@
           <div class="results-toolbar top-controls">
             <div class="pager-size">
               <label for="pageSize" class="mb-0">Ver</label>
-              <select id="pageSize" class="form-select form-select-sm"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
+              <select id="pageSize" class="form-select form-select-sm"><option value="10" selected>10</option><option value="25">25</option><option value="50" >50</option><option value="100">100</option><option value="all">Todo</option></select>
             </div>
             <div id="pagination" class="pager-controls">
               <button id="prevPage" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-left"></i></button>
@@ -1238,7 +1310,7 @@
           <div class="results-toolbar bottom-controls">
             <div class="pager-size">
               <label for="pageSizeBottom" class="mb-0">Ver</label>
-              <select id="pageSizeBottom" class="form-select form-select-sm"><option value="10">10</option><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="all">Todo</option></select>
+              <select id="pageSizeBottom" class="form-select form-select-sm"><option value="10" selected>10</option><option value="25">25</option><option value="50" >50</option><option value="100">100</option><option value="all">Todo</option></select>
             </div>
             <div id="paginationBottom" class="pager-controls">
               <button id="prevPageBottom" class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-chevron-left"></i></button>
@@ -1300,9 +1372,9 @@
             <div class="field">
               <label for="edEstado">Estado</label>
               <select id="edEstado" class="form-select">
-                <option value="No Tomada">No Tomada</option>
+                <option value="Descartada">Descartada</option>
                 <option value="En Proceso">En Proceso</option>
-                <option value="Trabajada">Trabajada</option>
+                <option value="Aplicada">Aplicada</option>
               </select>
             </div>
           </div>
@@ -1356,7 +1428,7 @@
     const GESTION_PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRygV7gvOFrXVZB2QfGxI8nPkx7K8xWjzG_cfOjY43XKQK2rPb-NVomqahZYCH3uymg-yVBWPcilJA_/pub?gid=350658914&single=true&output=csv";
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCXFV9J1ZY2A5CPejzHur4KaVVP96z4G9G9YQRUAjXhhOHhQ5LZG6JxJA3qn5gA_Q67w/exec";
 
-    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '50', gestionMap: {} };
+    const st = { rows: [], filtered: [], view: "cards", selected: null, currentPage: 1, pageSize: '10', gestionMap: {} };
     const GESTION_CACHE_KEY = "cm-gestion-cache";
 
     const el = {
@@ -1388,8 +1460,9 @@
       kanban: document.getElementById("kanban"),
       empty: document.getElementById("empty"),
       kNew: document.getElementById("kNew"),
-      kProg: document.getElementById("kProg"),
-      kDone: document.getElementById("kDone"),
+      kProc: document.getElementById("kProc"),
+      kApl: document.getElementById("kApl"),
+      kDesc: document.getElementById("kDesc"),
       kMonto: document.getElementById("kMonto"),
       mTotal: document.getElementById("mTotal"),
       mShow: document.getElementById("mShow"),
@@ -1462,7 +1535,7 @@
       if (!out.DiasRestantes) out.DiasRestantes = raw['Dias Disponibles'] || raw.DiasRestantes || raw['Dias Cierre Licitacion'] || "";
       if (!out.URLLicitacion) out.URLLicitacion = raw.URL || raw.URLLicitacion || raw['URL'] || "";
       out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
-      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "No Tomada";
+      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "Descartada";
       if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
       // compute general classification and subcategory
       const cls = classifyProduct(out.Producto || out.TipoLicitacion || out.Organismo || "");
@@ -1626,7 +1699,7 @@
     }
 
     function statusClass(s) {
-      if (s === "Trabajada") return "st-tr";
+      if (s === "Aplicada") return "st-tr";
       if (s === "En Proceso") return "st-ep";
       return "st-nt";
     }
@@ -1699,7 +1772,7 @@
         const g = gestionMap[id];
         if (!g) continue;
         row.Visto = String(g.visto || row.Visto || "FALSE").toUpperCase();
-        row.EstadoTrabajo = g.estadoTrabajo || row.EstadoTrabajo || "No Tomada";
+        row.EstadoTrabajo = g.estadoTrabajo || row.EstadoTrabajo || "Descartada";
         row.Responsable = g.responsable || row.Responsable || "";
         row.Comentario = g.comentario || row.Comentario || "";
         row._gestion = g;
@@ -1715,14 +1788,14 @@
 
       const id = raw.id || raw.ID || raw.codigo_externo || raw.CodigoExterno || raw['Codigo Externo'] || raw['ID Licitacion'] || raw['ID Licitación'] || "";
       const visto = raw.visto || raw.Visto || raw['Visto'] || "FALSE";
-      const estadoTrabajo = raw.estadoTrabajo || raw.EstadoTrabajo || raw['Estado Trabajo'] || raw.Estado || "No Tomada";
+      const estadoTrabajo = raw.estadoTrabajo || raw.EstadoTrabajo || raw['Estado Trabajo'] || raw.Estado || "Descartada";
       const responsable = raw.responsable || raw.Responsable || raw['Nombre Usuario'] || raw['Usuario'] || "";
       const comentario = raw.comentario || raw.Comentario || raw['Comentario'] || "";
 
       return {
         id: String(id || "").trim(),
         visto: String(visto || "FALSE").toUpperCase(),
-        estadoTrabajo: String(estadoTrabajo || "No Tomada").trim() || "No Tomada",
+        estadoTrabajo: String(estadoTrabajo || "Descartada").trim() || "Descartada",
         responsable: String(responsable || "").trim(),
         comentario: String(comentario || "").trim(),
         actualizadoEn: raw.actualizadoEn || raw.actualizado_en || raw['Actualizado en'] || ""
@@ -1927,7 +2000,7 @@
         const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
         const estadoLicitacion = String(r.EstadoAPI || "").trim();
         const mEst = !est || estadoLicitacion === est;
-        const estadoGestion = String(r.EstadoTrabajo || "No Tomada").trim() || "No Tomada";
+        const estadoGestion = String(r.EstadoTrabajo || "Descartada").trim() || "Descartada";
         const mGestion = !gestion || estadoGestion === gestion;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
@@ -1962,14 +2035,15 @@
     function kpis() {
       const total = st.rows.length;
       const nwe = st.rows.filter(r => isNew(r)).length;
-      const prog = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
-      const done = st.rows.filter(r => r.EstadoTrabajo === "Trabajada").length;
-      const free = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada").length;
+      const proc = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
+      const apl = st.rows.filter(r => r.EstadoTrabajo === "Aplicada").length;
+      const desc = st.rows.filter(r => (r.EstadoTrabajo || "Descartada") === "Descartada").length;
       const m = st.rows.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
 
       if (el.kNew) el.kNew.textContent = nwe;
-      if (el.kProg) el.kProg.textContent = prog;
-      if (el.kDone) el.kDone.textContent = done;
+      if (el.kProc) el.kProc.textContent = proc;
+      if (el.kApl) el.kApl.textContent = apl;
+      if (el.kDesc) el.kDesc.textContent = desc;
       if (el.kMonto) el.kMonto.textContent = fmt(m);
       if (el.mTotal) el.mTotal.textContent = `Total: ${total}`;
       if (el.mShow) el.mShow.textContent = `Mostrando: ${st.filtered.length}`;
@@ -2187,6 +2261,9 @@
         dom: 't'
       });
 
+      // keep top/bottom pager in sync when DataTable changes page/order/search
+      $tbl.off('draw.dt.pagerSync').on('draw.dt.pagerSync', () => updatePagination());
+
       // bind external search box to DataTable search
       if (el.q) {
         $(el.q).off('input.dtsearch').on('input.dtsearch', function() { if (dtInstance) dtInstance.search(this.value).draw(); });
@@ -2199,9 +2276,9 @@
     }
 
     function renderBoard(rows) {
-      const lanes = ["No Tomada", "En Proceso", "Trabajada"];
+      const lanes = ["Descartada", "En Proceso", "Aplicada"];
       el.kanban.innerHTML = lanes.map(l => {
-        const rs = rows.filter(r => (r.EstadoTrabajo || "No Tomada") === l);
+        const rs = rows.filter(r => (r.EstadoTrabajo || "Descartada") === l);
         return `
           <article class="lane">
             <header class="lane-head"><span>${l}</span><span class="count">${rs.length}</span></header>
@@ -2352,11 +2429,11 @@
       el.mdCloseDate.textContent = dateOnly(r.FechaCierre);
       el.mdDias.textContent = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
       el.mdCat.textContent = r.TipoLicitacion || "-";
-      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "No Tomada";
+      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "Descartada";
       el.mdPrio.textContent = r.Prioridad || "Media";
       el.mdDesc.textContent = r.Descripcion || "Sin descripcion";
       el.edVisto.value = r.Visto === "TRUE" ? "TRUE" : "FALSE";
-      el.edEstado.value = r.EstadoTrabajo || "No Tomada";
+      el.edEstado.value = r.EstadoTrabajo || "Descartada";
       el.edOwner.value = r.Responsable || "";
       el.edCom.value = r.Comentario || "";
       el.openDoc.dataset.url = buildPublicoUrlFromRow(r);
@@ -2447,6 +2524,7 @@
       if (el.catGeneral) el.catGeneral.value = "";
       if (el.fechaDesde) el.fechaDesde.value = "";
       if (el.fechaHasta) el.fechaHasta.value = "";
+      if (el.ordenarPor) el.ordenarPor.value = "";
       st.currentPage = 1;
       apply();
     }
@@ -2454,7 +2532,12 @@
     function quick(type) {
       if (type === "urg") {
         el.visto.value = "";
-        st.filtered = st.rows.filter(r => Number(r.DiasRestantes) <= 2);
+        st.filtered = st.rows
+          .filter(r => {
+            const d = Number(r.DiasRestantes);
+            return Number.isFinite(d) && d >= 0 && d <= 3;
+          })
+          .sort((a, b) => (Number(a.DiasRestantes) || 9999) - (Number(b.DiasRestantes) || 9999));
         st.currentPage = 1;
         updatePagination();
         render();
@@ -2464,7 +2547,7 @@
       if (type === "new") el.visto.value = "NUEVO";
       if (type === "free") {
         el.visto.value = "";
-        st.filtered = st.rows.filter(r => (r.EstadoTrabajo || "No Tomada") === "No Tomada");
+        st.filtered = st.rows.filter(r => (r.EstadoTrabajo || "Descartada") === "Descartada");
         st.currentPage = 1;
         updatePagination();
         render();
@@ -2530,7 +2613,7 @@
     }
     // pagination state defaults
     st.currentPage = 1;
-    st.pageSize = '50';
+    st.pageSize = '10';
     syncSidebarLayout();
     if (el.pageSizeBottom) el.pageSizeBottom.value = st.pageSize;
 
@@ -2544,6 +2627,7 @@
     if (el.catGeneral) el.catGeneral.addEventListener("change", applyDebounced);
     if (el.fechaDesde) el.fechaDesde.addEventListener("change", applyDebounced);
     if (el.fechaHasta) el.fechaHasta.addEventListener("change", applyDebounced);
+    if (el.ordenarPor) el.ordenarPor.addEventListener("change", applyDebounced);
     if (el.pageSize) el.pageSize.addEventListener("change", e => {
       st.pageSize = e.target.value;
       if (el.pageSizeBottom) el.pageSizeBottom.value = st.pageSize;
