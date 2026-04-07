@@ -662,7 +662,7 @@
     .name-cell span { font-size: .74rem; color: var(--muted); }
 
     .kanban {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       align-items: start;
       align-content: start;
@@ -1141,7 +1141,7 @@
 </head>
 <body>
 
-  <button id="sidebarToggle" class="btn btn-light btn-sm sidebar-toggle" type="button" aria-label="Abrir menú lateral"><i class="bi bi-list"></i></button>
+  <button id="sidebarToggle" class="btn btn-light btn-sm sidebar-toggle" type="button" aria-label="Abrir menÃº lateral"><i class="bi bi-list"></i></button>
 
   <main class="container-fluid py-3">
     <div class="row g-4 dashboard-shell">
@@ -1157,7 +1157,7 @@
                     <span>Panel de licitaciones</span>
                   </div>
                 </div>
-                <button id="sidebarClose" class="btn btn-sm btn-light sidebar-close-btn" type="button" aria-label="Cerrar menú"><i class="bi bi-x-lg"></i></button>
+                <button id="sidebarClose" class="btn btn-sm btn-light sidebar-close-btn" type="button" aria-label="Cerrar menÃº"><i class="bi bi-x-lg"></i></button>
               </div>
               <button id="themeToggle" class="btn btn-sm btn-outline-light w-100 mb-3"><i class="bi bi-moon-stars"></i> Modo Oscuro</button>
               <form id="sidebar-filtros" class="mb-4">
@@ -1169,7 +1169,7 @@
                   </div>
                 </div>
                 <div class="field mb-2">
-                  <label for="cat">Categoría</label>
+                  <label for="cat">CategorÃ­a</label>
                   <select id="cat" class="form-select"></select>
                 </div>
                 <div class="field mb-2">
@@ -1185,16 +1185,17 @@
                   <select id="visto" class="form-select"></select>
                 </div>
                 <div class="field mb-2">
-                  <label for="gestion">Gestión</label>
+                  <label for="gestion">GestiÃ³n</label>
                   <select id="gestion" class="form-select">
                     <option value="">Todas</option>
+                    <option value="Sin Evaluar">Sin Evaluar</option>
                     <option value="Descartada">Descartada</option>
                     <option value="En Proceso">En Proceso</option>
                     <option value="Aplicada">Aplicada</option>
                   </select>
                 </div>
                 <div class="field mb-2">
-                  <label for="catGeneral">Clasificación</label>
+                  <label for="catGeneral">ClasificaciÃ³n</label>
                   <select id="catGeneral" class="form-select"></select>
                 </div>
                 <div class="field mb-2">
@@ -1228,7 +1229,7 @@
               </div>
             </div>
             <div class="chips d-flex flex-wrap gap-2 justify-content-end">
-              <span class="chip"><i class="bi bi-lightning-charge text-warning me-1"></i>Rápido</span>
+              <span class="chip"><i class="bi bi-lightning-charge text-warning me-1"></i>RÃ¡pido</span>
               <span class="chip"><i class="bi bi-shield-check text-success me-1"></i>Seguro</span>
               <span class="chip"><i class="bi bi-cloud-arrow-down text-primary me-1"></i>Actualizable</span>
             </div>
@@ -1270,8 +1271,8 @@
             <label for="ordenarPor" class="sort-label">Ordenar</label>
             <select id="ordenarPor" class="form-select form-select-sm">
               <option value="">Predeterminado</option>
-              <option value="dias">Días (menor a mayor)</option>
-              <option value="dias_desc">Días (mayor a menor)</option>
+              <option value="dias">DÃ­as (menor a mayor)</option>
+              <option value="dias_desc">DÃ­as (mayor a menor)</option>
               <option value="monto">Monto (mayor a menor)</option>
               <option value="monto_asc">Monto (menor a mayor)</option>
               <option value="nombre">Nombre (A-Z)</option>
@@ -1306,7 +1307,7 @@
                   <th>Nombre</th>
                   <th>Tipo</th>
                   <th>Monto</th>
-                  <th>Días</th>
+                  <th>DÃ­as</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -1334,7 +1335,7 @@
   </main>
 
   <div id="sidebarBackdrop" class="sidebar-backdrop" hidden></div>
-  <div class="scroll-nav" aria-label="Navegación rápida">
+  <div class="scroll-nav" aria-label="NavegaciÃ³n rÃ¡pida">
     <button id="scrollTopBtn" class="btn btn-primary btn-sm" type="button" aria-label="Ir al inicio"><i class="bi bi-arrow-up"></i></button>
     <button id="scrollBottomBtn" class="btn btn-primary btn-sm" type="button" aria-label="Ir al final"><i class="bi bi-arrow-down"></i></button>
   </div>
@@ -1353,21 +1354,21 @@
         <div class="col-md-4"><div class="box"><b>Organismo</b><span id="mdOrg">-</span></div></div>
         <div class="col-md-4"><div class="box"><b>Producto</b><span id="mdProv">-</span></div></div>
         <div class="col-md-4"><div class="box"><b>Monto</b><span id="mdMonto">-</span></div></div>
-        <div class="col-md-4"><div class="box"><b>Publicación</b><span id="mdPub">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>PublicaciÃ³n</b><span id="mdPub">-</span></div></div>
         <div class="col-md-4"><div class="box"><b>Cierre</b><span id="mdCloseDate">-</span></div></div>
-        <div class="col-md-4"><div class="box"><b>Días</b><span id="mdDias">-</span></div></div>
-        <div class="col-md-4"><div class="box"><b>Tipo Licitación</b><span id="mdCat">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>DÃ­as</b><span id="mdDias">-</span></div></div>
+        <div class="col-md-4"><div class="box"><b>Tipo LicitaciÃ³n</b><span id="mdCat">-</span></div></div>
         <div class="col-md-4"><div class="box"><b>Estado</b><span id="mdEstado">-</span></div></div>
         <div class="col-md-4"><div class="box"><b>Prioridad</b><span id="mdPrio">-</span></div></div>
       </div>
 
       <div class="mb-3">
-        <b class="text-secondary small">Descripción</b>
+        <b class="text-secondary small">DescripciÃ³n</b>
         <div id="mdDesc" class="full"></div>
       </div>
 
       <section class="edit">
-        <strong class="text-primary mb-2">Gestión</strong>
+        <strong class="text-primary mb-2">GestiÃ³n</strong>
         <div class="row g-2">
           <div class="col-md-4">
             <div class="field">
@@ -1382,6 +1383,7 @@
             <div class="field">
               <label for="edEstado">Estado</label>
               <select id="edEstado" class="form-select">
+                <option value="Sin Evaluar">Sin Evaluar</option>
                 <option value="Descartada">Descartada</option>
                 <option value="En Proceso">En Proceso</option>
                 <option value="Aplicada">Aplicada</option>
@@ -1416,7 +1418,7 @@
         <button id="fieldsClose" class="close" type="button">Cerrar</button>
       </header>
       <div id="fieldsList" class="full" style="white-space:pre-wrap; max-height:60vh; overflow:auto;">
-        <!-- Lista de campos se llenará dinámicamente -->
+        <!-- Lista de campos se llenarÃ¡ dinÃ¡micamente -->
       </div>
     </article>
   </section>
@@ -1430,7 +1432,7 @@
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
-  <!-- Bootstrap debe ir después de jQuery si usas plugins que dependen de él -->
+  <!-- Bootstrap debe ir despuÃ©s de jQuery si usas plugins que dependen de Ã©l -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
@@ -1532,11 +1534,11 @@
       out._raw = Object.assign({}, raw);
 
       // Provide convenient aliases only if they are missing, do NOT remove or rename original headers
-      if (!out.CodigoExterno) out.CodigoExterno = raw['ID Licitacion'] || raw['ID Licitación'] || raw.CodigoExterno || raw['Codigo Externo'] || "";
+      if (!out.CodigoExterno) out.CodigoExterno = raw['ID Licitacion'] || raw['ID LicitaciÃ³n'] || raw.CodigoExterno || raw['Codigo Externo'] || "";
       if (!out.Nombre) out.Nombre = raw.Nombre || raw['Nombre'] || "";
       out.Monto = toNumber(raw['Monto Estimado'] || raw.Monto || raw['Monto'] || 0);
       if (!out.FechaCierre) out.FechaCierre = raw['Fecha Cierre'] || raw.FechaCierre || "";
-      if (!out.Descripcion) out.Descripcion = raw.Descripcion || raw['Descripcion'] || raw['Descripción'] || "";
+      if (!out.Descripcion) out.Descripcion = raw.Descripcion || raw['Descripcion'] || raw['DescripciÃ³n'] || "";
       if (!out.TipoLicitacion) out.TipoLicitacion = raw['Tipo Licitacion'] || raw.Categoria || raw['Codigo Tipo'] || "Sin tipo";
       if (!out.Organismo) out.Organismo = raw['Nombre Organismo'] || raw.Organismo || "";
       if (!out.EstadoAPI) out.EstadoAPI = raw.Estado || raw['Estado'] || "";
@@ -1545,7 +1547,7 @@
       if (!out.DiasRestantes) out.DiasRestantes = raw['Dias Disponibles'] || raw.DiasRestantes || raw['Dias Cierre Licitacion'] || "";
       if (!out.URLLicitacion) out.URLLicitacion = raw.URL || raw.URLLicitacion || raw['URL'] || "";
       out.Visto = String(raw.Visto || raw['Visto'] || out.Visto || "FALSE").toUpperCase();
-      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "Descartada";
+      if (!out.EstadoTrabajo) out.EstadoTrabajo = raw.EstadoTrabajo || raw['EstadoTrabajo'] || raw['Estado Trabajo'] || "Sin Evaluar";
       if (!out.Producto) out.Producto = raw['Nombre Producto (1er Item)'] || raw.Producto || raw.Proveedor || "";
       // compute general classification and subcategory
       const cls = classifyProduct(out.Producto || out.TipoLicitacion || out.Organismo || "");
@@ -1619,6 +1621,7 @@
     // Centralized data update to avoid duplicated sequences of fillFilters/apply/render
     function updateData(rows) {
       st.rows = rows;
+      migrateLegacyDefaultStatus(st.rows);
       st.filtered = Array.isArray(rows) ? [...rows] : [];
       fillFilters();
       st.currentPage = 1;
@@ -1630,11 +1633,11 @@
     function classifyProduct(text) {
       const s = String(text || "").toLowerCase();
       const mapping = [
-        { general: 'Salud', subs: [['Medic', /medic|hospital|salud|clínic|enfermer/], ['Servicios médicos', /servicio.*médic|prestaciones médicas/]] },
-        { general: 'Construcción', subs: [['Obras', /obra|construcc|pavi|obra/], ['Materiales', /material|grava|cemento|hormigón|moldaje/]] },
-        { general: 'Educación', subs: [['Capacitación', /capacitaci|escuela|docent/]] },
-        { general: 'Servicios', subs: [['Limpieza', /aseo|limpiez/], ['Seguridad', /guardia|segurid/], ['Transporte', /transporte|autobús|moviliz/]] },
-        { general: 'Tecnología', subs: [['Software', /soft|software|sistema|plataforma/], ['Equipamiento', /equipo|servidor|hosting/]] },
+        { general: 'Salud', subs: [['Medic', /medic|hospital|salud|clÃ­nic|enfermer/], ['Servicios mÃ©dicos', /servicio.*mÃ©dic|prestaciones mÃ©dicas/]] },
+        { general: 'ConstrucciÃ³n', subs: [['Obras', /obra|construcc|pavi|obra/], ['Materiales', /material|grava|cemento|hormigÃ³n|moldaje/]] },
+        { general: 'EducaciÃ³n', subs: [['CapacitaciÃ³n', /capacitaci|escuela|docent/]] },
+        { general: 'Servicios', subs: [['Limpieza', /aseo|limpiez/], ['Seguridad', /guardia|segurid/], ['Transporte', /transporte|autobÃºs|moviliz/]] },
+        { general: 'TecnologÃ­a', subs: [['Software', /soft|software|sistema|plataforma/], ['Equipamiento', /equipo|servidor|hosting/]] },
         { general: 'Suministros', subs: [['Insumos', /insumo|insumos|suministr|reactiv|material auxiliar/]] },
         { general: 'Alimentos', subs: [['Catering', /catering|desayun|banquet/]] }
       ];
@@ -1645,8 +1648,8 @@
         }
       }
       // fallback heuristics
-      if (/servicio|contratación|contrato/.test(s)) return { general: 'Servicios', sub: 'General' };
-      if (/mantenimiento|mantención|mantenim/.test(s)) return { general: 'Servicios', sub: 'Mantenimiento' };
+      if (/servicio|contrataciÃ³n|contrato/.test(s)) return { general: 'Servicios', sub: 'General' };
+      if (/mantenimiento|mantenciÃ³n|mantenim/.test(s)) return { general: 'Servicios', sub: 'Mantenimiento' };
       if (/pieza|pieza|repuesto|insumo|material/.test(s)) return { general: 'Suministros', sub: 'General' };
       return { general: 'Otros', sub: 'Otros' };
     }
@@ -1737,10 +1740,10 @@
         raw.Link,
         raw.link,
         raw['URL Licitacion'],
-        raw['URL Licitación'],
+        raw['URL LicitaciÃ³n'],
         raw['UrlLicitacion'],
         raw['Url Licitacion'],
-        raw['Url Licitación']
+        raw['Url LicitaciÃ³n']
       ].filter(Boolean).map(v => String(v).trim());
 
       const expanded = [];
@@ -1761,7 +1764,7 @@
     }
 
     function buildPublicoUrlFromRow(row) {
-      const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID Licitación'] || row._raw['CodigoExterno']));
+      const id = row && (row.CodigoExterno || row._raw && (row._raw['ID Licitacion'] || row._raw['ID LicitaciÃ³n'] || row._raw['CodigoExterno']));
       if (id) {
         return "https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion=" + encodeURIComponent(id);
       }
@@ -1782,12 +1785,28 @@
         const g = gestionMap[id];
         if (!g) continue;
         row.Visto = String(g.visto || row.Visto || "FALSE").toUpperCase();
-        row.EstadoTrabajo = g.estadoTrabajo || row.EstadoTrabajo || "Descartada";
+        row.EstadoTrabajo = g.estadoTrabajo || row.EstadoTrabajo || "Sin Evaluar";
         row.Responsable = g.responsable || row.Responsable || "";
         row.Comentario = g.comentario || row.Comentario || "";
         row._gestion = g;
       }
       return rows;
+    }
+
+    function migrateLegacyDefaultStatus(rows) {
+      if (!Array.isArray(rows)) return 0;
+      let migrated = 0;
+      for (const row of rows) {
+        const estado = String(row.EstadoTrabajo || "").trim();
+        const visto = String(row.Visto || "FALSE").toUpperCase();
+        const responsable = String(row.Responsable || "").trim();
+        const comentario = String(row.Comentario || "").trim();
+        if (estado === "Descartada" && visto !== "TRUE" && !responsable && !comentario) {
+          row.EstadoTrabajo = "Sin Evaluar";
+          migrated++;
+        }
+      }
+      return migrated;
     }
 
     function normalizeGestionCsvRow(row) {
@@ -1796,16 +1815,16 @@
         raw[String(key || "").trim()] = row[key];
       }
 
-      const id = raw.id || raw.ID || raw.codigo_externo || raw.CodigoExterno || raw['Codigo Externo'] || raw['ID Licitacion'] || raw['ID Licitación'] || "";
+      const id = raw.id || raw.ID || raw.codigo_externo || raw.CodigoExterno || raw['Codigo Externo'] || raw['ID Licitacion'] || raw['ID LicitaciÃ³n'] || "";
       const visto = raw.visto || raw.Visto || raw['Visto'] || "FALSE";
-      const estadoTrabajo = raw.estadoTrabajo || raw.EstadoTrabajo || raw['Estado Trabajo'] || raw.Estado || "Descartada";
+      const estadoTrabajo = raw.estadoTrabajo || raw.EstadoTrabajo || raw['Estado Trabajo'] || raw.Estado || "Sin Evaluar";
       const responsable = raw.responsable || raw.Responsable || raw['Nombre Usuario'] || raw['Usuario'] || "";
       const comentario = raw.comentario || raw.Comentario || raw['Comentario'] || "";
 
       return {
         id: String(id || "").trim(),
         visto: String(visto || "FALSE").toUpperCase(),
-        estadoTrabajo: String(estadoTrabajo || "Descartada").trim() || "Descartada",
+        estadoTrabajo: String(estadoTrabajo || "Sin Evaluar").trim() || "Sin Evaluar",
         responsable: String(responsable || "").trim(),
         comentario: String(comentario || "").trim(),
         actualizadoEn: raw.actualizadoEn || raw.actualizado_en || raw['Actualizado en'] || ""
@@ -1880,7 +1899,7 @@
             }
 
             if (typeof Papa === "undefined") {
-              reject(new Error("PapaParse no está disponible"));
+              reject(new Error("PapaParse no estÃ¡ disponible"));
               return;
             }
 
@@ -1949,11 +1968,11 @@
           applyGestionData(st.filtered, cached);
           render();
           if (st.view === "list") refreshDataTable();
-          toast("Sin conexión a Sheet: mostrando cambios guardados en este navegador.");
+          toast("Sin conexiÃ³n a Sheet: mostrando cambios guardados en este navegador.");
           return;
         }
 
-        console.warn("No se pudo cargar gestión publicada:", err);
+        console.warn("No se pudo cargar gestiÃ³n publicada:", err);
       }
     }
 
@@ -2010,13 +2029,13 @@
         const mCatGen = !catGen || (r.CategoriaGeneral === catGen);
         const estadoLicitacion = String(r.EstadoAPI || "").trim();
         const mEst = !est || estadoLicitacion === est;
-        const estadoGestion = String(r.EstadoTrabajo || "Descartada").trim() || "Descartada";
+        const estadoGestion = String(r.EstadoTrabajo || "Sin Evaluar").trim() || "Sin Evaluar";
         const mGestion = !gestion || estadoGestion === gestion;
         let mV = true;
         if (visto === "TRUE") mV = r.Visto === "TRUE";
         if (visto === "FALSE") mV = r.Visto !== "TRUE";
         if (visto === "NUEVO") mV = isNew(r);
-        // Filtro de fechas: solo considera la fecha de emisión/publicación.
+        // Filtro de fechas: solo considera la fecha de emisiÃ³n/publicaciÃ³n.
         // Si se completa Desde/Hasta, muestra las publicadas dentro de ese rango.
         const hasDateRange = Boolean(fechaDesde || fechaHasta);
         const fp = dateOnly(r.FechaPublicacion);
@@ -2053,7 +2072,7 @@
       const nwe = st.rows.filter(r => isNew(r)).length;
       const proc = st.rows.filter(r => r.EstadoTrabajo === "En Proceso").length;
       const apl = st.rows.filter(r => r.EstadoTrabajo === "Aplicada").length;
-      const desc = st.rows.filter(r => (r.EstadoTrabajo || "Descartada") === "Descartada").length;
+      const desc = st.rows.filter(r => r.EstadoTrabajo === "Descartada").length;
       const m = st.rows.reduce((acc, r) => acc + (Number(r.Monto) || 0), 0);
 
       if (el.kNew) el.kNew.textContent = nwe;
@@ -2088,7 +2107,7 @@
         await loadExcelJSScript();
       } catch (err) {
         console.error(err);
-        toast('No se pudo cargar ExcelJS. Reintenta con conexión estable.');
+        toast('No se pudo cargar ExcelJS. Reintenta con conexiÃ³n estable.');
         return;
       }
 
@@ -2107,15 +2126,15 @@
       const sheet = book.addWorksheet('Licitaciones');
 
       const columns = [
-        { header: 'Código', key: 'CodigoExterno', width: 20 },
+        { header: 'CÃ³digo', key: 'CodigoExterno', width: 20 },
         { header: 'Nombre', key: 'Nombre', width: 45 },
         { header: 'Organismo', key: 'Organismo', width: 30 },
         { header: 'Producto', key: 'Producto', width: 30 },
         { header: 'Tipo', key: 'TipoLicitacion', width: 25 },
         { header: 'Monto', key: 'Monto', width: 15 },
-        { header: 'Fecha Publicación', key: 'FechaPublicacion', width: 18 },
+        { header: 'Fecha PublicaciÃ³n', key: 'FechaPublicacion', width: 18 },
         { header: 'Fecha Cierre', key: 'FechaCierre', width: 18 },
-        { header: 'Días Restantes', key: 'DiasRestantes', width: 15 },
+        { header: 'DÃ­as Restantes', key: 'DiasRestantes', width: 15 },
         { header: 'Estado', key: 'EstadoTrabajo', width: 18 },
         { header: 'Visto', key: 'Visto', width: 10 },
         { header: 'Prioridad', key: 'Prioridad', width: 12 }
@@ -2263,7 +2282,7 @@
           { title: 'Nombre' },
           { title: 'Tipo' },
           { title: 'Monto' },
-          { title: 'Días' },
+          { title: 'DÃ­as' },
           { title: 'Estado' },
           { title: 'Acciones', orderable: false }
         ],
@@ -2292,9 +2311,9 @@
     }
 
     function renderBoard(rows) {
-      const lanes = ["Descartada", "En Proceso", "Aplicada"];
+      const lanes = ["Sin Evaluar", "Descartada", "En Proceso", "Aplicada"];
       el.kanban.innerHTML = lanes.map(l => {
-        const rs = rows.filter(r => (r.EstadoTrabajo || "Descartada") === l);
+        const rs = rows.filter(r => (r.EstadoTrabajo || "Sin Evaluar") === l);
         return `
           <article class="lane">
             <header class="lane-head"><span>${l}</span><span class="count">${rs.length}</span></header>
@@ -2450,11 +2469,11 @@
       el.mdCloseDate.textContent = dateOnly(r.FechaCierre);
       el.mdDias.textContent = Number.isFinite(Number(r.DiasRestantes)) ? `${r.DiasRestantes} dias` : "-";
       el.mdCat.textContent = r.TipoLicitacion || "-";
-      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "Descartada";
+      el.mdEstado.textContent = r.EstadoAPI || r.EstadoTrabajo || "Sin Evaluar";
       el.mdPrio.textContent = r.Prioridad || "Media";
       el.mdDesc.textContent = r.Descripcion || "Sin descripcion";
       el.edVisto.value = r.Visto === "TRUE" ? "TRUE" : "FALSE";
-      el.edEstado.value = r.EstadoTrabajo || "Descartada";
+      el.edEstado.value = r.EstadoTrabajo || "Sin Evaluar";
       el.edOwner.value = r.Responsable || "";
       el.edCom.value = r.Comentario || "";
       el.openDoc.dataset.url = buildPublicoUrlFromRow(r);
@@ -2568,7 +2587,7 @@
       if (type === "new") el.visto.value = "NUEVO";
       if (type === "free") {
         el.visto.value = "";
-        st.filtered = st.rows.filter(r => (r.EstadoTrabajo || "Descartada") === "Descartada");
+        st.filtered = st.rows.filter(r => (r.EstadoTrabajo || "Sin Evaluar") === "Sin Evaluar");
         st.currentPage = 1;
         updatePagination();
         render();
@@ -2725,7 +2744,7 @@
       const fieldsCloseBtn = document.getElementById('fieldsClose');
 
       async function fetchAndShowHeaders(){
-        fieldsList.textContent = 'Verificando conexión al CSV...';
+        fieldsList.textContent = 'Verificando conexiÃ³n al CSV...';
         try {
           // Intenta obtener el CSV (evita cache)
           const res = await fetch(CSV_URL, { method: 'GET', cache: 'no-store' });
@@ -2755,10 +2774,10 @@
               fieldsList.textContent = 'No se pudieron determinar los headers.';
             }
           } else {
-            fieldsList.textContent = `Conexión OK (HTTP ${res.status}).\n\n` + fields.join('\n');
+            fieldsList.textContent = `ConexiÃ³n OK (HTTP ${res.status}).\n\n` + fields.join('\n');
           }
 
-          // Comparar con lo que ya está cargado en memoria (st.rows) y avisar si difiere
+          // Comparar con lo que ya estÃ¡ cargado en memoria (st.rows) y avisar si difiere
           if (st.rows && st.rows.length) {
             const loaded = Object.keys(st.rows[0]._raw || {});
             const onlyInFetched = fields.filter(f => !loaded.includes(f));
@@ -2772,7 +2791,7 @@
           fieldsModal.classList.add('open');
           fieldsModal.setAttribute('aria-hidden','false');
         } catch (err) {
-          // CORS o network errores quedarán aquí
+          // CORS o network errores quedarÃ¡n aquÃ­
           fieldsList.textContent = 'Error conectando al CSV: ' + (err && err.message ? err.message : String(err));
           fieldsModal.classList.add('open');
           fieldsModal.setAttribute('aria-hidden','false');
