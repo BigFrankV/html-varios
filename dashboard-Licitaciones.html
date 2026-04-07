@@ -2321,11 +2321,14 @@
       syncDataTablePageSize();
       const rows = st.view === "board" ? st.filtered : getCurrentPageRows();
       const empty = rows.length === 0;
-      el.empty.style.display = empty ? "block" : "none";
+      if (el.empty) {
+        el.empty.classList.toggle("d-none", !empty);
+        el.empty.style.display = empty ? "block" : "none";
+      }
 
-      el.cards.style.display = st.view === "cards" ? "" : "none";
+      el.cards.style.display = st.view === "cards" ? "grid" : "none";
       el.list.style.display = st.view === "list" ? "" : "none";
-      el.kanban.style.display = st.view === "board" ? "" : "none";
+      el.kanban.style.display = st.view === "board" ? "grid" : "none";
 
       if (empty) {
         el.cards.innerHTML = "";
