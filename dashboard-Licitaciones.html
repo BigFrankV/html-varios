@@ -2319,7 +2319,7 @@
 
     function render() {
       syncDataTablePageSize();
-      const rows = getCurrentPageRows();
+      const rows = st.view === "board" ? st.filtered : getCurrentPageRows();
       const empty = rows.length === 0;
       el.empty.style.display = empty ? "block" : "none";
 
@@ -2415,10 +2415,12 @@
       el.viewCards.classList.toggle("active", v === "cards");
       el.viewList.classList.toggle("active", v === "list");
       el.viewBoard.classList.toggle("active", v === "board");
-      // Always show the sidebar pagination/pageSize — we'll use it for both list and cards
-      const pagWrap = document.getElementById('pagination');
-      if (pagWrap) pagWrap.style.display = '';
-      if (el.pageSize && el.pageSize.parentElement) el.pageSize.parentElement.style.display = '';
+      // Kanban no usa paginacion; tarjetas/lista si.
+      const isBoard = v === "board";
+      const topControls = document.querySelector('.results-toolbar.top-controls');
+      const bottomControls = document.querySelector('.results-toolbar.bottom-controls');
+      if (topControls) topControls.style.display = isBoard ? 'none' : '';
+      if (bottomControls) bottomControls.style.display = isBoard ? 'none' : '';
 
       if (v === 'list' && dtInstance) {
         syncDataTablePageSize();
