@@ -57,377 +57,556 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        let scene, camera, renderer, vehicle, ground, controls;
-        let keys = {};
+        // ============================================================
+        // CONSTANTS
+        // ============================================================
+        const CELL    = 80;              // distance between road centerlines
+        const RHALF   = 6;              // half road width  (road = 12 units wide)
+        const SW      = 3;              // sidewalk width
+        const RRAD    = 2;              // chunk render radius  →  (2*2+1)² = 25 chunks
+        const ARM_LEN = CELL / 2 - RHALF;        // 34 – arm length (road between intersection and block edge)
+        const ARM_OFF = (RHALF + CELL / 2) / 2;  // 23 – center of arm in local chunk coords
+        const SW_OFF  = RHALF + SW / 2;           // 7.5 – sidewalk centre offset from road axis
 
-        // NUEVO: contenedor del mapa
-        let world;
+        // Player car AABB half-extents (world-space, rotation-aware via formula below)
+        const PHX = 0.55, PHZ = 1.1;
 
-        // Configuración de movimiento (físicas simplificadas)
+        // Traffic car AABB half-extents
+        const THX = 0.55, THZ = 1.0;
+
+        // ============================================================
+        // PHYSICS
+        // ============================================================
         let speed = 0;
-        let acceleration = 0.005;
-        let turnSpeed = 0.03;
-        let friction = 0.98;
-        let maxSpeed = 0.5;
+        const ACC   = 0.007;
+        const FRIC  = 0.985;
+        const MAXSP = 0.5;
+        const TURN  = 0.03;
 
-        init();
-        animate();
+        // ============================================================
+        // STATE
+        // ============================================================
+        let scene, camera, renderer, vehicle;
+        let keys = {};
+        const chunks  = new Map();   // "ci,ck" -> { group, colls[] }
+        const sColls  = [];          // all active static AABB colliders: { mnX, mxX, mnZ, mxZ, key }
+        const tCars   = [];          // traffic car objects
 
+        // ============================================================
+        // SHARED MATERIALS  (created once, reused by every chunk)
+        // ============================================================
+        const MAT = {
+            road:     new THREE.MeshLambertMaterial({ color: 0x2a2a2a }),
+            sidewalk: new THREE.MeshLambertMaterial({ color: 0xd4c9b8 }),
+            lineY:    new THREE.MeshLambertMaterial({ color: 0xf1c40f }),
+            roof:     new THREE.MeshLambertMaterial({ color: 0x7d2912 }),
+            trunk:    new THREE.MeshLambertMaterial({ color: 0x5c3317 }),
+            crown:    new THREE.MeshLambertMaterial({ color: 0x2d7a38 }),
+            signPost: new THREE.MeshLambertMaterial({ color: 0xaaaaaa }),
+            signPare: new THREE.MeshLambertMaterial({ color: 0xcc0000 }),
+            signCeda: new THREE.MeshLambertMaterial({ color: 0xffffff }),
+            wheel:    new THREE.MeshLambertMaterial({ color: 0x111111 }),
+            cabin:    new THREE.MeshLambertMaterial({ color: 0x1a1a2e }),
+        };
+
+        const HOUSE_COLORS = [0xd35400, 0x2980b9, 0x27ae60, 0xf39c12, 0x8e44ad, 0xc0392b, 0x16a085, 0xe67e22];
+        const HOUSE_MATS   = HOUSE_COLORS.map(c => new THREE.MeshLambertMaterial({ color: c }));
+
+        const TC_COLORS = [0xff6600, 0x0055cc, 0xdddddd, 0x226600, 0xcc3300, 0x885522, 0xffcc00, 0x553399];
+        const TC_MATS   = TC_COLORS.map(c => new THREE.MeshLambertMaterial({ color: c }));
+
+        // ============================================================
+        // SHARED GEOMETRIES  (created once, reused by every chunk)
+        // ============================================================
+        const GEO = {
+            roadArmH:  new THREE.BoxGeometry(ARM_LEN, 0.04, RHALF * 2),     // horizontal arm  34×12
+            roadArmV:  new THREE.BoxGeometry(RHALF * 2, 0.04, ARM_LEN),     // vertical arm    12×34
+            roadInter: new THREE.BoxGeometry(RHALF * 2, 0.05, RHALF * 2),   // intersection    12×12
+            swalkH:    new THREE.BoxGeometry(ARM_LEN, 0.10, SW),             // H sidewalk      34×3
+            swalkV:    new THREE.BoxGeometry(SW, 0.10, ARM_LEN),             // V sidewalk      3×34
+            dashH:     new THREE.BoxGeometry(5, 0.01, 0.28),                 // yellow dash (H)
+            dashV:     new THREE.BoxGeometry(0.28, 0.01, 5),                 // yellow dash (V)
+            wheel:     new THREE.CylinderGeometry(0.25, 0.25, 0.2, 12),
+            trunk:     new THREE.CylinderGeometry(0.20, 0.30, 2.0, 8),
+            crown:     new THREE.SphereGeometry(1.1, 8, 8),
+            post:      new THREE.CylinderGeometry(0.07, 0.07, 2.2, 8),
+            signOct:   new THREE.CylinderGeometry(0.55, 0.55, 0.10, 8),
+            signTri:   new THREE.ConeGeometry(0.60, 0.10, 3),
+            signCirc:  new THREE.CylinderGeometry(0.55, 0.55, 0.10, 16),
+        };
+
+        // Set of shared geometries – excluded from disposal when a chunk is removed
+        const SHARED_GEOS = new Set(Object.values(GEO));
+
+        // ============================================================
+        // SEEDED PRNG  (deterministic per chunk so buildings always look the same)
+        // ============================================================
+        function makeRng(seed) {
+            let s = (seed ^ 0x9e3779b9) >>> 0 || 1;
+            return () => {
+                s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+                return s / 4294967296;
+            };
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
         function init() {
-            // 1. Escena
+            // Scene
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xa0a0a0); // Fondo gris (asfalto)
-            scene.fog = new THREE.Fog(0xa0a0a0, 10, 80); // un poco más lejos para ver "ciudad"
+            scene.background = new THREE.Color(0x87ceeb);
+            scene.fog = new THREE.FogExp2(0x87ceeb, 0.010);
 
-            // 2. Cámara
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 5, 10); // Posición inicial (arriba y atrás)
+            // Camera
+            camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 500);
 
-            // 3. Renderer
+            // Renderer
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-            // 4. Luces
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            scene.add(ambientLight);
+            // Lights
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+            const sun = new THREE.DirectionalLight(0xffffff, 1.0);
+            sun.position.set(60, 100, 40);
+            scene.add(sun);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(10, 15, 5);
-            scene.add(directionalLight);
-
-            // 5. Suelo base (para que no quede "vacío" fuera del mapa)
-            ground = new THREE.Mesh(
-                new THREE.PlaneGeometry(300, 300),
-                new THREE.MeshStandardMaterial({ color: 0x6b6b6b, depthWrite: false })
+            // Large grass ground plane (always visible under everything)
+            const grass = new THREE.Mesh(
+                new THREE.PlaneGeometry(4000, 4000),
+                new THREE.MeshLambertMaterial({ color: 0x4a7c4e })
             );
-            ground.rotation.x = -Math.PI / 2;
-            scene.add(ground);
+            grass.rotation.x = -Math.PI / 2;
+            scene.add(grass);
 
-            // Grid suave (debug)
-            const gridHelper = new THREE.GridHelper(200, 80, 0x000000, 0x000000);
-            gridHelper.material.opacity = 0.08;
-            gridHelper.material.transparent = true;
-            scene.add(gridHelper);
-
-            // NUEVO: crear "world" y el mapa
-            world = new THREE.Group();
-            scene.add(world);
-            buildCityMap(world);
-
-            // 6. CREACIÓN DEL "AUTITO" 3D (Formas básicas)
-            vehicle = new THREE.Group();
-
-            // Cuerpo del auto (Cubo rojo)
-            const carBody = new THREE.Mesh(
-                new THREE.BoxGeometry(1, 0.5, 2),
-                new THREE.MeshStandardMaterial({ color: 0xff0000 })
-            );
-            carBody.position.y = 0.35; // Un poco elevado para las ruedas
-            vehicle.add(carBody);
-
-            // Cabina (Cubo más pequeño)
-            const carCabin = new THREE.Mesh(
-                new THREE.BoxGeometry(0.8, 0.4, 1),
-                new THREE.MeshStandardMaterial({ color: 0x333333 })
-            );
-            carCabin.position.y = 0.75;
-            carCabin.position.z = -0.2;
-            vehicle.add(carCabin);
-
-            // Ruedas (Cilindros)
-            const wheelGeometry = new THREE.CylinderGeometry(0.25, 0.25, 0.2, 20);
-            const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-
-            const wheelPositions = [
-                [-0.6, 0.25, 0.6], [0.6, 0.25, 0.6],   // Delanteras
-                [-0.6, 0.25, -0.6], [0.6, 0.25, -0.6]  // Traseras
-            ];
-
-            wheelPositions.forEach(pos => {
-                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
-                wheel.position.set(pos[0], pos[1], pos[2]);
-                wheel.rotation.z = Math.PI / 2; // Girar el cilindro
-                vehicle.add(wheel);
-            });
-
+            // Player vehicle (red)
+            vehicle = makeVehicle(new THREE.MeshLambertMaterial({ color: 0xff2200 }));
+            vehicle.position.set(0, 0.1, 0);
             scene.add(vehicle);
-            vehicle.position.y = 0.1; // Ajuste fino sobre el suelo
 
-            // 7. Controles de Cámara (Para depuración, después lo haremos automático)
-            // controls = new OrbitControls(camera, renderer.domElement);
-            // controls.enablePan = false;
+            // Initial chunk load around origin
+            updateChunks();
 
-            // Eventos
-            window.addEventListener('resize', onWindowResize, false);
-            window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-            window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+            // Spawn traffic
+            spawnTraffic();
+
+            // Events
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+            window.addEventListener('keyup',   e => { keys[e.key.toLowerCase()] = false; });
         }
 
-        // =========================
-        // MAPA / CIUDAD (NUEVO)
-        // =========================
+        // ============================================================
+        // VEHICLE FACTORY  (player + traffic use this)
+        // ============================================================
+        function makeVehicle(bodyMat) {
+            const g = new THREE.Group();
+            // Body
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.5, 2.1), bodyMat);
+            body.position.y = 0.35;
+            g.add(body);
+            // Cabin
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.38, 1.1), MAT.cabin);
+            cabin.position.set(0, 0.74, -0.15);
+            g.add(cabin);
+            // Wheels
+            const wPos = [[-0.65, 0.25, 0.65], [0.65, 0.25, 0.65], [-0.65, 0.25, -0.65], [0.65, 0.25, -0.65]];
+            wPos.forEach(([x, y, z]) => {
+                const w = new THREE.Mesh(GEO.wheel, MAT.wheel);
+                w.position.set(x, y, z);
+                w.rotation.z = Math.PI / 2;
+                g.add(w);
+            });
+            return g;
+        }
 
-        function buildCityMap(parent) {
-            // Materiales básicos
-            const roadMat = new THREE.MeshStandardMaterial({ color: 0x2f2f2f, roughness: 1 });
-            const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0xbfbfbf, roughness: 1 });
-            const lineWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 });
-            const lineYellowMat = new THREE.MeshStandardMaterial({ color: 0xf1c40f, roughness: 1 });
+        // ============================================================
+        // CHUNK SYSTEM
+        // ============================================================
+        function chunkKey(ci, ck) { return `${ci},${ck}`; }
 
-            // Helpers para construir piezas
-            const ROAD_Y = 0.02;      // un pelín sobre el suelo base
-            const SIDEWALK_Y = 0.06;  // vereda un poco más alta
-            const LINE_Y = 0.03;
+        function updateChunks() {
+            const ci0 = Math.round(vehicle.position.x / CELL);
+            const ck0 = Math.round(vehicle.position.z / CELL);
 
-            function addRoadRect(x, z, w, d) {
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, 0.04, d), roadMat);
-                mesh.position.set(x, ROAD_Y, z);
-                mesh.receiveShadow = false;
-                parent.add(mesh);
-                return mesh;
+            // Load chunks inside render radius
+            for (let di = -RRAD; di <= RRAD; di++) {
+                for (let dk = -RRAD; dk <= RRAD; dk++) {
+                    const k = chunkKey(ci0 + di, ck0 + dk);
+                    if (!chunks.has(k)) loadChunk(ci0 + di, ck0 + dk);
+                }
             }
 
-            function addSidewalkRect(x, z, w, d) {
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, 0.08, d), sidewalkMat);
-                mesh.position.set(x, SIDEWALK_Y, z);
-                parent.add(mesh);
-                return mesh;
+            // Unload chunks that drifted too far away
+            for (const [k, ch] of chunks) {
+                const [ci, ck] = k.split(',').map(Number);
+                if (Math.abs(ci - ci0) > RRAD + 1 || Math.abs(ck - ck0) > RRAD + 1) {
+                    unloadChunk(k, ch);
+                }
+            }
+        }
+
+        function loadChunk(ci, ck) {
+            const key   = chunkKey(ci, ck);
+            const group = new THREE.Group();
+            group.position.set(ci * CELL, 0, ck * CELL);
+            scene.add(group);
+
+            const colls = [];
+            buildChunk(group, colls, ci, ck);
+            chunks.set(key, { group, colls });
+
+            // Register colliders globally, tagged with chunk key for later removal
+            colls.forEach(c => { c.key = key; sColls.push(c); });
+        }
+
+        function unloadChunk(key, ch) {
+            scene.remove(ch.group);
+            // Dispose only non-shared geometries (i.e. per-building boxes/cones)
+            ch.group.traverse(obj => {
+                if (obj.isMesh && !SHARED_GEOS.has(obj.geometry)) obj.geometry.dispose();
+            });
+            // Remove this chunk's colliders from the global list
+            for (let i = sColls.length - 1; i >= 0; i--) {
+                if (sColls[i].key === key) sColls.splice(i, 1);
+            }
+            chunks.delete(key);
+        }
+
+        // ============================================================
+        // CHUNK CONTENT BUILDER
+        // ============================================================
+        function buildChunk(g, colls, ci, ck) {
+            const R = makeRng(ci * 73856093 ^ ck * 19349663);
+
+            // ── ROADS ──────────────────────────────────────────────
+            // Intersection pad (slightly raised to avoid z-fighting with arms)
+            addMesh(g, GEO.roadInter, MAT.road, 0, 0.025, 0);
+            // Horizontal arms (±X)
+            addMesh(g, GEO.roadArmH, MAT.road,  ARM_OFF, 0.02, 0);
+            addMesh(g, GEO.roadArmH, MAT.road, -ARM_OFF, 0.02, 0);
+            // Vertical arms (±Z)
+            addMesh(g, GEO.roadArmV, MAT.road, 0, 0.02,  ARM_OFF);
+            addMesh(g, GEO.roadArmV, MAT.road, 0, 0.02, -ARM_OFF);
+
+            // ── SIDEWALKS ──────────────────────────────────────────
+            // Along horizontal arms (top + bottom, left + right)
+            for (const xs of [-1, 1]) {
+                for (const zs of [-1, 1]) {
+                    addMesh(g, GEO.swalkH, MAT.sidewalk, xs * ARM_OFF, 0.05, zs * SW_OFF);
+                }
+            }
+            // Along vertical arms (left + right, top + bottom)
+            for (const zs of [-1, 1]) {
+                for (const xs of [-1, 1]) {
+                    addMesh(g, GEO.swalkV, MAT.sidewalk, xs * SW_OFF, 0.05, zs * ARM_OFF);
+                }
             }
 
-            function addLineRect(x, z, w, d, mat) {
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, 0.01, d), mat);
-                mesh.position.set(x, LINE_Y, z);
-                parent.add(mesh);
-                return mesh;
+            // ── LANE MARKINGS  (yellow dashes, 3 per arm) ─────────
+            for (let d = RHALF + 6; d < CELL / 2 - 4; d += 9) {
+                addMesh(g, GEO.dashH, MAT.lineY,  d, 0.03, 0);
+                addMesh(g, GEO.dashH, MAT.lineY, -d, 0.03, 0);
+                addMesh(g, GEO.dashV, MAT.lineY, 0, 0.03,  d);
+                addMesh(g, GEO.dashV, MAT.lineY, 0, 0.03, -d);
             }
 
-            // 1) Layout simple: una cruz (intersección) + calles laterales
-            // Eje Z = norte/sur, eje X = este/oeste
-            // Calles principales
-            addRoadRect(0, 0, 12, 60);   // calle vertical
-            addRoadRect(0, 0, 60, 12);   // calle horizontal
+            // ── CORNER BLOCKS ─────────────────────────────────────
+            const SIGN_TYPES = ['PARE', 'CEDA', '50', 'PARE'];
+            [[1, 1], [-1, 1], [1, -1], [-1, -1]].forEach(([xs, zs], i) => {
+                buildBlock(g, colls, ci, ck, xs, zs, R);
+                // Sign at each intersection corner
+                addSign(g, xs * (RHALF + 1.8), zs * (RHALF + 1.8), SIGN_TYPES[i]);
+            });
+        }
 
-            // Veredas alrededor (bordes grandes)
-            // Vertical: veredas a los lados de la calle vertical
-            addSidewalkRect(-8, 0, 4, 60);
-            addSidewalkRect(8, 0, 4, 60);
+        // ── One corner block (buildings + trees) ──────────────────
+        function buildBlock(g, colls, ci, ck, xs, zs, R) {
+            // Block center in local chunk coords
+            const bcx = xs * ARM_OFF;   // ±23
+            const bcz = zs * ARM_OFF;   // ±23
 
-            // Horizontal: veredas arriba/abajo de la calle horizontal
-            addSidewalkRect(0, -8, 60, 4);
-            addSidewalkRect(0, 8, 60, 4);
+            // Usable area half-size (leave SW gap on road side + small margin on outer edges)
+            const halfUsable = ARM_LEN / 2 - SW - 1;   // 17 - 3 - 1 = 13
 
-            // 2) Líneas de carril (simples)
-            // Línea central amarilla en calle vertical (segmentada)
-            for (let z = -28; z <= 28; z += 4) {
-                addLineRect(0, z, 0.25, 2, lineYellowMat);
-            }
-            // Línea central amarilla en calle horizontal (segmentada)
-            for (let x = -28; x <= 28; x += 4) {
-                addLineRect(x, 0, 2, 0.25, lineYellowMat);
-            }
+            // ── Buildings ──
+            const numB = 2 + Math.floor(R() * 3);   // 2-4 buildings per block
+            for (let i = 0; i < numB; i++) {
+                const bw = 3 + R() * 7;
+                const bd = 3 + R() * 7;
+                const bh = 2 + R() * 6;
+                const ci2 = Math.floor(R() * HOUSE_MATS.length);
 
-            // Líneas blancas de borde (continuas, simple)
-            addLineRect(-5.5, 0, 0.2, 60, lineWhiteMat);
-            addLineRect(5.5, 0, 0.2, 60, lineWhiteMat);
-            addLineRect(0, -5.5, 60, 0.2, lineWhiteMat);
-            addLineRect(0, 5.5, 60, 0.2, lineWhiteMat);
+                // Clamp so building fits inside usable area
+                const maxHW = Math.max(0, halfUsable - bw / 2 - 0.5);
+                const maxHD = Math.max(0, halfUsable - bd / 2 - 0.5);
+                const lx = bcx + (R() * 2 - 1) * maxHW;
+                const lz = bcz + (R() * 2 - 1) * maxHD;
 
-            // 3) Casas (bloques) en las manzanas
-            // Casa simple
-            function addHouse(x, z, w = 4, d = 4, h = 3, color = 0xd35400) {
-                const house = new THREE.Group();
+                // Building base mesh
+                const baseGeo = new THREE.BoxGeometry(bw, bh, bd);
+                const base = new THREE.Mesh(baseGeo, HOUSE_MATS[ci2]);
+                base.position.set(lx, bh / 2, lz);
+                g.add(base);
 
-                const base = new THREE.Mesh(
-                    new THREE.BoxGeometry(w, h, d),
-                    new THREE.MeshStandardMaterial({ color })
-                );
-                base.position.y = h / 2;
-                house.add(base);
-
-                const roof = new THREE.Mesh(
-                    new THREE.ConeGeometry(Math.max(w, d) * 0.65, 1.6, 4),
-                    new THREE.MeshStandardMaterial({ color: 0x8e2c0b })
-                );
-                roof.position.y = h + 0.8;
+                // Roof
+                const roofGeo = new THREE.ConeGeometry(Math.max(bw, bd) * 0.65, 1.4, 4);
+                const roof = new THREE.Mesh(roofGeo, MAT.roof);
+                roof.position.set(lx, bh + 0.7, lz);
                 roof.rotation.y = Math.PI / 4;
-                house.add(roof);
+                g.add(roof);
 
-                house.position.set(x, 0.08, z);
-                parent.add(house);
-                return house;
+                // World-space AABB collider
+                const wx = ci * CELL + lx;
+                const wz = ck * CELL + lz;
+                colls.push({ mnX: wx - bw / 2, mxX: wx + bw / 2, mnZ: wz - bd / 2, mxZ: wz + bd / 2 });
             }
 
-            // Algunas casas en cada cuadrante (separadas de la calle)
-            const housePositions = [
-                [-18, -18], [-24, -18], [-18, -24],
-                [18, -18], [24, -18], [18, -24],
-                [-18, 18], [-24, 18], [-18, 24],
-                [18, 18], [24, 18], [18, 24],
-            ];
+            // ── Trees (along sidewalk edges of the block) ──
+            const numT = 3 + Math.floor(R() * 3);   // 3-5 trees
+            for (let i = 0; i < numT; i++) {
+                let tx, tz;
+                // Alternate between the two road-facing edges of this block
+                if (R() > 0.5) {
+                    tx = bcx + (R() * 2 - 1) * (ARM_LEN / 2 - 1);
+                    tz = bcz - zs * (ARM_LEN / 2 - SW / 2 - 0.5);
+                } else {
+                    tx = bcx - xs * (ARM_LEN / 2 - SW / 2 - 0.5);
+                    tz = bcz + (R() * 2 - 1) * (ARM_LEN / 2 - 1);
+                }
+                // Clamp into block bounds
+                tx = Math.max(bcx - ARM_LEN / 2 + 1, Math.min(bcx + ARM_LEN / 2 - 1, tx));
+                tz = Math.max(bcz - ARM_LEN / 2 + 1, Math.min(bcz + ARM_LEN / 2 - 1, tz));
 
-            housePositions.forEach((p, i) => {
-                const palette = [0xd35400, 0x2980b9, 0x27ae60, 0xf39c12, 0x8e44ad];
-                addHouse(p[0], p[1], 4, 4, 3, palette[i % palette.length]);
+                const trunk = new THREE.Mesh(GEO.trunk, MAT.trunk);
+                trunk.position.set(tx, 1.0, tz);
+                g.add(trunk);
+                const crown = new THREE.Mesh(GEO.crown, MAT.crown);
+                crown.position.set(tx, 2.5, tz);
+                g.add(crown);
+
+                // Small AABB collider for tree trunk
+                const wx = ci * CELL + tx;
+                const wz = ck * CELL + tz;
+                colls.push({ mnX: wx - 0.4, mxX: wx + 0.4, mnZ: wz - 0.4, mxZ: wz + 0.4 });
+            }
+        }
+
+        // ── Sign post helper ───────────────────────────────────────
+        function addSign(g, x, z, type) {
+            const post = new THREE.Mesh(GEO.post, MAT.signPost);
+            post.position.set(x, 1.1, z);
+            g.add(post);
+
+            let plateGeo;
+            let plateMat = MAT.signCeda;
+            if (type === 'PARE') { plateGeo = GEO.signOct;  plateMat = MAT.signPare; }
+            else if (type === 'CEDA') { plateGeo = GEO.signTri; }
+            else { plateGeo = GEO.signCirc; }   // '50'
+
+            const plate = new THREE.Mesh(plateGeo, plateMat);
+            plate.position.set(x, 2.2, z);
+            plate.rotation.x = Math.PI / 2;
+            g.add(plate);
+        }
+
+        // ── Generic mesh helper ────────────────────────────────────
+        function addMesh(g, geo, mat, x, y, z) {
+            const m = new THREE.Mesh(geo, mat);
+            m.position.set(x, y, z);
+            g.add(m);
+            return m;
+        }
+
+        // ============================================================
+        // TRAFFIC CARS
+        // ============================================================
+        function spawnTraffic() {
+            // 12 cars: 6 on horizontal roads (Z = 0, ±CELL), 6 on vertical roads (X = 0, ±CELL)
+            const hRoads = [0, CELL, -CELL];
+            const vRoads = [0, CELL, -CELL];
+            let idx = 0;
+
+            hRoads.forEach(roadZ => {
+                [1, -1].forEach(dir => {
+                    const laneOffset = dir > 0 ? -3 : 3;
+                    const startX     = (Math.random() * 2 - 1) * RRAD * CELL;
+                    const mat        = TC_MATS[idx % TC_MATS.length];
+                    const grp        = makeVehicle(mat);
+                    scene.add(grp);
+                    tCars.push({ group: grp, axis: 0, roadCoord: roadZ, laneOffset, dir, pos: startX, spd: 0.10 + Math.random() * 0.08 });
+                    idx++;
+                });
             });
 
-            // 4) Árboles
-            function addTree(x, z) {
-                const tree = new THREE.Group();
+            vRoads.forEach(roadX => {
+                [1, -1].forEach(dir => {
+                    const laneOffset = dir > 0 ? 3 : -3;
+                    const startZ     = (Math.random() * 2 - 1) * RRAD * CELL;
+                    const mat        = TC_MATS[idx % TC_MATS.length];
+                    const grp        = makeVehicle(mat);
+                    scene.add(grp);
+                    tCars.push({ group: grp, axis: 1, roadCoord: roadX, laneOffset, dir, pos: startZ, spd: 0.10 + Math.random() * 0.08 });
+                    idx++;
+                });
+            });
 
-                const trunk = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.25, 0.35, 2, 10),
-                    new THREE.MeshStandardMaterial({ color: 0x6e3b1f })
-                );
-                trunk.position.y = 1;
-                tree.add(trunk);
-
-                const crown = new THREE.Mesh(
-                    new THREE.SphereGeometry(1.1, 12, 12),
-                    new THREE.MeshStandardMaterial({ color: 0x1f8f3a })
-                );
-                crown.position.y = 2.4;
-                tree.add(crown);
-
-                tree.position.set(x, 0.08, z);
-                parent.add(tree);
-                return tree;
-            }
-
-            // Filas de árboles en veredas (simple)
-            for (let t = -24; t <= 24; t += 6) {
-                addTree(-10, t);
-                addTree(10, t);
-                addTree(t, -10);
-                addTree(t, 10);
-            }
-
-            // 5) Señalética chilena (prototipo)
-            // - PARE (octágono rojo)
-            // - CEDA EL PASO (triángulo invertido)
-            // - LÍMITE 50 (círculo)
-            function addSignPost(x, z, signType = 'PARE', rotY = 0) {
-                const sign = new THREE.Group();
-
-                const post = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.08, 0.08, 2.2, 10),
-                    new THREE.MeshStandardMaterial({ color: 0xaaaaaa })
-                );
-                post.position.y = 1.1;
-                sign.add(post);
-
-                let plateGeo, plateMat;
-
-                if (signType === 'PARE') {
-                    // Octágono: CylinderGeometry con 8 segmentos y poca altura
-                    plateGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.08, 8);
-                    plateMat = new THREE.MeshStandardMaterial({ color: 0xd00000 });
-                } else if (signType === 'CEDA') {
-                    // Triángulo: ConeGeometry de 3 lados, luego rotar
-                    plateGeo = new THREE.ConeGeometry(0.65, 0.08, 3);
-                    plateMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-                } else if (signType === '50') {
-                    // Círculo: cylinder
-                    plateGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.08, 24);
-                    plateMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-                } else {
-                    plateGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.08, 6);
-                    plateMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-                }
-
-                const plate = new THREE.Mesh(plateGeo, plateMat);
-                plate.position.y = 2.0;
-                plate.rotation.x = Math.PI / 2; // mirar hacia el auto (plano vertical)
-                sign.add(plate);
-
-                // Borde rojo para CEDA y 50 (simple: un aro/cylinder un poco más grande detrás)
-                if (signType === 'CEDA') {
-                    const border = new THREE.Mesh(
-                        new THREE.ConeGeometry(0.72, 0.05, 3),
-                        new THREE.MeshStandardMaterial({ color: 0xd00000 })
-                    );
-                    border.position.y = 2.0;
-                    border.rotation.x = Math.PI / 2;
-                    border.rotation.z = Math.PI; // invertir para que parezca triángulo invertido
-                    sign.add(border);
-
-                    plate.rotation.z = Math.PI; // triángulo invertido
-                    border.rotation.z = Math.PI;
-                }
-
-                if (signType === '50') {
-                    const ring = new THREE.Mesh(
-                        new THREE.CylinderGeometry(0.62, 0.62, 0.03, 24),
-                        new THREE.MeshStandardMaterial({ color: 0xd00000 })
-                    );
-                    ring.position.y = 2.0;
-                    ring.rotation.x = Math.PI / 2;
-                    sign.add(ring);
-                }
-
-                sign.position.set(x, 0.08, z);
-                sign.rotation.y = rotY;
-                parent.add(sign);
-                return sign;
-            }
-
-            // Colocar señales alrededor de la intersección
-            addSignPost(-6.5, 6.5, 'PARE', Math.PI * 0.25);
-            addSignPost(6.5, -6.5, 'CEDA', -Math.PI * 0.75);
-            addSignPost(-6.5, -6.5, '50', Math.PI * 0.75);
-            addSignPost(6.5, 6.5, '50', -Math.PI * 0.25);
+            // Set initial transforms
+            tCars.forEach(updateTCarTransform);
         }
 
-        function updateVehicle() {
-            // Control de dirección
-            if (keys['a'] || keys['ArrowLeft']) vehicle.rotation.y += turnSpeed;
-            if (keys['d'] || keys['ArrowRight']) vehicle.rotation.y -= turnSpeed;
+        function updateTCarTransform(tc) {
+            const limit = (RRAD + 1) * CELL;
+            // Wrap around when car leaves the loaded area
+            if (tc.pos >  limit) tc.pos = -limit;
+            if (tc.pos < -limit) tc.pos =  limit;
 
-            // Control de velocidad
-            if (keys['w'] || keys['ArrowUp']) speed += acceleration;
-            if (keys['s'] || keys['ArrowDown']) speed -= acceleration;
-            
-            // Tecla Reiniciar
+            if (tc.axis === 0) {
+                // Driving along X axis
+                tc.group.position.set(tc.pos, 0.1, tc.roadCoord + tc.laneOffset);
+                tc.group.rotation.y = tc.dir > 0 ? -Math.PI / 2 : Math.PI / 2;
+            } else {
+                // Driving along Z axis
+                tc.group.position.set(tc.roadCoord + tc.laneOffset, 0.1, tc.pos);
+                tc.group.rotation.y = tc.dir > 0 ? Math.PI : 0;
+            }
+        }
+
+        function updateTrafficCars() {
+            tCars.forEach(tc => {
+                tc.pos += tc.dir * tc.spd;
+                updateTCarTransform(tc);
+            });
+        }
+
+        // ============================================================
+        // COLLISION  (AABB – rotation-aware for player)
+        // ============================================================
+
+        // Returns the world-space AABB of the player car, accounting for its Y-rotation.
+        // We expand the axis-aligned box to fully contain the oriented bounding box.
+        function playerAABB() {
+            const p   = vehicle.position;
+            const cos = Math.abs(Math.cos(vehicle.rotation.y));
+            const sin = Math.abs(Math.sin(vehicle.rotation.y));
+            const hw  = PHX * cos + PHZ * sin;  // half-width in world X
+            const hd  = PHX * sin + PHZ * cos;  // half-depth in world Z
+            return { mnX: p.x - hw, mxX: p.x + hw, mnZ: p.z - hd, mxZ: p.z + hd };
+        }
+
+        // Push a out of b along the axis of smallest penetration.
+        // Returns the signed push vector {dx, dz}.
+        function resolveAABB(amnX, amxX, amnZ, amxZ, bmnX, bmxX, bmnZ, bmxZ) {
+            const overlapX = Math.min(amxX - bmnX, bmxX - amnX);
+            const overlapZ = Math.min(amxZ - bmnZ, bmxZ - amnZ);
+            if (overlapX <= 0 || overlapZ <= 0) return null;   // no overlap
+            if (overlapX < overlapZ) {
+                const dx = (amxX - bmnX < bmxX - amnX) ? -overlapX : overlapX;
+                return { dx, dz: 0 };
+            } else {
+                const dz = (amxZ - bmnZ < bmxZ - amnZ) ? -overlapZ : overlapZ;
+                return { dx: 0, dz };
+            }
+        }
+
+        function resolveCollisions() {
+            const pa = playerAABB();
+            const CHECK = PHZ + 8;   // broad-phase range
+
+            // ── Static props ──
+            for (const c of sColls) {
+                if (c.mxX < pa.mnX - CHECK || c.mnX > pa.mxX + CHECK) continue;
+                if (c.mxZ < pa.mnZ - CHECK || c.mnZ > pa.mxZ + CHECK) continue;
+
+                const push = resolveAABB(pa.mnX, pa.mxX, pa.mnZ, pa.mxZ, c.mnX, c.mxX, c.mnZ, c.mxZ);
+                if (push) {
+                    vehicle.position.x += push.dx;
+                    vehicle.position.z += push.dz;
+                    speed *= 0.25;   // strong speed reduction on prop collision
+                    // Update AABB after push so subsequent colliders use the new position
+                    const nb = playerAABB();
+                    pa.mnX = nb.mnX; pa.mxX = nb.mxX;
+                    pa.mnZ = nb.mnZ; pa.mxZ = nb.mxZ;
+                }
+            }
+
+            // ── Traffic cars ──
+            for (const tc of tCars) {
+                const tp  = tc.group.position;
+                const tmnX = tp.x - THX, tmxX = tp.x + THX;
+                const tmnZ = tp.z - THZ, tmxZ = tp.z + THZ;
+
+                const push = resolveAABB(pa.mnX, pa.mxX, pa.mnZ, pa.mxZ, tmnX, tmxX, tmnZ, tmxZ);
+                if (push) {
+                    // Push player 60%, traffic car 40%
+                    vehicle.position.x += push.dx * 0.6;
+                    vehicle.position.z += push.dz * 0.6;
+                    tp.x -= push.dx * 0.4;
+                    tp.z -= push.dz * 0.4;
+                    speed  *= 0.4;
+                    tc.spd *= 0.5;
+                    const nb = playerAABB();
+                    pa.mnX = nb.mnX; pa.mxX = nb.mxX;
+                    pa.mnZ = nb.mnZ; pa.mxZ = nb.mxZ;
+                }
+            }
+        }
+
+        // ============================================================
+        // PLAYER UPDATE
+        // ============================================================
+        function updateVehicle() {
+            // Steering
+            if (keys['a'] || keys['arrowleft'])  vehicle.rotation.y += TURN;
+            if (keys['d'] || keys['arrowright']) vehicle.rotation.y -= TURN;
+
+            // Throttle / brake
+            if (keys['w'] || keys['arrowup'])   speed += ACC;
+            if (keys['s'] || keys['arrowdown']) speed -= ACC;
+
+            // Reset (R) – restores player only; world stays intact
             if (keys['r']) {
                 vehicle.position.set(0, 0.1, 0);
                 vehicle.rotation.set(0, 0, 0);
                 speed = 0;
+                keys['r'] = false;   // prevent continuous reset while key is held
             }
 
-            // Aplicar fricción (desaceleración natural)
-            speed *= friction;
+            // Friction & speed cap
+            speed *= FRIC;
+            speed  = Math.max(-MAXSP / 2, Math.min(MAXSP, speed));
 
-            // Limitar velocidad máxima
-            speed = Math.max(-maxSpeed / 2, Math.min(maxSpeed, speed));
+            // Move forward
+            vehicle.translateZ(-speed);
 
-            // Mover el vehículo en la dirección a la que mira
-            vehicle.translateZ(-speed); 
-
-            // Actualizar la posición de la cámara para que siga al auto (Chase Cam)
-            // Crear un offset suave detrás y arriba
-            const relativeCameraOffset = new THREE.Vector3(0, 3, 7);
-            const cameraOffset = relativeCameraOffset.applyMatrix4(vehicle.matrixWorld);
-
-            camera.position.x = cameraOffset.x;
-            camera.position.y = cameraOffset.y;
-            camera.position.z = cameraOffset.z;
-
-            // Mirar al auto
+            // Chase camera  (smooth offset behind & above)
+            const camOff = new THREE.Vector3(0, 3, 7).applyMatrix4(vehicle.matrixWorld);
+            camera.position.copy(camOff);
             camera.lookAt(vehicle.position);
         }
 
+        // ============================================================
+        // MAIN LOOP
+        // ============================================================
         function animate() {
             requestAnimationFrame(animate);
             updateVehicle();
-            // if (controls) controls.update();
+            updateChunks();
+            updateTrafficCars();
+            resolveCollisions();
             renderer.render(scene, camera);
         }
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = innerWidth / innerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(innerWidth, innerHeight);
         }
+
+        init();
+        animate();
+
     </script>
 </body>
 </html>
