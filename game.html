@@ -88,6 +88,7 @@
         // ============================================================
         let scene, camera, renderer, vehicle;
         let keys = {};
+        let resetFlag = false;       // one-shot reset, set by keydown to avoid continuous trigger
         const chunks  = new Map();   // "ci,ck" -> { group, colls[] }
         const sColls  = [];          // all active static AABB colliders: { mnX, mxX, mnZ, mxZ, key }
         const tCars   = [];          // traffic car objects
@@ -141,8 +142,13 @@
         // ============================================================
         // SEEDED PRNG  (deterministic per chunk so buildings always look the same)
         // ============================================================
-        function makeRng(seed) {
-            let s = (seed ^ 0x9e3779b9) >>> 0 || 1;
+        // SEEDED PRNG  (deterministic per chunk so buildings always look the same)
+        // ============================================================
+        function makeSeededPrng(seed) {
+            // XOR with the Fibonacci hashing constant to spread low seeds;
+            // guard against the edge case where the result is exactly 0.
+            let s = (seed ^ 0x9e3779b9) >>> 0;
+            if (s === 0) s = 1;
             return () => {
                 s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
                 return s / 4294967296;
@@ -193,8 +199,12 @@
 
             // Events
             window.addEventListener('resize', onWindowResize);
-            window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
-            window.addEventListener('keyup',   e => { keys[e.key.toLowerCase()] = false; });
+            window.addEventListener('keydown', e => {
+                const k = e.key.toLowerCase();
+                if (k === 'r') { resetFlag = true; }
+                else { keys[k] = true; }
+            });
+            window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
         }
 
         // ============================================================
@@ -278,7 +288,9 @@
         // CHUNK CONTENT BUILDER
         // ============================================================
         function buildChunk(g, colls, ci, ck) {
-            const R = makeRng(ci * 73856093 ^ ck * 19349663);
+            // Spatial hash: multiply each axis by a distinct large prime before XOR-ing
+            // to avoid collisions between chunks that share an X or Z coordinate.
+            const R = makeSeededPrng(ci * 73856093 ^ ck * 19349663);
 
             // ── ROADS ──────────────────────────────────────────────
             // Intersection pad (slightly raised to avoid z-fighting with arms)
@@ -457,8 +469,9 @@
         }
 
         function updateTCarTransform(tc) {
-            const limit = (RRAD + 1) * CELL;
-            // Wrap around when car leaves the loaded area
+            // Wrap off-screen: add a half-CELL buffer so teleportation happens
+            // outside the visible area rather than in front of the player.
+            const limit = (RRAD + 1) * CELL + CELL / 2;
             if (tc.pos >  limit) tc.pos = -limit;
             if (tc.pos < -limit) tc.pos =  limit;
 
@@ -496,16 +509,16 @@
         }
 
         // Push a out of b along the axis of smallest penetration.
-        // Returns the signed push vector {dx, dz}.
-        function resolveAABB(amnX, amxX, amnZ, amxZ, bmnX, bmxX, bmnZ, bmxZ) {
-            const overlapX = Math.min(amxX - bmnX, bmxX - amnX);
-            const overlapZ = Math.min(amxZ - bmnZ, bmxZ - amnZ);
+        // Returns the signed push vector {dx, dz}, or null if no overlap.
+        function resolveAABB(aMinX, aMaxX, aMinZ, aMaxZ, bMinX, bMaxX, bMinZ, bMaxZ) {
+            const overlapX = Math.min(aMaxX - bMinX, bMaxX - aMinX);
+            const overlapZ = Math.min(aMaxZ - bMinZ, bMaxZ - aMinZ);
             if (overlapX <= 0 || overlapZ <= 0) return null;   // no overlap
             if (overlapX < overlapZ) {
-                const dx = (amxX - bmnX < bmxX - amnX) ? -overlapX : overlapX;
+                const dx = (aMaxX - bMinX < bMaxX - aMinX) ? -overlapX : overlapX;
                 return { dx, dz: 0 };
             } else {
-                const dz = (amxZ - bmnZ < bmxZ - amnZ) ? -overlapZ : overlapZ;
+                const dz = (aMaxZ - bMinZ < bMaxZ - aMinZ) ? -overlapZ : overlapZ;
                 return { dx: 0, dz };
             }
         }
@@ -545,7 +558,8 @@
                     tp.x -= push.dx * 0.4;
                     tp.z -= push.dz * 0.4;
                     speed  *= 0.4;
-                    tc.spd *= 0.5;
+                    // Clamp traffic car speed to a minimum so it never becomes immobile
+                    tc.spd  = Math.max(tc.spd * 0.5, 0.05);
                     const nb = playerAABB();
                     pa.mnX = nb.mnX; pa.mxX = nb.mxX;
                     pa.mnZ = nb.mnZ; pa.mxZ = nb.mxZ;
@@ -566,11 +580,11 @@
             if (keys['s'] || keys['arrowdown']) speed -= ACC;
 
             // Reset (R) – restores player only; world stays intact
-            if (keys['r']) {
+            if (resetFlag) {
                 vehicle.position.set(0, 0.1, 0);
                 vehicle.rotation.set(0, 0, 0);
                 speed = 0;
-                keys['r'] = false;   // prevent continuous reset while key is held
+                resetFlag = false;
             }
 
             // Friction & speed cap
