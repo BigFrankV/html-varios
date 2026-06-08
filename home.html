@@ -627,6 +627,14 @@
 
     // INICIALIZAR
     document.addEventListener("DOMContentLoaded", () => {
+      console.log("\n╔═══════════════════════════════════════════════════════════╗");
+      console.log("║          🐾 FERIA APP - INVENTARIO MASCOTAS 🐾           ║");
+      console.log("╚═══════════════════════════════════════════════════════════╝");
+      console.log("⏰ Hora:", new Date().toLocaleString());
+      console.log("🌐 API:", API_URL);
+      console.log("📱 User Agent:", navigator.userAgent.substring(0, 80));
+      console.log("");
+      
       loadProducts();
       setupEventListeners();
     });
@@ -666,31 +674,86 @@
 
     async function loadProducts() {
       try {
-        console.log("Intentando cargar desde:", API_URL);
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("📡 INICIANDO CARGA DE PRODUCTOS");
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("🔗 URL:", API_URL);
+        console.log("⏱️ Timestamp:", new Date().toISOString());
+        
+        console.log("\n📤 Enviando request...");
+        const startTime = performance.now();
+        
         const response = await fetch(API_URL, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          mode: 'cors',
+          credentials: 'omit'
         });
         
+        const endTime = performance.now();
+        console.log(`⏱️ Tiempo de respuesta: ${(endTime - startTime).toFixed(2)}ms`);
+        
+        console.log("\n📥 RESPUESTA RECIBIDA:");
+        console.log("   Status:", response.status, `(${response.statusText})`);
+        console.log("   Headers Content-Type:", response.headers.get('content-type'));
+        console.log("   OK?", response.ok);
+        
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          const errorText = await response.text();
+          console.error("❌ ERROR HTTP:", response.status, response.statusText);
+          console.error("   Body:", errorText);
+          throw new Error(`HTTP ${response.status}: ${response.statusText}\n${errorText}`);
         }
         
         const text = await response.text();
-        console.log("Respuesta recibida:", text.substring(0, 100));
+        console.log("\n📝 TEXTO RAW (primeros 200 chars):");
+        console.log(text.substring(0, 200));
         
-        products = JSON.parse(text);
-        if (!Array.isArray(products)) {
+        console.log("\n🔍 Intentando parsear JSON...");
+        let products_temp;
+        try {
+          products_temp = JSON.parse(text);
+          console.log("✅ JSON parseado exitosamente");
+        } catch (e) {
+          console.error("❌ ERROR al parsear JSON:");
+          console.error("   Error:", e.message);
+          console.error("   Text recibido:", text);
+          throw e;
+        }
+        
+        console.log("\n📊 VALIDANDO DATOS:");
+        console.log("   ¿Es array?", Array.isArray(products_temp));
+        console.log("   Cantidad de items:", products_temp.length);
+        
+        if (!Array.isArray(products_temp)) {
+          console.error("❌ La respuesta no es un array:", typeof products_temp);
           throw new Error("La respuesta no es un array");
         }
         
-        console.log(`✅ Cargados ${products.length} productos`);
+        products = products_temp;
+        
+        if (products.length > 0) {
+          console.log("\n📦 PRIMER PRODUCTO:");
+          console.log(products[0]);
+          console.log("   Keys:", Object.keys(products[0]));
+        }
+        
+        console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log(`✅ ¡ÉXITO! Cargados ${products.length} productos`);
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        
         renderProducts();
         checkLowStock();
       } catch (error) {
-        console.error("Error cargando productos:", error);
+        console.error("\n❌ ERROR CRÍTICO:");
+        console.error("   Tipo:", error.constructor.name);
+        console.error("   Mensaje:", error.message);
+        console.error("   Stack:", error.stack);
+        console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        
         document.getElementById("productsGrid").innerHTML = 
           `<div style="color: white; text-align: center; padding: 40px;">❌ Error: ${error.message}</div>`;
       }
@@ -813,6 +876,7 @@
 
     async function quickSale(id) {
       try {
+        console.log("\n🛒 VENTA RÁPIDA - ID:", id);
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {
@@ -821,16 +885,19 @@
           body: JSON.stringify({ action: "reducir", id: id })
         });
 
+        console.log("   Status:", response.status);
         const result = await response.json();
+        console.log("   Resultado:", result);
+        
         if (result.success) {
           const product = products.find(p => p["ID"] === id);
           if (product) {
             product["Cantidad"] = result.newQuantity;
+            console.log("✅ Stock reducido a:", result.newQuantity);
             renderProducts();
             checkLowStock();
             playSuccessSound();
 
-            // Animación de éxito
             const card = document.querySelector(`[data-product-id="${id}"]`);
             if (card) {
               card.classList.add("success-animation");
@@ -839,7 +906,7 @@
           }
         }
       } catch (error) {
-        console.error("Error en venta rápida:", error);
+        console.error("❌ Error en venta rápida:", error);
       }
     }
 
@@ -910,6 +977,10 @@
     async function handleFormSubmit(e) {
       e.preventDefault();
 
+      console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("💾 INICIANDO GUARDADO DE PRODUCTO");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
       const formData = {
         id: currentEditingId,
         nombre: document.getElementById("nombre").value,
@@ -920,9 +991,18 @@
         imagenUrl: ""
       };
 
+      console.log("📝 DATOS DEL FORMULARIO:");
+      console.log(formData);
+      console.log("🖼️ ¿Hay imagen seleccionada?", selectedImage ? "SÍ" : "NO");
+
       try {
         let imageUrl = "";
+        
         if (selectedImage) {
+          console.log("\n📤 SUBIENDO IMAGEN...");
+          console.log("   Tamaño:", selectedImage.length, "bytes");
+          console.log("   Primeros 50 chars:", selectedImage.substring(0, 50));
+          
           const imageResponse = await fetch(API_URL, {
             method: "POST",
             headers: {
@@ -934,9 +1014,16 @@
               fileName: `producto_${Date.now()}.jpg`
             })
           });
+
+          console.log("   Status respuesta imagen:", imageResponse.status);
           const imageResult = await imageResponse.json();
+          console.log("   Resultado:", imageResult);
+          
           if (imageResult.success) {
             imageUrl = imageResult.imageUrl;
+            console.log("✅ Imagen subida exitosamente:", imageUrl);
+          } else {
+            console.warn("⚠️ Upload de imagen falló:", imageResult);
           }
         }
 
@@ -944,6 +1031,10 @@
 
         const action = currentEditingId ? "update" : "create";
         formData.action = action;
+
+        console.log("\n📦 ENVIANDO PRODUCTO:");
+        console.log("   Acción:", action);
+        console.log("   Data:", formData);
 
         const response = await fetch(API_URL, {
           method: "POST",
@@ -953,19 +1044,31 @@
           body: JSON.stringify(formData)
         });
 
+        console.log("   Status respuesta:", response.status);
         const result = await response.json();
+        console.log("   Resultado:", result);
+
         if (result.success) {
+          console.log("✅ ÉXITO - Producto guardado");
           closeModal();
           loadProducts();
+        } else {
+          console.error("❌ Error del servidor:", result);
+          alert("❌ Error: " + (result.error || "Error desconocido"));
         }
       } catch (error) {
-        console.error("Error guardando producto:", error);
-        alert("❌ Error al guardar");
+        console.error("\n❌ ERROR CRÍTICO AL GUARDAR:");
+        console.error("   Tipo:", error.constructor.name);
+        console.error("   Mensaje:", error.message);
+        console.error("   Stack:", error.stack);
+        alert("❌ Error: " + error.message);
       }
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
     }
 
     async function deleteProduct(id) {
       try {
+        console.log("\n🗑️ ELIMINANDO PRODUCTO - ID:", id);
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {
@@ -974,13 +1077,17 @@
           body: JSON.stringify({ action: "delete", id: id })
         });
 
+        console.log("   Status:", response.status);
         const result = await response.json();
+        console.log("   Resultado:", result);
+        
         if (result.success) {
+          console.log("✅ Producto eliminado");
           closeModal();
           loadProducts();
         }
       } catch (error) {
-        console.error("Error eliminando producto:", error);
+        console.error("❌ Error eliminando producto:", error);
       }
     }
   </script>
