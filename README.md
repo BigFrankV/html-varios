@@ -11,6 +11,9 @@ https://bigfrankv.github.io/html-varios/dashboard-cm-basico.html
 
 https://bigfrankv.github.io/html-varios/ConversorMonedaBCCentral.html
 
+https://bigfrankv.github.io/html-varios/home.html
+
+
 https://BigFrankV.github.io/html-varios/cv_Frank_Vogt.html
 
 https://bigfrankv.github.io/html-varios/Equipos.html
